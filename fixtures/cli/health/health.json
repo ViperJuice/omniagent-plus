@@ -6,6 +6,7 @@
     "health",
     "sessions list",
     "sessions show",
+    "control snapshot",
     "identities list",
     "identities preflight",
     "worktrees list",

@@ -22,6 +22,8 @@ export {
   replayRouteDecisions,
   replaySession,
   replaySessionHistory,
+  replayUiControlSnapshot,
+  replayUiControlSnapshotFromStateRoot,
   type SessionReplay,
 } from "./replay.js";
 export {

@@ -1,0 +1,90 @@
+{
+  "interfaceFreezeGate": "IF-0-UI-12",
+  "redactionPosture": "metadata_only",
+  "sessions": [
+    {
+      "sessionId": "session-parent",
+      "state": "blocked_on_approval",
+      "activeTurnCount": 1,
+      "pendingApprovalCount": 1,
+      "worktreeLeaseId": "lease-1"
+    },
+    {
+      "sessionId": "session-child",
+      "parentSessionId": "session-parent",
+      "rootSessionId": "session-parent",
+      "handoffPacketId": "packet-1"
+    }
+  ],
+  "sessionTree": [
+    {
+      "sessionId": "session-parent",
+      "depth": 0,
+      "childSessionIds": ["session-child"]
+    },
+    {
+      "sessionId": "session-child",
+      "depth": 1,
+      "rootSessionId": "session-parent"
+    }
+  ],
+  "activeTurns": [
+    {
+      "sessionId": "session-parent",
+      "turnId": "turn-parent-1",
+      "state": "blocked_on_tool_approval",
+      "pendingApprovalRequestId": "approval-1"
+    }
+  ],
+  "routeDecisions": [
+    {
+      "taskId": "task-parent",
+      "selectedProvider": "openai",
+      "selectedHarness": "codex",
+      "routeReason": "capability_fit"
+    }
+  ],
+  "approvals": [
+    {
+      "approvalRequestId": "approval-1",
+      "status": "pending",
+      "requestedAction": "review control snapshot docs"
+    }
+  ],
+  "cooldowns": [
+    {
+      "provider": "openai",
+      "active": true,
+      "reason": "rate limit"
+    }
+  ],
+  "worktreeLeases": [
+    {
+      "id": "lease-1",
+      "branchName": "feature/ui",
+      "dirtyState": "clean"
+    }
+  ],
+  "handoffs": [
+    {
+      "packetId": "packet-1",
+      "sessionId": "session-child",
+      "changedFileCount": 1,
+      "nextRecommendedAction": "Confirm the read-only CLI snapshot output."
+    }
+  ],
+  "limitClassifications": [
+    {
+      "type": "burst_rate_limit",
+      "provider": "openai",
+      "statusCode": 429
+    }
+  ],
+  "evidenceRefs": [
+    {
+      "kind": "log",
+      "label": "phase verification",
+      "path": ".phase-loop/runs/ui/verification.log"
+    }
+  ]
+}

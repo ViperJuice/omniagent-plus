@@ -1,0 +1,41 @@
+{
+  "interfaceFreezeGate": "IF-0-UI-12",
+  "readOnly": true,
+  "stateStorePresent": true,
+  "snapshot": {
+    "sessions": [
+      {
+        "sessionId": "session-parent",
+        "state": "blocked_on_approval"
+      },
+      {
+        "sessionId": "session-child",
+        "handoffPacketId": "packet-1"
+      }
+    ],
+    "activeTurns": [
+      {
+        "turnId": "turn-parent-1",
+        "pendingApprovalRequestId": "approval-1"
+      }
+    ],
+    "cooldowns": [
+      {
+        "provider": "openai",
+        "active": true
+      }
+    ],
+    "worktreeLeases": [
+      {
+        "id": "lease-1",
+        "branchName": "feature/ui"
+      }
+    ],
+    "handoffs": [
+      {
+        "packetId": "packet-1",
+        "changedFileCount": 1
+      }
+    ]
+  }
+}

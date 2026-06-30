@@ -1,31 +1,28 @@
-import { mkdtemp } from "node:fs/promises";
 import { readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
+import { mkdtemp, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
 import { buildHandoffPacket } from "@omniagent-plus/core-contracts";
+import { AuditLedger, getStateLedgerPaths } from "@omniagent-plus/state-ledger";
 
-import { AuditLedger } from "./audit-ledger.js";
-import {
-  replayRouteDecisions,
-  replaySessionHistory,
-  replayUiControlSnapshot,
-  replayUiControlSnapshotFromStateRoot,
-} from "./replay.js";
+import { COMMAND_REGISTRY } from "./command-registry.js";
+import { executeCli } from "./runtime.js";
 
 function readFixture<T>(name: string): T {
   return JSON.parse(
     readFileSync(
-      new URL(`../../../fixtures/ui/projections/${name}`, import.meta.url),
+      new URL(`../../../fixtures/cli/control/${name}`, import.meta.url),
       "utf8",
     ),
   ) as T;
 }
 
-async function seedUiLedger(rootDir: string): Promise<AuditLedger> {
-  const ledger = await AuditLedger.open({ rootDir });
+async function seedUiStateRoot(stateRoot: string): Promise<void> {
+  const ledger = await AuditLedger.open({ rootDir: stateRoot });
   const handoff = buildHandoffPacket({
     packetId: "packet-1",
     createdAt: "2026-06-30T00:08:00.000Z",
@@ -42,7 +39,7 @@ async function seedUiLedger(rootDir: string): Promise<AuditLedger> {
     },
     evidence: {
       changedFiles: ["docs/ui-read-model.md"],
-      inspectedFiles: ["packages/state-ledger/src/replay.ts", "packages/cli/src/commands/control.ts"],
+      inspectedFiles: ["packages/state-ledger/src/replay.ts"],
       commandsRun: [
         {
           command: "pnpm --filter @omniagent-plus/cli test -- --run packages/cli/src/control.test.ts",
@@ -58,7 +55,7 @@ async function seedUiLedger(rootDir: string): Promise<AuditLedger> {
         },
       ],
     },
-    risks: ["Keep the CLI snapshot read-only for missing state roots."],
+    risks: ["Keep the control snapshot command read-only."],
     openQuestions: ["Should the browser UI paginate long audit feeds?"],
     nextRecommendedAction: "Confirm the read-only CLI snapshot output.",
     contextPolicy: {
@@ -154,38 +151,11 @@ async function seedUiLedger(rootDir: string): Promise<AuditLedger> {
     capabilityFit: 1,
     providerHealth: 0.95,
     currentCapacity: 0.45,
-    preferredTarget: {
-      provider: "openai",
-      harness: "codex",
-      identityProfileId: "profile-openai-primary",
-    },
     contextPortability: "high",
     portabilityScore: 0.88,
     activeTurnTarget: 2,
-    cooldownState: {
-      providerFamilyBlocked: true,
-      identityBlocked: false,
-      reason: "provider family cooldown",
-      resetAt: "2026-06-30T00:10:00.000Z",
-      sameProviderAccountSwitch: "forbidden",
-    },
-    launchGate: {
-      action: "wait_for_reset",
-      reason: "cooldown is still active",
-      routeDecisionPersisted: true,
-      labelsMatch: true,
-      manualConfirmationProvided: false,
-    },
     routeReason: "capability_fit",
     silentDowngrade: false,
-    evidenceRefs: [
-      {
-        kind: "log",
-        label: "phase verification",
-        path: ".phase-loop/runs/ui/verification.log",
-        excerpt: "Redacted verification summary only.",
-      },
-    ],
   });
   await ledger.appendProviderCooldown({
     schema: "provider_family_cooldown.v0.1",
@@ -237,7 +207,6 @@ async function seedUiLedger(rootDir: string): Promise<AuditLedger> {
       requireManualReview: false,
       sameProviderAccountSwitch: "forbidden",
     },
-    notes: ["Cooldown metadata is visible without raw payloads."],
   });
   await ledger.appendEvidenceRef(
     {
@@ -265,143 +234,56 @@ async function seedUiLedger(rootDir: string): Promise<AuditLedger> {
     rootSessionId: "session-parent",
     handoffPacket: handoff,
   });
-  await ledger.appendTurn({
-    sessionId: "session-child",
-    turnId: "turn-child-1",
-    idempotencyKey: "turn-child-1",
-    state: "completed",
-    createdAt: "2026-06-30T00:07:00.000Z",
-    updatedAt: "2026-06-30T00:09:00.000Z",
-    eventCursor: 1,
-  });
-  await ledger.appendRuntimeEvent({
-    schema: "runtime_event.v0.1",
-    eventId: "event-child-1",
-    sequence: 1,
-    sessionId: "session-child",
-    turnId: "turn-child-1",
-    type: "runtime.turn.completed",
-    occurredAt: "2026-06-30T00:09:00.000Z",
-    payload: {
-      outcome: "completed",
-      outputSummary: "Child review completed.",
-    },
-    redaction: "metadata_only",
-    terminal: true,
-  });
-
-  return ledger;
 }
 
-describe("replay", () => {
-  it("replays route decisions and runtime history without live Omnigent", async () => {
-    const ledger = await AuditLedger.open({
-      rootDir: await mkdtemp(join(tmpdir(), "state-ledger-replay-")),
-    });
+describe("control snapshot command", () => {
+  it("returns the API-ready UI snapshot without mutating durable state", async () => {
+    const stateRoot = await mkdtemp(join(tmpdir(), "cli-control-"));
+    await seedUiStateRoot(stateRoot);
+    const ledgerPath = getStateLedgerPaths(stateRoot).ledgerPath;
+    const before = await readFile(ledgerPath, "utf8");
+    const fixture = readFixture<Record<string, unknown>>("snapshot.json");
 
-    await ledger.appendSession({
-      id: "session-1",
-      runtime: "omnigent",
-      targetHarness: "codex",
-      title: "Replay test",
-      state: "idle",
-      createdAt: "2026-06-30T00:00:00.000Z",
-      updatedAt: "2026-06-30T00:00:00.000Z",
-    });
-    await ledger.appendRuntimeEvent({
-      schema: "runtime_event.v0.1",
-      eventId: "event-1",
-      sequence: 1,
-      sessionId: "session-1",
-      turnId: "turn-1",
-      type: "runtime.turn.started",
-      occurredAt: "2026-06-30T00:00:01.000Z",
-      payload: {
-        message: "start",
-        state: "running",
-      },
-      redaction: "metadata_only",
-      terminal: false,
-    });
-    await ledger.appendRuntimeEvent({
-      schema: "runtime_event.v0.1",
-      eventId: "event-2",
-      sequence: 2,
-      sessionId: "session-1",
-      turnId: "turn-1",
-      type: "runtime.turn.completed",
-      occurredAt: "2026-06-30T00:00:02.000Z",
-      payload: {
-        outcome: "completed",
-        outputSummary: "done",
-      },
-      redaction: "metadata_only",
-      terminal: true,
-    });
-    await ledger.appendRouteDecision({
-      schema: "route_decision.v0.1",
-      taskId: "task-1",
-      selectedProvider: "openai",
-      selectedHarness: "codex",
-      fallbackUsed: false,
-      capabilityFit: 1,
-      providerHealth: 0.9,
-      currentCapacity: 0.7,
-      contextPortability: "high",
-      routeReason: "capability_fit",
-      silentDowngrade: false,
-    });
-
-    const history = await replaySessionHistory(ledger, "session-1");
-    const routes = await replayRouteDecisions(ledger, "task-1");
-
-    expect(history.events.map((event) => event.type)).toEqual([
-      "runtime.turn.started",
-      "runtime.turn.completed",
-    ]);
-    expect(history.nextCursor).toBe(3);
-    expect(routes[0]?.selectedHarness).toBe("codex");
-  });
-
-  it("builds the UI control snapshot from durable ledger records and matches the read-only replay", async () => {
-    const rootDir = await mkdtemp(join(tmpdir(), "state-ledger-ui-"));
-    const ledger = await seedUiLedger(rootDir);
-
-    const snapshot = await replayUiControlSnapshot(ledger);
-    const readOnlySnapshot = await replayUiControlSnapshotFromStateRoot(rootDir);
-    const fixture = readFixture<Record<string, unknown>>("control-snapshot.json");
-
-    expect(snapshot).toEqual(readOnlySnapshot);
-    expect(snapshot).toMatchObject(fixture);
-    expect(snapshot.handoffs[0]?.packetId).toBe("packet-1");
-    expect(snapshot.activeTurns[0]?.pendingApprovalRequestId).toBe("approval-1");
-  });
-
-  it("rejects unsafe evidence content when projecting UI-facing snapshots", async () => {
-    const ledger = await AuditLedger.open({
-      rootDir: await mkdtemp(join(tmpdir(), "state-ledger-ui-redaction-")),
-    });
-
-    await ledger.appendSession({
-      id: "session-secret",
-      runtime: "omnigent",
-      targetHarness: "codex",
-      title: "Secret projection test",
-      state: "idle",
-      createdAt: "2026-06-30T00:00:00.000Z",
-      updatedAt: "2026-06-30T00:00:00.000Z",
-    });
-    await ledger.appendEvidenceRef(
-      {
-        kind: "log",
-        label: "unsafe evidence",
-        excerpt: "HOME=/tmp/secret-value",
-      },
-      {
-        sessionId: "session-secret",
-      },
+    const result = await executeCli(
+      ["control", "snapshot", "--state-root", stateRoot, "--json"],
+      COMMAND_REGISTRY,
     );
+    const parsed = JSON.parse(result.stdout) as {
+      readonly result: Record<string, unknown>;
+    };
+    const after = await readFile(ledgerPath, "utf8");
 
-    await expect(replayUiControlSnapshot(ledger)).rejects.toThrow(/environment dump/);
+    expect(result.exitCode).toBe(0);
+    expect(parsed.result).toMatchObject(fixture);
+    expect(after).toBe(before);
+  });
+
+  it("returns an empty read-only snapshot when the state root does not exist", async () => {
+    const rootDir = await mkdtemp(join(tmpdir(), "cli-control-missing-"));
+    const missingStateRoot = join(rootDir, "missing-state");
+
+    const result = await executeCli(
+      ["control", "snapshot", "--state-root", missingStateRoot, "--json"],
+      COMMAND_REGISTRY,
+    );
+    const parsed = JSON.parse(result.stdout) as {
+      readonly result: {
+        readonly stateStorePresent: boolean;
+        readonly readOnly: boolean;
+        readonly snapshot: {
+          readonly sessions: unknown[];
+          readonly routeDecisions: unknown[];
+          readonly approvals: unknown[];
+        };
+      };
+    };
+
+    expect(result.exitCode).toBe(0);
+    expect(parsed.result.readOnly).toBe(true);
+    expect(parsed.result.stateStorePresent).toBe(false);
+    expect(parsed.result.snapshot.sessions).toEqual([]);
+    expect(parsed.result.snapshot.routeDecisions).toEqual([]);
+    expect(parsed.result.snapshot.approvals).toEqual([]);
+    expect(existsSync(missingStateRoot)).toBe(false);
   });
 });

@@ -1,8 +1,9 @@
 # Architecture
 
-CLI extends the repository with the first operator-facing package that reads
-and writes the durable ledger, identity preflight state, worktree lease state,
-limit classifications, and route decisions through one local entrypoint:
+CLI and the frozen UI read model extend the repository with an API-ready
+control surface that reads the durable ledger, identity preflight state,
+worktree lease state, limit classifications, route decisions, approvals,
+handoff metadata, and cooldown state through one local entrypoint:
 
 ```text
 consumer repos
@@ -31,6 +32,8 @@ contract:
 - `RuntimeFailure`
 - `IdentityProfile`
 - `WorktreeLease`
+- `UiControlSnapshot` plus the UI session/tree/approval/cooldown/read-model
+  summary schemas that stay runtime-neutral and `metadata_only`
 
 `@omniagent-plus/state-ledger` still owns the durable local backend slice:
 
@@ -39,6 +42,7 @@ contract:
 - audit persistence for sessions, turns, events, routes, approvals, cooldowns,
   leases, capability snapshot records, and evidence refs
 - replay APIs that do not require live Omnigent
+- read-only replay that projects a `UiControlSnapshot` from durable records
 - shared cooldown and worktree lease coordination across Node processes
 
 `@omniagent-plus/identity-isolation` and `@omniagent-plus/worktree-leasing`
@@ -79,20 +83,44 @@ still own the reusable metadata-only operator primitives:
 
 - one local entrypoint,
   `pnpm --filter @omniagent-plus/cli cli -- <command>`,
-  for `health`, `sessions list`, `sessions show`, `route-task`,
-  `classify-limit`, `identities list`, `identities preflight`,
-  `worktrees list`, and `worktrees cleanup`
+  for `health`, `sessions list`, `sessions show`, `control snapshot`,
+  `route-task`, `classify-limit`, `identities list`,
+  `identities preflight`, `worktrees list`, and `worktrees cleanup`
 - a schema-backed `--json` envelope with `schema`, `ok`, `command`,
   `stateRoot`, and typed `result` or `error` payloads
 - human-readable output derived from the same redacted `metadata_only` command
   result used for JSON output
 - explicit `state-root` selection so repeated invocations share the same
   durable backend
+- read-only `control snapshot` replay that does not append ledger records,
+  does not require live Omnigent, and can return an empty snapshot when the
+  selected `state-root` has no durable ledger yet
 - typed exit code categories for argument errors, missing records, validation
   failures, policy blocks, cleanup blocks, route blocks, and unexpected
   internal failures
 - dry-run-by-default `classify-limit` and `route-task` behavior that records
   durable metadata only when `--record` is passed
+
+## UI Read Model
+
+`IF-0-UI-12` deliberately stops at an API-ready surface:
+
+- `@omniagent-plus/core-contracts` validates the exported session tree, active
+  turn, route decision, approval, cooldown, worktree lease, handoff, limit
+  classification, and evidence-ref summaries.
+- `@omniagent-plus/state-ledger` replays durable records into
+  `UiControlSnapshot` without importing Omnigent transport internals,
+  `.phase-loop` runtime state, ignored/private inputs, or secret-bearing env
+  config.
+- `@omniagent-plus/cli` exposes that snapshot through
+  `pnpm --filter @omniagent-plus/cli cli -- control snapshot [--state-root <path>] [--json]`.
+- Every UI-facing string/path is bounded through the existing metadata and
+  untrusted-text sanitizers, so the surface stays `metadata_only` and never
+  exposes raw transcripts, provider payloads, or secret-bearing paths.
+
+See [docs/ui-read-model.md](./ui-read-model.md) for the command contract,
+redaction posture, verification commands, and the `no_spec_delta` closeout
+decision for this phase.
 
 ## Explicit Non-Goals
 
@@ -103,8 +131,10 @@ still own the reusable metadata-only operator primitives:
 - No provider launch side effects from `route-task` or `classify-limit`.
 - No same-provider quota bypass through account hopping during provider-family
   cooldowns.
-- No UI read model or release-dispatch surface in this phase.
+- No browser UI shell, marketing page, or account-mutation surface in this
+  phase.
 
-CLI freezes the operator-facing `state-root`, `--json`, `metadata_only`, and
-exit code behavior without pretending downstream UI or hardening surfaces are
-already complete.
+CLI freezes the operator-facing `state-root`, `--json`, and exit-code
+behavior, while the UI read model freezes the API-ready `metadata_only`
+control snapshot without pretending a browser UI or hardening/release surface
+is already complete.

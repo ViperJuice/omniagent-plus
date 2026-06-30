@@ -3,6 +3,7 @@ import {
   limitClassificationSchema,
   redactedConfigValueSchema,
   routeDecisionSchema,
+  uiControlSnapshotSchema,
 } from "@omniagent-plus/core-contracts";
 import { z } from "zod";
 
@@ -10,6 +11,7 @@ export const cliCommandKeys = [
   "health",
   "sessions list",
   "sessions show",
+  "control snapshot",
   "identities list",
   "identities preflight",
   "worktrees list",
@@ -114,6 +116,14 @@ export const sessionsShowResultSchema = z.object({
   approvalRequestCount: z.number().int().nonnegative(),
   approvalResponseCount: z.number().int().nonnegative(),
   evidenceRefCount: z.number().int().nonnegative(),
+});
+
+export const controlSnapshotResultSchema = z.object({
+  schema: z.literal("cli.control.snapshot.result.v0.1"),
+  interfaceFreezeGate: z.literal("IF-0-UI-12"),
+  readOnly: z.literal(true),
+  stateStorePresent: z.boolean(),
+  snapshot: uiControlSnapshotSchema,
 });
 
 const identityListItemSchema = z.object({
@@ -245,6 +255,7 @@ export const commandResultSchema = z.discriminatedUnion("schema", [
   healthResultSchema,
   sessionsListResultSchema,
   sessionsShowResultSchema,
+  controlSnapshotResultSchema,
   identitiesListResultSchema,
   identitiesPreflightResultSchema,
   worktreesListResultSchema,

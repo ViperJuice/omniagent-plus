@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -15,6 +16,7 @@ describe("phase verification", () => {
       "health",
       "sessions list",
       "sessions show",
+      "control snapshot",
       "identities list",
       "identities preflight",
       "worktrees list",
@@ -22,6 +24,28 @@ describe("phase verification", () => {
       "classify-limit",
       "route-task",
     ]);
+  });
+
+  it("keeps the UI read-model surface free of transport internals, phase-loop runtime imports, and env-based secret lookups", () => {
+    const sources = [
+      readFileSync(
+        new URL("../../../packages/core-contracts/src/ui-read-model.ts", import.meta.url),
+        "utf8",
+      ),
+      readFileSync(
+        new URL("../../../packages/state-ledger/src/replay.ts", import.meta.url),
+        "utf8",
+      ),
+      readFileSync(new URL("./commands/control.ts", import.meta.url), "utf8"),
+    ];
+
+    for (const source of sources) {
+      expect(source).not.toMatch(/from ["'][^"']*@omniagent-plus\/omnigent-transport["']/);
+      expect(source).not.toMatch(/from ["'][^"']*packages\/omnigent-transport[^"']*["']/);
+      expect(source).not.toMatch(/from ["'][^"']*\.phase-loop\/[^"']*["']/);
+      expect(source).not.toMatch(/process\.env/);
+      expect(source).not.toMatch(/from ["'][^"']*(fixtures\/omnigent|\.omniagent-plus\/state|\.env)[^"']*["']/);
+    }
   });
 
   it("maps identity policy blocks and route blocks to typed exit codes", async () => {

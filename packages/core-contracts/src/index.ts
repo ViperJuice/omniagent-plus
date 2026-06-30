@@ -93,6 +93,33 @@ export {
   sanitizeWorkspacePath,
 } from "./redaction.js";
 export type {
+  UiActiveTurnSummary,
+  UiApprovalSummary,
+  UiControlSnapshot,
+  UiCooldownSummary,
+  UiEvidenceRef,
+  UiHandoffSummary,
+  UiLimitClassificationSummary,
+  UiRouteDecisionSummary,
+  UiSessionSummary,
+  UiSessionTreeNode,
+  UiWorktreeLeaseSummary,
+} from "./ui-read-model.js";
+export {
+  uiActiveTurnSummarySchema,
+  uiApprovalSummarySchema,
+  uiControlSnapshotSchema,
+  uiCooldownSummarySchema,
+  uiEvidenceRefSchema,
+  uiHandoffSummarySchema,
+  uiLimitClassificationSummarySchema,
+  uiReadModelInterfaceFreezeGate,
+  uiRouteDecisionSummarySchema,
+  uiSessionSummarySchema,
+  uiSessionTreeNodeSchema,
+  uiWorktreeLeaseSummarySchema,
+} from "./ui-read-model.js";
+export type {
   IdentityProfileStatus,
   OmnigentCapabilities,
   OmnigentCapabilitySnapshot,

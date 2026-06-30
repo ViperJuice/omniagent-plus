@@ -1,5 +1,6 @@
 import { runHealthCommand } from "./commands/health.js";
 import { runSessionsCommand } from "./commands/sessions.js";
+import { runControlCommand } from "./commands/control.js";
 import { runIdentitiesCommand } from "./commands/identities.js";
 import { runWorktreesCommand } from "./commands/worktrees.js";
 import { runClassifyLimitCommand } from "./commands/classify-limit.js";
@@ -21,6 +22,11 @@ export const COMMAND_REGISTRY: readonly CliCommandRegistration[] = [
     key: "sessions show",
     description: "Show one durable session summary without raw transcript output.",
     handle: runSessionsCommand,
+  },
+  {
+    key: "control snapshot",
+    description: "Project the UI/control read model from durable state without writing records.",
+    handle: runControlCommand,
   },
   {
     key: "identities list",

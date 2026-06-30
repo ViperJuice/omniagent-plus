@@ -31,6 +31,10 @@ export interface ParsedSessionsShowRequest extends ParsedCliBase {
   readonly sessionId: string;
 }
 
+export interface ParsedControlSnapshotRequest extends ParsedCliBase {
+  readonly command: "control snapshot";
+}
+
 export interface ParsedIdentitiesListRequest extends ParsedCliBase {
   readonly command: "identities list";
 }
@@ -92,6 +96,7 @@ export type ParsedCliRequest =
   | ParsedHealthRequest
   | ParsedSessionsListRequest
   | ParsedSessionsShowRequest
+  | ParsedControlSnapshotRequest
   | ParsedIdentitiesListRequest
   | ParsedIdentitiesPreflightRequest
   | ParsedWorktreesListRequest
@@ -349,6 +354,13 @@ export function parseCliArgs(
         "session-id",
       ),
     };
+  }
+
+  if (first === "control" && second === "snapshot") {
+    const base = buildBase("control snapshot", cwd, globals);
+    const parsed = parseCommandArgs(rest, {});
+    assertNoPositionals(parsed.positionals, "control snapshot");
+    return base;
   }
 
   if (
