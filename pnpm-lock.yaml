@@ -33,6 +33,12 @@ importers:
         specifier: ^3.2.4
         version: 3.2.6(@types/node@24.13.2)
 
+  packages/agent-harness-adapter:
+    dependencies:
+      '@omniagent-plus/core-contracts':
+        specifier: workspace:*
+        version: link:../core-contracts
+
   packages/coordinator:
     dependencies:
       '@omniagent-plus/core-contracts':
@@ -50,6 +56,12 @@ importers:
       zod:
         specifier: ^3.25.76
         version: 3.25.76
+
+  packages/governed-pipeline-adapter:
+    dependencies:
+      '@omniagent-plus/core-contracts':
+        specifier: workspace:*
+        version: link:../core-contracts
 
   packages/identity-isolation:
     dependencies:

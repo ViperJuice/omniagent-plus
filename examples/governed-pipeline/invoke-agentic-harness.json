@@ -1,0 +1,59 @@
+{
+  "harness": "omnigent",
+  "target_harness": "codex",
+  "repo_root": "/workspace/consiliency/governed-pipeline",
+  "adapter": "governed-pipeline",
+  "request": {
+    "task_id": "governed-adapter-route-1",
+    "idempotency_key": "governed-adapter-route-1",
+    "correlation_id": "corr-governed-adapter-1",
+    "title": "governed adapter launch",
+    "initial_message": "Launch the routed task without changing native policy semantics.",
+    "identity_profile_id": "profile-openai-primary",
+    "preferred_executor": "codex",
+    "fallback_executor": "claude-code"
+  },
+  "route_decision": {
+    "schema": "route_decision.v0.1",
+    "taskId": "governed-adapter-route-1",
+    "selectedProvider": "openai",
+    "selectedHarness": "codex",
+    "selectedIdentityProfileId": "profile-openai-primary",
+    "preferredProvider": "openai",
+    "preferredHarness": "codex",
+    "fallbackUsed": true,
+    "fallbackReason": "fixed_window_usage_cap",
+    "capabilityFit": 0.92,
+    "providerHealth": 0.81,
+    "currentCapacity": 0.56,
+    "preferredTarget": {
+      "provider": "openai",
+      "harness": "codex",
+      "identityProfileId": "profile-openai-primary"
+    },
+    "contextPortability": "high",
+    "portabilityScore": 0.88,
+    "activeTurnTarget": 2,
+    "cooldownState": {
+      "providerFamilyBlocked": false,
+      "identityBlocked": false,
+      "sameProviderAccountSwitch": "forbidden"
+    },
+    "launchGate": {
+      "action": "allowed",
+      "reason": "persisted before launch",
+      "routeDecisionPersisted": true,
+      "labelsMatch": true,
+      "manualConfirmationProvided": false
+    },
+    "routeReason": "usage_cap",
+    "silentDowngrade": false,
+    "evidenceRefs": [
+      {
+        "kind": "test",
+        "label": "governed-adapter-route-proof",
+        "path": "examples/governed-pipeline/invoke-agentic-harness.json"
+      }
+    ]
+  }
+}

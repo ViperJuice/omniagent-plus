@@ -1,0 +1,37 @@
+{
+  "schema": "executor_adapter_result.v0.1",
+  "executor": "omnigent",
+  "target_harness": "codex",
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "status": "blocked",
+  "transport_ok": true,
+  "parse_ok": true,
+  "parse_mode": "structured_json",
+  "unavailable_reason": "codex launch held at review gate with metadata_only fallback evidence.",
+  "blocker": {
+    "class": "review_gate_block",
+    "summary": "review gate blocked the fallback route until the next approval window"
+  },
+  "log_excerpt": {
+    "schema": "redacted_text.v0.1",
+    "redaction": "content_redacted",
+    "reason": "untrusted_evidence_excerpt",
+    "content": "metadata_only governed adapter log excerpt",
+    "byteLength": 42,
+    "truncated": false
+  },
+  "policy": {
+    "preferred_executor": "codex",
+    "fallback_executor": "claude-code",
+    "fallback_reason": "fixed_window_usage_cap",
+    "silent_downgrade": false
+  },
+  "runtime_ledger_citations": [
+    {
+      "kind": "test",
+      "label": "route-proof",
+      "path": "examples/governed-pipeline/executor-adapter-result.json"
+    }
+  ]
+}

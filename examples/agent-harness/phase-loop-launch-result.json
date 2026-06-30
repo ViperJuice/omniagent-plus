@@ -1,0 +1,23 @@
+{
+  "executor": "omnigent",
+  "target_executor": "codex",
+  "selected_executor": "codex",
+  "available": false,
+  "unavailable_reason": "metadata_only dry run probe kept codex unavailable until the review gate clears.",
+  "selected_model": "gpt-5.5",
+  "selected_effort": "xhigh",
+  "run_mode": "governed",
+  "dry_run": true,
+  "auth_preflight_mode": "metadata_only",
+  "auth_preflight_probes": [
+    "codex --version",
+    "codex login status"
+  ],
+  "timeout_posture": "runner_managed",
+  "output_capture_format": "json_stream",
+  "fallback_reason": "fixed_window_usage_cap",
+  "blocker_class": "review_gate_block",
+  "verification_status": "not_run",
+  "terminal_status": "planned",
+  "terminal_summary": "metadata_only dry run preserved without promoting dry_run to terminal_status"
+}

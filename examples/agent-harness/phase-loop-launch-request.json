@@ -1,0 +1,54 @@
+{
+  "adapter": "agent-harness",
+  "phase": "ADAPTERS",
+  "phase_plan": "plans/phase-plan-v1-ADAPTERS.md",
+  "repo_root": "/workspace/viperjuice/agent-harness",
+  "target_executor": "codex",
+  "selected_model": "gpt-5.5",
+  "selected_effort": "xhigh",
+  "run_mode": "governed",
+  "dry_run": true,
+  "auth_preflight_mode": "metadata_only",
+  "auth_preflight_probes": [
+    "codex --version",
+    "codex login status"
+  ],
+  "timeout_posture": "runner_managed",
+  "output_capture_format": "json_stream",
+  "idempotency_key": "agent-harness-adapters-1",
+  "correlation_id": "corr-agent-harness-adapters-1",
+  "title": "agent harness adapters launch",
+  "initial_message": "Dispatch the ADAPTERS phase through the omnigent backend.",
+  "identity_profile_id": "profile-openai-primary",
+  "route_decision": {
+    "schema": "route_decision.v0.1",
+    "taskId": "agent-harness-adapters-1",
+    "selectedProvider": "openai",
+    "selectedHarness": "codex",
+    "selectedIdentityProfileId": "profile-openai-primary",
+    "preferredProvider": "openai",
+    "preferredHarness": "codex",
+    "fallbackUsed": true,
+    "fallbackReason": "fixed_window_usage_cap",
+    "capabilityFit": 0.89,
+    "providerHealth": 0.76,
+    "currentCapacity": 0.58,
+    "contextPortability": "medium",
+    "portabilityScore": 0.67,
+    "activeTurnTarget": 2,
+    "cooldownState": {
+      "providerFamilyBlocked": false,
+      "identityBlocked": false,
+      "sameProviderAccountSwitch": "forbidden"
+    },
+    "launchGate": {
+      "action": "allowed",
+      "reason": "persisted before launch",
+      "routeDecisionPersisted": true,
+      "labelsMatch": true,
+      "manualConfirmationProvided": false
+    },
+    "routeReason": "usage_cap",
+    "silentDowngrade": false
+  }
+}
