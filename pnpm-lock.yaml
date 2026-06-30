@@ -31,13 +31,40 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^3.2.4
-        version: 3.2.6(@types/node@24.13.2)
+        version: 3.2.6(@types/node@24.13.2)(tsx@4.22.4)
 
   packages/agent-harness-adapter:
     dependencies:
       '@omniagent-plus/core-contracts':
         specifier: workspace:*
         version: link:../core-contracts
+
+  packages/cli:
+    dependencies:
+      '@omniagent-plus/coordinator':
+        specifier: workspace:*
+        version: link:../coordinator
+      '@omniagent-plus/core-contracts':
+        specifier: workspace:*
+        version: link:../core-contracts
+      '@omniagent-plus/identity-isolation':
+        specifier: workspace:*
+        version: link:../identity-isolation
+      '@omniagent-plus/rate-limit-catalog':
+        specifier: workspace:*
+        version: link:../rate-limit-catalog
+      '@omniagent-plus/state-ledger':
+        specifier: workspace:*
+        version: link:../state-ledger
+      '@omniagent-plus/worktree-leasing':
+        specifier: workspace:*
+        version: link:../worktree-leasing
+      tsx:
+        specifier: ^4.8.1
+        version: 4.22.4
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
 
   packages/coordinator:
     dependencies:
@@ -980,6 +1007,11 @@ packages:
     peerDependencies:
       typescript: '>=4.8.4'
 
+  tsx@4.22.4:
+    resolution: {integrity: sha512-X8EX+XV4QR5xCsrgxaED954zTDfY8KqlDtskKEL0cHhyS/P8b4IFOvGDQpsC9Q1XnLq915wEfwwY/zzskCtmhg==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
+
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
@@ -1422,13 +1454,13 @@ snapshots:
       chai: 5.3.3
       tinyrainbow: 2.0.0
 
-  '@vitest/mocker@3.2.6(vite@7.3.6(@types/node@24.13.2))':
+  '@vitest/mocker@3.2.6(vite@7.3.6(@types/node@24.13.2)(tsx@4.22.4))':
     dependencies:
       '@vitest/spy': 3.2.6
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 7.3.6(@types/node@24.13.2)
+      vite: 7.3.6(@types/node@24.13.2)(tsx@4.22.4)
 
   '@vitest/pretty-format@3.2.6':
     dependencies:
@@ -1864,6 +1896,12 @@ snapshots:
     dependencies:
       typescript: 5.9.3
 
+  tsx@4.22.4:
+    dependencies:
+      esbuild: 0.28.1
+    optionalDependencies:
+      fsevents: 2.3.3
+
   type-check@0.4.0:
     dependencies:
       prelude-ls: 1.2.1
@@ -1876,13 +1914,13 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  vite-node@3.2.4(@types/node@24.13.2):
+  vite-node@3.2.4(@types/node@24.13.2)(tsx@4.22.4):
     dependencies:
       cac: 6.7.14
       debug: 4.4.3
       es-module-lexer: 1.7.0
       pathe: 2.0.3
-      vite: 7.3.6(@types/node@24.13.2)
+      vite: 7.3.6(@types/node@24.13.2)(tsx@4.22.4)
     transitivePeerDependencies:
       - '@types/node'
       - jiti
@@ -1897,7 +1935,7 @@ snapshots:
       - tsx
       - yaml
 
-  vite@7.3.6(@types/node@24.13.2):
+  vite@7.3.6(@types/node@24.13.2)(tsx@4.22.4):
     dependencies:
       esbuild: 0.28.1
       fdir: 6.5.0(picomatch@4.0.4)
@@ -1908,12 +1946,13 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.13.2
       fsevents: 2.3.3
+      tsx: 4.22.4
 
-  vitest@3.2.6(@types/node@24.13.2):
+  vitest@3.2.6(@types/node@24.13.2)(tsx@4.22.4):
     dependencies:
       '@types/chai': 5.2.3
       '@vitest/expect': 3.2.6
-      '@vitest/mocker': 3.2.6(vite@7.3.6(@types/node@24.13.2))
+      '@vitest/mocker': 3.2.6(vite@7.3.6(@types/node@24.13.2)(tsx@4.22.4))
       '@vitest/pretty-format': 3.2.6
       '@vitest/runner': 3.2.6
       '@vitest/snapshot': 3.2.6
@@ -1931,8 +1970,8 @@ snapshots:
       tinyglobby: 0.2.17
       tinypool: 1.1.1
       tinyrainbow: 2.0.0
-      vite: 7.3.6(@types/node@24.13.2)
-      vite-node: 3.2.4(@types/node@24.13.2)
+      vite: 7.3.6(@types/node@24.13.2)(tsx@4.22.4)
+      vite-node: 3.2.4(@types/node@24.13.2)(tsx@4.22.4)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.13.2

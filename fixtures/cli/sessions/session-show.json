@@ -1,0 +1,17 @@
+{
+  "session": {
+    "id": "session-cli",
+    "title": "CLI Session",
+    "state": "idle"
+  },
+  "history": {
+    "eventCount": 1,
+    "eventType": "runtime.turn.completed"
+  },
+  "turns": [
+    {
+      "turnId": "turn-cli-1",
+      "state": "completed"
+    }
+  ]
+}

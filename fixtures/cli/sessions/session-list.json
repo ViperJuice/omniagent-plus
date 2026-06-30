@@ -1,0 +1,15 @@
+{
+  "count": 1,
+  "sessions": [
+    {
+      "id": "session-cli",
+      "title": "CLI Session",
+      "state": "idle",
+      "turnCount": 1,
+      "eventCount": 1,
+      "approvalRequestCount": 1,
+      "approvalResponseCount": 1,
+      "evidenceRefCount": 1
+    }
+  ]
+}

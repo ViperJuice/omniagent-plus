@@ -1,0 +1,13 @@
+{
+  "commands": [
+    "health",
+    "sessions list",
+    "sessions show",
+    "identities list",
+    "identities preflight",
+    "worktrees list",
+    "worktrees cleanup",
+    "classify-limit",
+    "route-task"
+  ]
+}
