@@ -1,0 +1,7 @@
+{
+  "hostEnv": {
+    "ANTHROPIC_BASE_URL": "https://anthropic.example",
+    "ANTHROPIC_API_KEY": "sk-anthropic-should-not-pass",
+    "UNRELATED": "ignore-me"
+  }
+}

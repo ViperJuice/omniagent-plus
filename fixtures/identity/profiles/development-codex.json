@@ -1,0 +1,24 @@
+{
+  "id": "profile-codex-dev",
+  "provider": "openai",
+  "harness": "codex",
+  "authMode": "local_subscription",
+  "isolation": "host_env",
+  "secretRefs": [
+    {
+      "provider": "onepassword",
+      "key": "OpenAI Local Subscription",
+      "field": "session_token"
+    }
+  ],
+  "envAllowlist": ["OPENAI_API_BASE", "OPENAI_ORG"],
+  "authVolumeRef": "auth-volume-openai-dev",
+  "homeDir": "/tmp/omniagent/identities/codex-dev",
+  "processOwner": "viperjuice",
+  "networkPolicy": "host",
+  "toolPolicyRef": "tool-policy-codex-dev",
+  "maxOpenSessions": 4,
+  "maxActiveTurns": 2,
+  "maxActiveToolCalls": 6,
+  "tags": ["development", "metadata-only"]
+}

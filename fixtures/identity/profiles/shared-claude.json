@@ -1,0 +1,23 @@
+{
+  "id": "profile-claude-shared",
+  "provider": "anthropic",
+  "harness": "claude-code",
+  "authMode": "api_key",
+  "isolation": "isolated_home",
+  "secretRefs": [
+    {
+      "provider": "onepassword",
+      "key": "Anthropic Shared API Key",
+      "field": "api_key"
+    }
+  ],
+  "envAllowlist": ["ANTHROPIC_BASE_URL"],
+  "authVolumeRef": "auth-volume-anthropic-shared",
+  "homeDir": "/srv/omniagent/identities/claude-shared",
+  "processOwner": "omni",
+  "networkPolicy": "restricted",
+  "toolPolicyRef": "tool-policy-claude-shared",
+  "maxOpenSessions": 2,
+  "maxActiveTurns": 1,
+  "tags": ["shared", "metadata-only"]
+}

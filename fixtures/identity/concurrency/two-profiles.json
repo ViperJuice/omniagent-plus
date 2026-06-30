@@ -1,0 +1,15 @@
+{
+  "profileIds": ["profile-codex-dev", "profile-claude-shared"],
+  "hostEnvByProfileId": {
+    "profile-codex-dev": {
+      "OPENAI_API_BASE": "https://api.openai.example",
+      "OPENAI_ORG": "org-dev",
+      "UNLISTED_SECRET": "Bearer dev-secret-token-123456"
+    },
+    "profile-claude-shared": {
+      "ANTHROPIC_BASE_URL": "https://anthropic.example",
+      "ANTHROPIC_API_KEY": "sk-anthropic-secret-123456",
+      "UNUSED": "unused"
+    }
+  }
+}

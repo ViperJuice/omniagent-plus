@@ -1,0 +1,13 @@
+{
+  "providerMode": "http",
+  "sharedServerRequested": true,
+  "profileIds": ["profile-codex-dev", "profile-claude-shared"],
+  "evidence": {
+    "schema": "shared_http_identity_isolation.v0.1",
+    "perSessionHome": true,
+    "perSessionEnv": true,
+    "perSessionCredentials": true,
+    "perSessionAuthVolume": true,
+    "source": "contract_freeze"
+  }
+}

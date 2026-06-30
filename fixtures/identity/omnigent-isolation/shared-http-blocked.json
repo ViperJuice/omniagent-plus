@@ -1,0 +1,5 @@
+{
+  "providerMode": "http",
+  "sharedServerRequested": true,
+  "profileIds": ["profile-codex-dev", "profile-claude-shared"]
+}

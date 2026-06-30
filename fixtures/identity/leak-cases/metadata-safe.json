@@ -1,0 +1,36 @@
+{
+  "cases": [
+    {
+      "name": "redacted config value",
+      "payload": {
+        "OPENAI_API_KEY": {
+          "schema": "redacted_config_value.v0.1",
+          "value": "[redacted]",
+          "reason": "secret_ref"
+        }
+      }
+    },
+    {
+      "name": "identity profile status",
+      "payload": {
+        "schema": "identity_profile_status.v0.1",
+        "profileId": "profile-codex-dev",
+        "provider": "openai",
+        "harness": "codex",
+        "status": "ready",
+        "checkedAt": "2026-06-30T18:00:00.000Z",
+        "activeSessions": 0,
+        "activeTurns": 0,
+        "reason": "metadata_only"
+      }
+    },
+    {
+      "name": "safe route decision metadata",
+      "payload": {
+        "schema": "route_decision.v0.1",
+        "selectedIdentityProfileId": "profile-codex-dev",
+        "routeReason": "capability_fit"
+      }
+    }
+  ]
+}

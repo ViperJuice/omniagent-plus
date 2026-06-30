@@ -1,0 +1,8 @@
+{
+  "hostEnv": {
+    "OPENAI_API_BASE": "https://api.openai.example",
+    "OPENAI_ORG": "org-dev",
+    "OPENAI_API_KEY": "sk-live-should-not-pass",
+    "UNLISTED_SECRET": "Bearer unlisted-secret-token"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "id": "profile-openai-prod-cooldown",
+  "provider": "openai",
+  "harness": "codex",
+  "authMode": "api_key",
+  "isolation": "isolated_home",
+  "secretRefs": [
+    {
+      "provider": "onepassword",
+      "key": "OpenAI Production API Key",
+      "field": "api_key"
+    }
+  ],
+  "envAllowlist": ["OPENAI_API_BASE"],
+  "authVolumeRef": "auth-volume-openai-prod",
+  "homeDir": "/srv/omniagent/identities/openai-prod",
+  "processOwner": "omni",
+  "networkPolicy": "restricted",
+  "toolPolicyRef": "tool-policy-openai-prod",
+  "maxOpenSessions": 1,
+  "maxActiveTurns": 1,
+  "providerFamilyCooldown": {
+    "active": true,
+    "reason": "fixed_window_usage_cap",
+    "resetAt": "2026-06-30T19:00:00.000Z"
+  },
+  "identityCooldown": {
+    "active": true,
+    "reason": "provider_family_cooldown",
+    "resetAt": "2026-06-30T19:00:00.000Z"
+  },
+  "tags": ["production", "cooldown", "metadata-only"]
+}

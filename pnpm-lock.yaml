@@ -39,6 +39,18 @@ importers:
         specifier: ^3.25.76
         version: 3.25.76
 
+  packages/identity-isolation:
+    dependencies:
+      '@omniagent-plus/core-contracts':
+        specifier: workspace:*
+        version: link:../core-contracts
+      '@omniagent-plus/omnigent-transport':
+        specifier: workspace:*
+        version: link:../omnigent-transport
+      '@omniagent-plus/state-ledger':
+        specifier: workspace:*
+        version: link:../state-ledger
+
   packages/omnigent-transport:
     dependencies:
       '@omniagent-plus/core-contracts':
