@@ -1,0 +1,44 @@
+{
+  "schema": "omnigent.event_fixture.v1",
+  "redaction": "metadata_only",
+  "fixture": "cancel_interrupt",
+  "request": {
+    "method": "POST",
+    "path": "/v1/sessions/{session_id}/events",
+    "body": {
+      "type": "interrupt",
+      "data": {}
+    }
+  },
+  "ack": {
+    "queued": false
+  },
+  "events": [
+    {
+      "type": "response.incomplete",
+      "reason": "user_interrupt",
+      "terminal": true
+    },
+    {
+      "type": "session.interrupted",
+      "terminal": false
+    },
+    {
+      "type": "session.status",
+      "status": "idle",
+      "terminal": false
+    }
+  ],
+  "provenance": [
+    {
+      "kind": "tagged_source",
+      "path": "omnigent/server/API.md",
+      "ref": "v0.3.0"
+    },
+    {
+      "kind": "tagged_source",
+      "path": "sdks/python-client/omnigent_client/_sessions.py",
+      "ref": "v0.3.0"
+    }
+  ]
+}

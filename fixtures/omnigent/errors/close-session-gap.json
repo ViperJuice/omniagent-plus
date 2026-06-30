@@ -1,0 +1,24 @@
+{
+  "schema": "omnigent.error_fixture.v1",
+  "redaction": "metadata_only",
+  "fixture": "close_session_gap",
+  "observed_public_surface": {
+    "stop_session_event": true,
+    "delete_session_route": true,
+    "non_destructive_public_close": false
+  },
+  "provider_status": "emulated",
+  "note": "Logical close needs provider-owned policy or state because the public surface exposes stop-or-delete, not a stable close state.",
+  "provenance": [
+    {
+      "kind": "tagged_source",
+      "path": "omnigent/server/API.md",
+      "ref": "v0.3.0"
+    },
+    {
+      "kind": "tagged_source",
+      "path": "omnigent/tools/builtins/spawn.py",
+      "ref": "v0.3.0"
+    }
+  ]
+}

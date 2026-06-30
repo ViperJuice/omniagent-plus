@@ -1,0 +1,6 @@
+Starting background service…
+backgrounded · eebeeda9 · advisor-claude-20260630T071226Z
+  claude agents             list sessions
+  claude attach eebeeda9    open in this terminal
+  claude logs eebeeda9      show recent output
+  claude stop eebeeda9      stop this session

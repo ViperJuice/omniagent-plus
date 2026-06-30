@@ -1,0 +1,100 @@
+{
+  "schema": "omnigent.fake_server_scenarios.v1",
+  "redaction": "metadata_only",
+  "captured_at": "2026-06-30T09:00:01Z",
+  "scenarios": [
+    {
+      "name": "create_send_stream_success",
+      "capabilities": [
+        "create_session",
+        "send_turn",
+        "stream_events"
+      ],
+      "fixtures": [
+        "fixtures/omnigent/events/normal-terminal.json"
+      ]
+    },
+    {
+      "name": "interrupt_cancel",
+      "capabilities": [
+        "cancel_turn"
+      ],
+      "fixtures": [
+        "fixtures/omnigent/events/cancel-interrupt.json"
+      ]
+    },
+    {
+      "name": "reconnect_snapshot_dedupe",
+      "capabilities": [
+        "reconnect",
+        "read_history",
+        "stream_events"
+      ],
+      "fixtures": [
+        "fixtures/omnigent/events/reconnect-snapshot-dedupe.json"
+      ]
+    },
+    {
+      "name": "history_snapshot_and_items",
+      "capabilities": [
+        "read_history"
+      ],
+      "fixtures": [
+        "fixtures/omnigent/discovery/http-surface.json"
+      ]
+    },
+    {
+      "name": "logical_close_requires_provider_emulation",
+      "capabilities": [
+        "close_session"
+      ],
+      "fixtures": [
+        "fixtures/omnigent/errors/close-session-gap.json"
+      ]
+    },
+    {
+      "name": "child_session_blocked",
+      "capabilities": [
+        "child_session"
+      ],
+      "fixtures": [
+        "fixtures/omnigent/errors/child-session-blocked.json"
+      ]
+    },
+    {
+      "name": "harness_override_blocked",
+      "capabilities": [
+        "harness_override"
+      ],
+      "fixtures": [
+        "fixtures/omnigent/errors/harness-override-blocked.json"
+      ]
+    },
+    {
+      "name": "malformed_sse_skip",
+      "capabilities": [
+        "malformed_event"
+      ],
+      "fixtures": [
+        "fixtures/omnigent/events/malformed-sse-skip.json",
+        "fixtures/omnigent/errors/invalid-event-400.json"
+      ]
+    },
+    {
+      "name": "terminal_marker_deduplication",
+      "capabilities": [
+        "terminal_event_uniqueness"
+      ],
+      "fixtures": [
+        "fixtures/omnigent/events/dual-terminal-markers.json"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "kind": "phase_contract",
+      "path": "docs/omnigent-contract.md",
+      "gate": "IF-0-CONTRACT-1"
+    }
+  ]
+}

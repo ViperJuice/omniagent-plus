@@ -1,0 +1,21 @@
+{
+  "schema": "omnigent.error_fixture.v1",
+  "redaction": "metadata_only",
+  "fixture": "invalid_event_400",
+  "request": {
+    "method": "POST",
+    "path": "/v1/sessions/{session_id}/events",
+    "case": "unsupported_event_type_or_schema_mismatch"
+  },
+  "response": {
+    "status_code": 400,
+    "class": "bad_request"
+  },
+  "provenance": [
+    {
+      "kind": "tagged_source",
+      "path": "omnigent/server/API.md",
+      "ref": "v0.3.0"
+    }
+  ]
+}

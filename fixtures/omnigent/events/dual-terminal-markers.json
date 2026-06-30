@@ -1,0 +1,28 @@
+{
+  "schema": "omnigent.event_fixture.v1",
+  "redaction": "metadata_only",
+  "fixture": "dual_terminal_markers",
+  "events": [
+    {
+      "type": "response.completed",
+      "semantic_terminal": true
+    },
+    {
+      "type": "turn.completed",
+      "semantic_terminal": true
+    }
+  ],
+  "expected_provider_behavior": "collapse duplicate terminal markers into one normalized turn outcome",
+  "provenance": [
+    {
+      "kind": "tagged_source",
+      "path": "omnigent/server/API.md",
+      "ref": "v0.3.0"
+    },
+    {
+      "kind": "tagged_source",
+      "path": "sdks/python-client/omnigent_client/_events.py",
+      "ref": "v0.3.0"
+    }
+  ]
+}

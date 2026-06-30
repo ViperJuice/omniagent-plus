@@ -1,0 +1,40 @@
+{
+  "schema": "omnigent.source_metadata.v1",
+  "redaction": "metadata_only",
+  "captured_at": "2026-06-30T09:00:01Z",
+  "repo": "omnigent-ai/omnigent",
+  "freeze_target": {
+    "tag": "v0.3.0",
+    "commit": "4edb4d95b95fd2748f3f119628936d75511918e9",
+    "published_at": "2026-06-27T05:21:16Z",
+    "package_version": "0.3.0",
+    "requires_python": ">=3.12"
+  },
+  "head_probe": {
+    "branch": "main",
+    "commit": "03d893181da5c1a267c74fd8761a510f6a82dcd1",
+    "observed_at": "2026-06-30T09:00:01Z",
+    "authority": "latest remote head probe only; not part of IF-0-CONTRACT-1"
+  },
+  "local_cli_probe": {
+    "omnigent_on_path": false,
+    "omni_on_path": false
+  },
+  "provenance": [
+    {
+      "kind": "release_metadata",
+      "source": "github release metadata",
+      "ref": "v0.3.0"
+    },
+    {
+      "kind": "tagged_source",
+      "path": "pyproject.toml",
+      "ref": "v0.3.0"
+    },
+    {
+      "kind": "remote_head_probe",
+      "path": "refs/heads/main",
+      "ref": "03d893181da5c1a267c74fd8761a510f6a82dcd1"
+    }
+  ]
+}

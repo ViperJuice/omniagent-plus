@@ -1,0 +1,54 @@
+{
+  "schema": "omnigent.event_fixture.v1",
+  "redaction": "metadata_only",
+  "fixture": "normal_terminal_turn",
+  "events": [
+    {
+      "type": "session.status",
+      "status": "running",
+      "terminal": false
+    },
+    {
+      "type": "response.created",
+      "terminal": false
+    },
+    {
+      "type": "response.in_progress",
+      "terminal": false
+    },
+    {
+      "type": "response.output_text.delta",
+      "terminal": false
+    },
+    {
+      "type": "response.completed",
+      "terminal": true
+    },
+    {
+      "type": "turn.completed",
+      "terminal": true
+    },
+    {
+      "type": "session.status",
+      "status": "idle",
+      "terminal": false
+    },
+    {
+      "type": "[DONE]",
+      "terminal": true
+    }
+  ],
+  "note": "Successful turn with both response and turn terminal markers present.",
+  "provenance": [
+    {
+      "kind": "tagged_source",
+      "path": "omnigent/server/API.md",
+      "ref": "v0.3.0"
+    },
+    {
+      "kind": "tagged_source",
+      "path": "sdks/python-client/omnigent_client/_events.py",
+      "ref": "v0.3.0"
+    }
+  ]
+}

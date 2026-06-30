@@ -1,0 +1,18 @@
+{
+  "schema": "omnigent.error_fixture.v1",
+  "redaction": "metadata_only",
+  "fixture": "harness_override_blocked",
+  "observed_public_surface": {
+    "public_rest_harness_override": false,
+    "internal_allowlisted_spawn_override": true
+  },
+  "provider_status": "blocked",
+  "note": "The only observed harness override path is allowlist-gated internal spawn-tool behavior, not a stable public session API.",
+  "provenance": [
+    {
+      "kind": "tagged_source",
+      "path": "omnigent/tools/builtins/spawn.py",
+      "ref": "v0.3.0"
+    }
+  ]
+}

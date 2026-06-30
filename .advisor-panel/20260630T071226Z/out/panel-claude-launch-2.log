@@ -1,0 +1,6 @@
+Starting background service…
+backgrounded · 3edc080c · advisor-claude-embedded-20260630T071226Z
+  claude agents             list sessions
+  claude attach 3edc080c    open in this terminal
+  claude logs 3edc080c      show recent output
+  claude stop 3edc080c      stop this session

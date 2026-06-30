@@ -1,0 +1,73 @@
+1. Consensus Verdict
+
+PARTIALLY AGREE. The direction is sound: a separate TypeScript provider repo, Omnigent behind a client boundary, explicit handoff packets, rate-limit-aware routing, and no direct imports into governed-pipeline workflow code. But the spec is not yet implementation-ready. It defines many desired modules without freezing the hard contracts that determine correctness: Omnigent API compatibility, lifecycle semantics, event ordering, cancellation, secret isolation, lease durability, adapter dependency boundaries, and audit persistence.
+
+2. Critical Findings
+
+1. Omnigent is treated as a stable backend before its contract is specified.
+Why it matters: the provider’s whole architecture depends on Omnigent capabilities that may not exist consistently across HTTP, CLI, and hybrid modes: create session, stream events, cancel, close, list sessions, child sessions, harness override, and history reads.
+Concrete spec change: add an `omnigent-contract.md` requirement before implementation: exact supported Omnigent versions, HTTP endpoints or CLI commands, request/response schemas, event names, failure shapes, capability-negotiation rules, and what happens when a capability is absent.
+
+2. Agent lifecycle and concurrency semantics are underspecified.
+Why it matters: `sendTurn`, `TurnHandle`, streaming, cancellation, and multiple active turns per session are the correctness core. Without rules, consumers will disagree about whether turns are ordered, idempotent, cancelable, resumable, replayable, or concurrent.
+Concrete spec change: define a session/turn state machine with allowed transitions, turn IDs, idempotency keys, per-session concurrency policy, event sequence numbers, stream replay cursors, timeout behavior, and cancellation guarantees.
+
+3. Security model is too permissive for identity profiles.
+Why it matters: `env?: Record<string,string>`, `host_env`, `authVolume`, and `homeDir` can leak secrets or allow cross-profile credential bleed. Redaction after capture is not enough.
+Concrete spec change: replace raw env maps with named secret/profile references, explicit allowlisted env keys, redacted config loading, process isolation requirements per `authMode`, and a hard rule that secret values never enter provider config, logs, events, handoff packets, or route decisions.
+
+4. Prompt-injection boundaries are acknowledged but not enforceable.
+Why it matters: handoff packets and rendered prompts will include untrusted prior-agent output, logs, diffs, and history. Saying raw history is untrusted does not prevent the target agent from treating it as instructions.
+Concrete spec change: define a rendering contract that separates operator instructions, task contract, evidence, and untrusted transcript excerpts. Require quoting/labeling of untrusted content, prohibit transcript text from becoming system/developer instructions, and add tests with malicious prior-agent content.
+
+5. Worktree leasing lacks durable locking and crash-recovery rules.
+Why it matters: this system’s safety depends on preventing two agents from writing the same worktree. The spec names locks but not how they survive process crashes, stale leases, branch collisions, dirty trees, or host-specific storage constraints.
+Concrete spec change: specify the lease backend, lock acquisition algorithm, lease heartbeat/expiry, stale-lock recovery, dirty-worktree policy, branch naming rules, path selection policy, and required invariant tests for parallel writers.
+
+6. Adapter boundaries contradict the “no dependency” principle.
+Why it matters: the repo includes `governed-pipeline-adapter` and `agent-harness-adapter`, but also says the provider must not depend on either. Without a dependency rule, adapter packages may import unstable internals and create tight coupling.
+Concrete spec change: define adapters as optional leaf packages with only schema-level or peer dependency contracts. Freeze the exact request/result DTOs consumed from governed-pipeline and agent-harness, and forbid imports from their internal runtime modules.
+
+7. Error taxonomy is incomplete outside rate limits.
+Why it matters: real execution failures include auth expiry, missing CLI, malformed Omnigent responses, transport disconnects, partial tool failure, sandbox denial, parse failure, timeout, user approval required, and cancellation races. Rate-limit classification alone will not produce reliable routing.
+Concrete spec change: add a `RuntimeFailure` schema with category, retryability, actor, scope, redacted evidence, cause chain, and recommended action. Require all public methods to return or throw normalized failures.
+
+8. Durable audit state is not specified.
+Why it matters: the spec repeatedly requires auditability, route decisions, evidence refs, cooldowns, and histories, but does not define where those records live, how they are bounded, retained, queried, migrated, or redacted.
+Concrete spec change: add a storage model for audit ledger, route decisions, limit classifications, session metadata, and worktree leases. Define retention policy, schema versions, migration strategy, and maximum stored payload sizes.
+
+9. Naming is inconsistent enough to cause adapter churn.
+Why it matters: the spec alternates between `claude-code` and `claude`, `gemini` and `gemini-antigravity`, `executor`, `harness`, `provider`, `model`, and `runtime`. These are different concepts.
+Concrete spec change: add a glossary and canonical enum table. Require all public schemas to use the canonical names and adapters to map local repo terminology at the boundary only.
+
+10. Scope is too broad for v0.1.
+Why it matters: core provider, scheduler, identity isolation, worktree router, two repo adapters, CLI, UI, and commercialization hardening are too much to stabilize at once.
+Concrete spec change: make v0.1 explicitly limited to core schemas, fake Omnigent client, rate-limit classifier framework, redaction, and one adapter contract test. Move scheduler, worktree leasing, identity isolation, real Omnigent, and UI into later milestones gated by contract tests.
+
+3. Missing Acceptance Tests Or Validation Gates
+
+- Omnigent conformance suite against pinned fake responses and at least one opt-in real Omnigent version.
+- Turn lifecycle tests: concurrent send, cancel during stream, timeout, duplicate idempotency key, reconnect/replay, close during active turn.
+- Event stream tests for ordering, sequence gaps, backpressure, disconnect, malformed event, and resume cursor.
+- Secret-leak tests across config, logs, event payloads, handoff packets, CLI JSON, and adapter results.
+- Prompt-injection fixture tests for malicious transcript/log/diff content inside rendered handoff prompts.
+- Worktree race tests with parallel exclusive writers, read-only reviewers, stale locks, dirty trees, branch collisions, and crash recovery.
+- Adapter contract tests that validate governed-pipeline and agent-harness schemas without importing their internals.
+- Retry-storm prevention tests for repeated transient failures and misclassified usage caps.
+- Audit ledger tests for schema versioning, redaction, retention limits, and evidence reference integrity.
+- Naming compatibility tests that reject non-canonical enum values at public boundaries.
+
+4. Ambiguities Or Questions To Resolve Before Implementation
+
+- What exact Omnigent version and API surface is the initial target?
+- Is HTTP mode mandatory for v0, or can CLI mode ship first?
+- Are multiple active turns in one session allowed, or only multiple sessions per identity?
+- What is the authoritative state store: files, SQLite, repo-local artifacts, Omnigent, or consumer-owned storage?
+- Who owns identity profile creation and secret resolution: this provider, an operator config, 1Password, environment, or Omnigent?
+- What isolation level is acceptable for local subscription CLIs: isolated home only, container, unix user, or host env?
+- What fields in handoff packets are trusted operator intent versus untrusted evidence?
+- How are approval requests surfaced and resumed?
+- What is the minimum adapter contract for governed-pipeline and agent-harness, and where are those schemas versioned?
+- What are the rollback semantics if a routed agent partially edits a worktree then fails?
+
+PARTIALLY AGREE: top 3 changes are to freeze the Omnigent contract first, define lifecycle/event/cancellation semantics precisely, and harden identity/secret/prompt-injection boundaries before real routing or adapters are implemented.

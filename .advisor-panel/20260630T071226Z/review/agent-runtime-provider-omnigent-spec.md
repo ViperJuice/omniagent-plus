@@ -1,13 +1,11 @@
 # Agent Runtime Provider for Omnigent
 
-**Spec ID:** `agent-runtime-provider-omnigent.v0.1`
-**Working repo:** `ViperJuice/omniagent-plus`
-**Package/product target:** `agent-runtime-provider-omnigent`
-**Primary language:** TypeScript / Node 22+ / ESM
-**First dependent repos:** `Consiliency/governed-pipeline`, `ViperJuice/agent-harness`
-**Runtime backend:** Omnigent, treated as an external Python runtime engine
+**Spec ID:** `agent-runtime-provider-omnigent.v0.1`  
+**Primary repo:** `Consiliency/agent-runtime-provider-omnigent`  
+**Primary language:** TypeScript / Node 22+ / ESM  
+**First dependent repos:** `Consiliency/governed-pipeline`, `ViperJuice/agent-harness`  
+**Runtime backend:** Omnigent, treated as an external Python runtime engine  
 **Product goal:** A reusable provider/router layer that lets existing Consiliency/ViperJuice orchestration systems launch, route, observe, pause, resume, and hand off agent work across Claude Code, Codex, Gemini/Antigravity, OpenCode, Pi, and future harnesses, while reusing Omnigent’s session/runtime engineering without hard-forking it.
-**Review status:** Revised after independent advisor-panel feedback on 2026-06-30. This version treats Omnigent compatibility, lifecycle semantics, durable state, identity isolation, worktree locking, and adapter boundaries as blocking contracts rather than implementation details.
 
 ---
 
@@ -48,15 +46,15 @@ provider-aware routing, rate-limit classification, handoff packets, identity lan
 
 ## 2. Repository Decision
 
-### Working repo
+### Recommended repo
 
 ```text
-ViperJuice/omniagent-plus
+Consiliency/agent-runtime-provider-omnigent
 ```
 
 ### Reason
 
-This repo can incubate the spec and first implementation while the package/product target remains precise: `agent-runtime-provider-omnigent`. If the repo later grows into a broader multi-backend runtime router, create or rename to:
+This name keeps the initial scope precise: wrapping Omnigent as a runtime provider. If the repo later grows into a broader multi-backend runtime router, create or rename to:
 
 ```text
 Consiliency/agent-runtime-router
@@ -105,8 +103,6 @@ fractal-agents    → agent-runtime-provider-omnigent later
 
 The provider must expose neutral runtime primitives and optional adapter packages.
 
-Adapter packages must be leaf packages. They may depend on provider core contracts and on published/public consumer schemas, but they must not import consumer repo internals. If a required consumer contract is not public, the adapter phase must stop and publish or fixture that contract first.
-
 ### 3.5 Handoff is explicit, not magical
 
 Do not pretend Claude Code, Codex, Gemini, Pi, and OpenCode share one continuous context window.
@@ -141,52 +137,6 @@ A burst/concurrency limit is not the same as a weekly/session cap. The router mu
 ### 3.8 Raw logs are evidence, not state
 
 Raw stdout/stderr/transcripts should not become durable control-plane truth. Normalize results into bounded, redacted metadata and durable evidence references.
-
-### 3.9 Freeze contracts before routing live work
-
-The first implementation must not start with real scheduling or multi-harness routing. It must first freeze:
-
-```text
-- Omnigent transport contract
-- session and turn state machines
-- runtime event envelope
-- normalized error taxonomy
-- durable state and audit ledger schemas
-- identity isolation model
-- worktree lease protocol
-- adapter dependency direction
-```
-
-Any phase that cannot prove those contracts with fixtures must block downstream integration.
-
-### 3.10 Canonical terminology
-
-Use these canonical names at every public boundary:
-
-```ts
-export type RuntimeId = "omnigent";
-
-export type HarnessId =
-  | "claude-code"
-  | "codex"
-  | "gemini-antigravity"
-  | "opencode"
-  | "pi"
-  | "custom";
-
-export type ProviderFamilyId =
-  | "anthropic"
-  | "openai"
-  | "google"
-  | "zai"
-  | "minimax"
-  | "local"
-  | "custom";
-
-export type BackendId = "omnigent-http" | "omnigent-cli" | "omnigent-hybrid";
-```
-
-Adapter-local names are allowed only at adapter boundaries. For example, `agent-harness` may continue to say `target_executor = claude`, but the provider must map that to canonical `HarnessId = "claude-code"` before storing or routing. `gemini` in public provider schemas means `gemini-antigravity` only when explicitly mapped.
 
 ---
 
@@ -224,20 +174,15 @@ Commercialization can be evaluated later after security, provider terms, tenant 
 ┌───────────────────────────────────────────────────────────┐
 │ agent-runtime-provider-omnigent                            │
 │                                                           │
-│ Pure/schema packages                                       │
-│ - core contracts                                           │
-│ - event/error schemas                                      │
-│ - handoff packet schemas                                   │
-│                                                           │
-│ Stateful local packages                                    │
-│ - state ledger                                             │
-│ - route/cooldown coordinator                               │
+│ - AgentRuntimeProvider interface                           │
+│ - Omnigent client                                          │
+│ - rate-limit catalog                                       │
+│ - identity/profile manager                                 │
 │ - worktree lease manager                                   │
-│                                                           │
-│ Boundary packages                                          │
-│ - Omnigent transport                                       │
-│ - identity isolation                                       │
-│ - optional consumer adapters                               │
+│ - handoff packet builder                                   │
+│ - routing policy engine                                    │
+│ - governed-pipeline adapter                                │
+│ - agent-harness adapter                                    │
 └───────────────────────────┬───────────────────────────────┘
                             │
                             ▼
@@ -276,7 +221,7 @@ agent-runtime-provider-omnigent/
   vitest.config.ts
 
   packages/
-    core-contracts/
+    core/
       package.json
       src/
         index.ts
@@ -291,20 +236,8 @@ agent-runtime-provider-omnigent/
         route-decision.ts
         worktree.ts
         redaction.ts
-        state-ledger.ts
 
-    state-ledger/
-      package.json
-      src/
-        index.ts
-        sqlite-store.ts
-        migrations.ts
-        audit-ledger.ts
-        evidence-store.ts
-        retention.ts
-        replay.ts
-
-    omnigent-transport/
+    omnigent-client/
       package.json
       src/
         index.ts
@@ -315,7 +248,6 @@ agent-runtime-provider-omnigent/
         process-manager.ts
         health.ts
         version.ts
-        conformance.ts
 
     rate-limit-catalog/
       package.json
@@ -338,7 +270,7 @@ agent-runtime-provider-omnigent/
           opencode.ts
           pi.ts
 
-    coordinator/
+    scheduler/
       package.json
       src/
         index.ts
@@ -350,17 +282,7 @@ agent-runtime-provider-omnigent/
         task-portability.ts
         routing-policy.ts
 
-    identity-isolation/
-      package.json
-      src/
-        index.ts
-        profile-loader.ts
-        env-allowlist.ts
-        process-profile.ts
-        sandbox-policy.ts
-        preflight.ts
-
-    worktree-leasing/
+    worktree-router/
       package.json
       src/
         index.ts
@@ -401,8 +323,6 @@ agent-runtime-provider-omnigent/
   docs/
     architecture.md
     omnigent-contract.md
-    lifecycle-and-events.md
-    durable-state.md
     governed-pipeline-integration.md
     agent-harness-integration.md
     rate-limit-taxonomy.md
@@ -452,7 +372,7 @@ export interface AgentRuntimeProvider {
     options?: StreamOptions,
   ): AsyncIterable<RuntimeEvent>;
 
-  cancelTurn(handle: TurnHandle, reason?: CancellationReason): Promise<TurnHandle>;
+  cancelTurn(handle: TurnHandle): Promise<void>;
 
   closeSession(sessionId: string): Promise<void>;
 
@@ -462,16 +382,18 @@ export interface AgentRuntimeProvider {
 }
 ```
 
-All public methods must validate input schemas before crossing a process or network boundary. Public methods must return typed objects or throw/return `RuntimeFailure`; raw Omnigent, CLI, or harness errors must not leak through unnormalized.
-
 ### 7.2 `CreateSessionRequest`
 
 ```ts
 export interface CreateSessionRequest {
   readonly runtime: "omnigent";
-  readonly targetHarness: HarnessId;
-  readonly idempotencyKey: string;
-  readonly correlationId?: string;
+  readonly targetHarness:
+    | "claude-code"
+    | "codex"
+    | "gemini"
+    | "opencode"
+    | "pi"
+    | "custom";
 
   readonly targetProvider?: ProviderId;
   readonly identityProfileId?: string;
@@ -488,16 +410,11 @@ export interface CreateSessionRequest {
 }
 ```
 
-`idempotencyKey` is required. Retrying `createSession` with the same key must return the original session or a deterministic `RuntimeFailure` if the original result cannot be recovered.
-
 ### 7.3 `SendTurnRequest`
 
 ```ts
 export interface SendTurnRequest {
   readonly sessionId: string;
-  readonly turnId?: string;
-  readonly idempotencyKey: string;
-  readonly correlationId?: string;
   readonly message: string;
   readonly handoffPacket?: HandoffPacket;
   readonly files?: RuntimeFileRef[];
@@ -506,8 +423,6 @@ export interface SendTurnRequest {
   readonly metadata?: Record<string, unknown>;
 }
 ```
-
-The default policy is one active turn per session. A second `sendTurn` for the same active session must either return the existing turn for the same `idempotencyKey` or fail with `RuntimeFailure.category = "concurrency_limit"`. Queueing must be explicitly enabled by config and reflected in the returned `TurnHandle`.
 
 ### 7.4 `RuntimeEvent`
 
@@ -522,79 +437,10 @@ export type RuntimeEvent =
   | RuntimeLimitEvent
   | RuntimeTurnCompletedEvent
   | RuntimeTurnFailedEvent
-  | RuntimeTurnCancelledEvent
-  | RuntimeTurnTimedOutEvent
   | RuntimeSessionClosedEvent;
 ```
 
-Every runtime event must use this envelope:
-
-```ts
-export interface RuntimeEventEnvelope<TType extends string, TPayload> {
-  readonly schema: "runtime_event.v0.1";
-  readonly eventId: string;
-  readonly sequence: number;
-  readonly sessionId: string;
-  readonly turnId?: string;
-  readonly correlationId?: string;
-  readonly type: TType;
-  readonly occurredAt: string;
-  readonly payload: TPayload;
-  readonly redaction: RedactionStatus;
-  readonly terminal: boolean;
-  readonly evidenceRefs?: RuntimeEvidenceRef[];
-}
-```
-
-Ordering rules:
-
-```text
-- `sequence` is monotonic per session.
-- Events from one turn must preserve Omnigent/backend order.
-- Replay starts after the supplied sequence cursor.
-- Missing sequence numbers are stream corruption and must emit RuntimeFailure.
-- Heartbeats are allowed but must not advance turn state.
-- Terminal turn events are exactly one of completed, failed, cancelled, or timed_out.
-```
-
-### 7.5 Session and turn state machines
-
-```ts
-export type AgentSessionState =
-  | "created"
-  | "starting"
-  | "idle"
-  | "turn_active"
-  | "blocked_on_approval"
-  | "cancelling"
-  | "closed"
-  | "failed";
-
-export type TurnState =
-  | "accepted"
-  | "queued"
-  | "running"
-  | "blocked_on_tool_approval"
-  | "cancelling"
-  | "cancelled"
-  | "timed_out"
-  | "completed"
-  | "failed";
-
-export interface TurnHandle {
-  readonly sessionId: string;
-  readonly turnId: string;
-  readonly idempotencyKey: string;
-  readonly state: TurnState;
-  readonly createdAt: string;
-  readonly updatedAt: string;
-  readonly eventCursor?: number;
-}
-```
-
-Allowed transitions must be documented and tested. Cancellation must attempt to stop backend work, not merely detach the TypeScript listener. If the backend cannot stop in-flight model work, the result must be `RuntimeFailure.category = "backend_capability_missing"` with safe diagnostics.
-
-### 7.6 `HandoffPacket`
+### 7.5 `HandoffPacket`
 
 ```ts
 export interface HandoffPacket {
@@ -676,62 +522,6 @@ export interface HandoffPacket {
 }
 ```
 
-Handoff rendering must separate trusted operator/task instructions from untrusted evidence:
-
-```text
-trusted:
-  - objective
-  - taskContract
-  - contextPolicy
-  - requiredOutput
-
-untrusted:
-  - prior agent summaries
-  - logs
-  - diffs
-  - command output
-  - raw history excerpts
-```
-
-Untrusted content must be quoted or fenced and labeled as evidence. It must never be rendered as system, developer, or operator instruction text.
-
-### 7.7 Tool use and approval protocol
-
-Tool calls and approval requests are security boundaries, not UI-only events.
-
-```ts
-export interface RuntimeToolCall {
-  readonly toolCallId: string;
-  readonly sessionId: string;
-  readonly turnId: string;
-  readonly toolName: string;
-  readonly argumentsRedacted: unknown;
-  readonly approvalRequired: boolean;
-  readonly evidenceRefs?: RuntimeEvidenceRef[];
-}
-
-export interface RuntimeApprovalRequest {
-  readonly approvalRequestId: string;
-  readonly toolCallId?: string;
-  readonly sessionId: string;
-  readonly turnId: string;
-  readonly requestedAction: string;
-  readonly risk: "low" | "medium" | "high";
-  readonly allowedApprovers: string[];
-  readonly expiresAt?: string;
-}
-
-export interface RuntimeApprovalResponse {
-  readonly approvalRequestId: string;
-  readonly decision: "approved" | "denied" | "timed_out" | "cancelled";
-  readonly decidedBy?: string;
-  readonly decidedAt: string;
-  readonly reason?: string;
-}
-```
-
-Approval denial or timeout must transition the turn to a typed blocked/failed state and write an audit record.
-
 ---
 
 ## 8. Identity Profile Model
@@ -754,7 +544,13 @@ export interface IdentityProfile {
     | "local"
     | "custom";
 
-  readonly harness: HarnessId;
+  readonly harness:
+    | "claude-code"
+    | "codex"
+    | "gemini"
+    | "opencode"
+    | "pi"
+    | "custom";
 
   readonly authMode:
     | "local_subscription"
@@ -771,14 +567,9 @@ export interface IdentityProfile {
     | "container"
     | "vm";
 
-  readonly secretRefs?: SecretRef[];
-  readonly envAllowlist?: string[];
-  readonly env?: Record<string, RedactedConfigValue>;
-  readonly authVolumeRef?: string;
+  readonly env?: Record<string, string>;
+  readonly authVolume?: string;
   readonly homeDir?: string;
-  readonly processOwner?: string;
-  readonly networkPolicy?: "host" | "restricted" | "disabled";
-  readonly toolPolicyRef?: string;
 
   readonly maxOpenSessions: number;
   readonly maxActiveTurns: number;
@@ -800,11 +591,6 @@ export interface IdentityProfile {
 - Fixed usage caps create cooldown-until-reset events.
 - Same-provider account hopping after a hard cap is discouraged or manual-confirmed.
 - Cross-provider routing is preferred for portable work.
-- Raw secret values must never appear in profile config, events, logs, route decisions, or handoff packets.
-- `host_env` is development-only and must require an explicit allowlist of env keys.
-- HTTP/server mode may share an Omnigent process across profiles only if Omnigent natively proves per-session auth/home/env isolation.
-- Otherwise the provider must use one backend process per active identity profile.
-- CLI mode must spawn with the profile's isolated environment and home directory.
 ```
 
 ---
@@ -838,26 +624,17 @@ export interface WorktreeLeaseRequest {
   readonly taskId: string;
   readonly mode: "exclusive_write" | "read_only" | "sequential_continue";
   readonly allowReuseExisting?: boolean;
-  readonly requestedTtlSeconds?: number;
 }
 
 export interface WorktreeLease {
   readonly id: string;
-  readonly fencingToken: string;
   readonly repoId: string;
   readonly path: string;
   readonly branchName: string;
   readonly mode: "exclusive_write" | "read_only" | "sequential_continue";
-  readonly holder: {
-    readonly processId: number;
-    readonly host: string;
-    readonly sessionId?: string;
-    readonly turnId?: string;
-  };
+  readonly holder: string;
   readonly acquiredAt: string;
-  readonly renewedAt: string;
-  readonly expiresAt: string;
-  readonly dirtyState: "clean" | "dirty" | "unknown";
+  readonly expiresAt?: string;
 }
 ```
 
@@ -868,13 +645,6 @@ export interface WorktreeLease {
 - Parallel agents must receive separate worktrees.
 - Reviewers should use diff/contracts, not mutable implementation worktrees, unless explicitly configured.
 - Every handoff packet must include worktree/diff state.
-- Lease acquisition must be atomic across processes.
-- Every exclusive lease must use a fencing token; cleanup must verify the token before mutating a worktree.
-- Active leases must be renewed by heartbeat. Static expiration without renewal is not sufficient.
-- Stale lease recovery must inspect process liveness, host identity, dirty state, and branch state before reusing or cleaning.
-- Branch collisions must fail closed unless the caller explicitly requests sequential continuation.
-- Symlink and path traversal in worktree paths must be rejected.
-- On hosts where `/mnt/workspace` exists, created worktrees must live under `/mnt/workspace/worktrees/<project>-<branch>`.
 ```
 
 ---
@@ -944,10 +714,7 @@ export interface LimitClassification {
     readonly routeNewWorkElsewhere: boolean;
     readonly migrateExistingPortableWork: boolean;
     readonly requireManualReview: boolean;
-    readonly sameProviderAccountSwitch:
-      | "forbidden"
-      | "manual_confirmation_required"
-      | "allowed_by_policy";
+    readonly sameProviderAccountSwitchAllowed: boolean;
   };
 
   readonly notes?: string[];
@@ -1052,147 +819,13 @@ export interface RouteDecision {
 5. Route high-portability work freely.
 6. Always record fallback reason.
 7. Never silently relabel fallback as the original executor.
-8. Every route decision must be persisted before launching backend work.
-9. Route replay from the durable ledger must explain why a provider/harness/identity was selected.
 ```
 
 ---
 
-## 12. Durable State and Audit Ledger
+## 12. Omnigent Client Requirements
 
-### 12.1 State backend
-
-The provider must use a durable local state backend before exposing CLI commands, scheduler behavior, worktree leases, or cross-process routing. In-memory state is allowed only inside unit tests.
-
-Preferred backend:
-
-```text
-SQLite database
-  +
-append-only audit ledger table
-  +
-bounded redacted evidence store
-```
-
-An append-only JSONL ledger with indexed sidecars is acceptable for an early slice only if it proves atomic writes, cross-process reads, schema versioning, and crash recovery.
-
-### 12.2 Required records
-
-```text
-- sessions
-- turns
-- runtime events
-- route decisions
-- limit classifications
-- identity profile status
-- provider-family cooldowns
-- worktree leases
-- tool approval requests/responses
-- Omnigent capability snapshots
-- evidence refs
-```
-
-### 12.3 Ledger rules
-
-```text
-- Every record has a schema version.
-- Every persisted payload is bounded.
-- Secret-bearing values are rejected before persistence.
-- Raw transcripts are not persisted by default.
-- Evidence refs point to bounded redacted excerpts or external artifact paths.
-- Migrations are explicit and tested.
-- Retention policy is configurable.
-- Audit replay must not require live Omnigent.
-```
-
----
-
-## 13. Error Taxonomy
-
-All public package boundaries must normalize failures into `RuntimeFailure`.
-
-```ts
-export type RuntimeFailureCategory =
-  | "validation"
-  | "transport"
-  | "protocol"
-  | "auth"
-  | "billing"
-  | "rate_limit"
-  | "concurrency_limit"
-  | "policy_denied"
-  | "approval_required"
-  | "approval_denied"
-  | "timeout"
-  | "cancelled"
-  | "harness_unavailable"
-  | "backend_unavailable"
-  | "backend_version_mismatch"
-  | "backend_capability_missing"
-  | "sandbox_denied"
-  | "malformed_response"
-  | "state_conflict"
-  | "internal";
-
-export interface RuntimeFailure {
-  readonly schema: "runtime_failure.v0.1";
-  readonly category: RuntimeFailureCategory;
-  readonly retryable: boolean;
-  readonly actor:
-    | "caller"
-    | "provider"
-    | "harness"
-    | "omnigent"
-    | "network"
-    | "policy"
-    | "unknown";
-  readonly scope:
-    | "request"
-    | "turn"
-    | "session"
-    | "identity_profile"
-    | "provider_family"
-    | "worktree"
-    | "system";
-  readonly message: string;
-  readonly retryAfterSeconds?: number;
-  readonly resetAt?: string;
-  readonly safeDiagnostics?: Record<string, unknown>;
-  readonly evidenceRefs?: RuntimeEvidenceRef[];
-  readonly causeChain?: RuntimeFailure[];
-}
-```
-
-Adapters must map `RuntimeFailure` to their native blocker/result schemas without losing category, retryability, fallback reason, or evidence refs.
-
----
-
-## 14. Omnigent Client Requirements
-
-### 14.1 Contract freeze before implementation
-
-`docs/omnigent-contract.md` is a blocking artifact and is the authoritative
-source for `IF-0-CONTRACT-1`. Before implementing real HTTP, CLI, hybrid,
-scheduler, or adapter behavior, the repo must capture:
-
-```text
-- supported Omnigent versions
-- supported Omnigent git SHA or release tag
-- HTTP endpoints, methods, request schemas, response schemas, and error schemas
-- SSE/event names, payloads, ordering behavior, and reconnect behavior
-- CLI commands, flags, stdin/stdout/stderr contracts, and exit codes
-- session creation, send-turn, cancel, close, list, history, child-session, and harness override behavior
-- capability negotiation and degradation behavior
-- fake server fixtures copied from real Omnigent responses
-```
-
-If a required Omnigent capability is missing, the spec must say whether the provider emulates it, blocks the phase, or marks the capability unavailable.
-
-Downstream phases must consume `IF-0-CONTRACT-1` from
-`docs/omnigent-contract.md` rather than infer behavior from upstream README,
-OpenAPI, or source fragments in isolation.
-
-### 14.2 Supported modes
+### 12.1 Supported modes
 
 ```text
 1. HTTP/server mode
@@ -1205,11 +838,7 @@ OpenAPI, or source fragments in isolation.
    Starts a local Omnigent server if absent, then uses HTTP.
 ```
 
-Shared HTTP/server mode may be used across identity profiles only if Omnigent natively proves per-session `$HOME`, environment, credential, and auth-volume isolation. Without that proof, the provider must spawn or attach to one backend process per active identity profile.
-
-Hybrid mode must define process ownership, process group behavior, heartbeat files, parent-death handling, and cleanup. A crashed Node orchestrator must not leave orphaned Omnigent model loops running indefinitely.
-
-### 14.3 Required capabilities
+### 12.2 Required capabilities
 
 ```ts
 export interface OmnigentCapabilities {
@@ -1225,13 +854,7 @@ export interface OmnigentCapabilities {
 }
 ```
 
-The v0.1 provider must preserve typed degradation for any capability that the
-contract freeze marks `emulated`, `blocked`, or `unavailable`. In particular,
-the downstream implementation must not assume native upstream support for
-logical close, child-session creation, harness override, or unique terminal
-markers unless `docs/omnigent-contract.md` explicitly upgrades those entries.
-
-### 14.4 Mapping requirements
+### 12.3 Mapping requirements
 
 The Omnigent client must map:
 
@@ -1243,7 +866,7 @@ Omnigent errors             → RuntimeFailure / LimitClassification candidate
 Omnigent child sessions     → AgentSession.parentSessionId/rootSessionId
 ```
 
-### 14.5 Pinning
+### 12.4 Pinning
 
 The client must detect and record:
 
@@ -1257,11 +880,11 @@ The client must detect and record:
 
 ---
 
-## 15. UI Product Requirements
+## 13. UI Product Requirements
 
 The first version can be CLI/API only, but the product should be designed for a UI that borrows Omnigent’s strongest UX ideas.
 
-### 15.1 UI concepts to reuse
+### 13.1 UI concepts to reuse
 
 ```text
 - session tree
@@ -1276,7 +899,7 @@ The first version can be CLI/API only, but the product should be designed for a 
 - route decision timeline
 ```
 
-### 15.2 UI panels
+### 13.2 UI panels
 
 ```text
 1. Task board
@@ -1304,7 +927,7 @@ The first version can be CLI/API only, but the product should be designed for a 
    Shows route decisions, fallbacks, retries, cooldowns.
 ```
 
-### 15.3 UI non-goals
+### 13.3 UI non-goals
 
 ```text
 - Do not expose secrets.
@@ -1315,24 +938,24 @@ The first version can be CLI/API only, but the product should be designed for a 
 
 ---
 
-## 16. Governed Pipeline Integration
+## 14. Governed Pipeline Integration
 
-### 16.1 Goal
+### 14.1 Goal
 
 Add Omnigent as an execution backend without violating the single agentic boundary.
 
-### 16.2 Integration point
+### 14.2 Integration point
 
 ```text
 packages/pipeline-runtime/src/harness/invoke.mjs
 ```
 
-### 16.3 New harness mode
+### 14.3 New harness mode
 
 ```ts
 invokeAgenticHarness({
   harness: "omnigent",
-  targetHarness: "claude-code" | "codex" | "gemini-antigravity" | "opencode" | "pi",
+  targetHarness: "claude" | "codex" | "gemini" | "opencode" | "pi",
   request,
   repoRoot,
   adapter,
@@ -1340,7 +963,7 @@ invokeAgenticHarness({
 });
 ```
 
-### 16.4 Result mapping
+### 14.4 Result mapping
 
 Map Omnigent results into `executor_adapter_result.v0.1`.
 
@@ -1362,7 +985,7 @@ Required fields:
 - runtime ledger citations if available
 ```
 
-### 16.5 Acceptance criteria
+### 14.5 Acceptance criteria
 
 ```text
 - Existing fake/native harness tests continue passing.
@@ -1376,13 +999,13 @@ Required fields:
 
 ---
 
-## 17. Agent Harness Integration
+## 15. Agent Harness Integration
 
-### 17.1 Goal
+### 15.1 Goal
 
 Allow `agent-harness` phase-loop to dispatch phases through Omnigent-backed sessions while preserving its executor/model/run-mode semantics.
 
-### 17.2 Integration point
+### 15.2 Integration point
 
 Add an optional provider backend:
 
@@ -1391,21 +1014,11 @@ executor = omnigent
 target_executor = claude | codex | gemini | opencode | pi
 ```
 
-The adapter must map `target_executor` values to canonical `HarnessId` values before calling the provider:
-
-```text
-claude -> claude-code
-gemini -> gemini-antigravity
-codex -> codex
-opencode -> opencode
-pi -> pi
-```
-
-### 17.3 Model policy preservation
+### 15.3 Model policy preservation
 
 Do not replace `agent-harness` model policy. The adapter should receive the selected executor/model/effort from `agent-harness` and translate that into an Omnigent session request.
 
-### 17.4 Launch result mapping
+### 15.4 Launch result mapping
 
 Map Omnigent sessions into `LaunchResult`-like metadata:
 
@@ -1425,7 +1038,7 @@ Map Omnigent sessions into `LaunchResult`-like metadata:
 - route/fallback posture
 ```
 
-### 17.5 Acceptance criteria
+### 15.5 Acceptance criteria
 
 ```text
 - Phase-loop can launch one phase through Omnigent.
@@ -1438,26 +1051,21 @@ Map Omnigent sessions into `LaunchResult`-like metadata:
 
 ---
 
-## 18. Roadmap Requirements
+## 16. Roadmap Requirements
 
-The agent building roadmaps from this spec must produce gated roadmaps in this order:
+The agent building roadmaps from this spec must produce separate phased roadmaps for:
 
 ```text
-A. Omnigent contract discovery and freeze
-B. Provider repo bootstrap
-C. Core contracts and fake provider
-D. Durable state and audit ledger
-E. Omnigent transport integration
-F. Rate-limit catalog
-G. Identity/profile isolation
-H. Worktree leasing
-I. Handoff packet builder
-J. Coordinator/router
-K. governed-pipeline adapter
-L. agent-harness adapter
-M. CLI
-N. UI/control surface
-O. hardening/commercialization readiness
+A. New provider repo bootstrap
+B. Omnigent client integration
+C. Rate-limit catalog and scheduler
+D. Identity/profile isolation
+E. Worktree leasing
+F. Handoff packet builder
+G. governed-pipeline adapter
+H. agent-harness adapter
+I. UI/control surface
+J. hardening/commercialization readiness
 ```
 
 Each roadmap must contain:
@@ -1473,46 +1081,13 @@ Each roadmap must contain:
 - integration target
 - artifacts to produce
 - risks
-- blocking questions
-```
-
-No roadmap may schedule real multi-agent routing, UI work, or downstream repo integration before phases A-D pass.
-
----
-
-## 19. Proposed Product Phases
-
-## Phase 0 — Omnigent Contract Discovery and Freeze
-
-### Goal
-
-Prove the real Omnigent contract before implementing production transport.
-
-### Tasks
-
-```text
-- inspect the target Omnigent version and public API surface
-- document HTTP endpoints, SSE events, CLI commands, exit codes, and error payloads
-- capture real request/response/event fixtures
-- define capability negotiation and degradation behavior
-- decide whether HTTP, CLI, or hybrid mode is allowed for v0.1
-- decide whether shared HTTP mode can isolate identity profiles
-- write `docs/omnigent-contract.md`
-```
-
-### Acceptance criteria
-
-```text
-- `docs/omnigent-contract.md` is complete enough to build a fake server
-- every required provider capability is marked supported, emulated, unavailable, or blocked
-- event samples include ordering, terminal, malformed, and reconnect cases
-- cancel/close behavior is proven or explicitly unavailable
-- no downstream phase depends on an undocumented Omnigent behavior
 ```
 
 ---
 
-## Phase 1 — Repository Bootstrap
+# 17. Proposed Product Phases
+
+## Phase 0 — Repository Bootstrap
 
 ### Goal
 
@@ -1539,25 +1114,28 @@ Create the TypeScript monorepo and freeze public package boundaries.
 - pnpm test succeeds
 - pnpm build succeeds
 - all packages emit ESM
-- package ownership rules are documented
 - public exports are documented
 ```
 
 ---
 
-## Phase 2 — Core Contracts and Fake Provider
+## Phase 1 — Core Runtime Contracts
 
 ### Goal
 
-Define stable neutral interfaces independent of real Omnigent and prove them with a fake provider.
+Define stable neutral interfaces independent of Omnigent.
 
 ### Tasks
 
 ```text
 - implement AgentRuntimeProvider interface
-- define AgentSession, TurnHandle, RuntimeEventEnvelope, HandoffPacket, LimitClassification, RouteDecision, RuntimeFailure, IdentityProfile, and WorktreeLease schemas
-- define session and turn state-machine transition tables
-- implement fake provider and fake event stream
+- define AgentSession
+- define RuntimeEvent
+- define HandoffPacket
+- define LimitClassification
+- define RouteDecision
+- define IdentityProfile
+- define WorktreeLease
 - add Zod or JSON Schema validation
 - add redaction utilities
 ```
@@ -1567,73 +1145,46 @@ Define stable neutral interfaces independent of real Omnigent and prove them wit
 ```text
 - schemas validate good fixtures
 - schemas reject malformed fixtures
-- duplicate idempotency keys are deterministic
-- one-active-turn policy is enforced
-- fake stream supports replay, sequence gaps, heartbeats, and terminal events
-- no real Omnigent dependency in core packages
+- no Omnigent dependency in core package
+- docs describe every exported type
 ```
 
 ---
 
-## Phase 3 — Durable State and Audit Ledger
+## Phase 2 — Omnigent Client
 
 ### Goal
 
-Make CLI, scheduler, identity state, cooldowns, route decisions, approvals, and leases durable across processes.
+Create a client that can connect to Omnigent and map its sessions/events into the neutral provider interface.
 
 ### Tasks
 
 ```text
-- implement local SQLite or approved append-only ledger backend
-- add migrations and schema versioning
-- persist sessions, turns, events, route decisions, limit classifications, cooldowns, approvals, leases, and evidence refs
-- add retention policy and bounded payload enforcement
-- add audit replay utilities
-```
-
-### Acceptance criteria
-
-```text
-- two separate processes see the same cooldown and lease state
-- route decisions can be replayed without live Omnigent
-- secret-bearing values are rejected before persistence
-- migrations are tested
-- crash during write leaves the store recoverable
-```
-
----
-
-## Phase 4 — Omnigent Transport
-
-### Goal
-
-Create transport clients that map Omnigent sessions/events/errors into the neutral provider interface.
-
-### Tasks
-
-```text
-- implement fake-server conformance tests from Phase 0 fixtures
-- implement HTTP client only for documented endpoints
-- implement CLI fallback only for documented commands
-- implement health/version/capability probe
-- implement session creation, send turn, history read, stream events, cancel, and close where available
-- implement process ownership and cleanup for CLI/hybrid mode
-- map Omnigent failures to RuntimeFailure and LimitClassification candidates
+- implement Omnigent HTTP client
+- implement CLI fallback client
+- implement health/version probe
+- implement session creation
+- implement send turn
+- implement history read
+- implement event stream parser
+- implement cancel/close where available
+- map Omnigent sessions to AgentSession
+- map Omnigent stream events to RuntimeEvent
 ```
 
 ### Acceptance criteria
 
 ```text
 - fake Omnigent server fixtures pass
-- missing capability returns typed unavailable failure
-- disconnected server returns typed transport/backend_unavailable failure
-- cancel either stops backend work or reports backend_capability_missing
+- client handles disconnected server
+- client records version/capabilities
+- client returns normalized errors
 - no raw secret-bearing payload is persisted
 ```
 
 ---
 
-## Phase 5 — Rate-Limit Catalog
+## Phase 3 — Rate-Limit Catalog
 
 ### Goal
 
@@ -1649,7 +1200,23 @@ Classify provider/harness failure signals into actionable typed limit events.
 - add fixture corpus
 - add unknown-limit capture format
 - add confidence scoring
-- add routing-action mapper using sameProviderAccountSwitch enum
+- add routing-action mapper
+```
+
+### Required classifiers
+
+```text
+- Claude Code
+- Codex
+- Gemini/Antigravity
+- OpenCode
+- Pi
+- OpenAI API
+- Anthropic API
+- Google/Gemini API
+- ZAI
+- MiniMax
+- generic OpenAI-compatible API
 ```
 
 ### Acceptance criteria
@@ -1660,112 +1227,20 @@ Classify provider/harness failure signals into actionable typed limit events.
 - reset times are parsed when present
 - retry-after headers are honored
 - hard usage caps are not treated as burst limits
-- non-limit 429/auth/policy/outage fixtures are not misclassified as quota
 ```
 
 ---
 
-## Phase 6 — Identity/Profile Isolation
+## Phase 4 — Scheduler and Provider State
 
 ### Goal
 
-Support isolated provider auth lanes without auth bleed.
+Implement provider-aware routing and adaptive concurrency.
 
 ### Tasks
 
 ```text
-- implement identity profile config loader
-- support isolated HOME profile
-- support process/env allowlists
-- support container/profile metadata
-- support auth volume references by id, not secret path content
-- implement health/preflight probes
-- implement secret redaction and leak tests
-- prove or reject shared Omnigent HTTP isolation
-```
-
-### Acceptance criteria
-
-```text
-- profiles can be listed
-- profiles can be marked available/cooling/needs_auth
-- no secret values appear in logs, events, handoffs, route decisions, or ledger
-- concurrent identities cannot read each other's env/home/auth material
-- shared HTTP mode is blocked unless Omnigent isolation is proven
-```
-
----
-
-## Phase 7 — Worktree Leasing
-
-### Goal
-
-Provide durable worktree leases for sequential handoff and parallel lane isolation.
-
-### Tasks
-
-```text
-- implement atomic lock acquisition
-- implement fencing tokens
-- implement heartbeat renewal
-- implement stale lease recovery
-- implement dirty tree and branch collision checks
-- implement `/mnt/workspace/worktrees` placement policy
-- implement cleanup command with token verification
-- implement diff summary helper
-```
-
-### Acceptance criteria
-
-```text
-- two separate processes cannot acquire the same exclusive lease
-- long-running leases renew without being stolen
-- stale leases recover only after process/host/dirty-state checks
-- dirty worktrees are not deleted by cleanup
-- handoff packets include branch/worktree/diff metadata
-```
-
----
-
-## Phase 8 — Handoff Packet Builder
-
-### Goal
-
-Generate typed packets for cross-harness continuation.
-
-### Tasks
-
-```text
-- implement session history summarizer interface
-- implement worktree diff summarizer
-- implement command/test evidence collector
-- implement packet builder
-- implement packet rendering for target harness prompts
-- implement trusted/untrusted content separation
-- implement prompt-injection fixtures
-```
-
-### Acceptance criteria
-
-```text
-- handoff packet validates against schema
-- packet separates task contract, facts, assumptions, risks, open questions, and untrusted evidence
-- malicious prior-agent transcript cannot become instructions
-- packet includes changed files and test evidence
-- raw history is optional and bounded
-```
-
----
-
-## Phase 9 — Coordinator and Router
-
-### Goal
-
-Implement provider-aware routing and adaptive concurrency on top of durable state.
-
-### Tasks
-
-```text
+- implement ProviderState
 - implement IdentityPool
 - implement cooldown manager
 - implement active-turn counters
@@ -1784,46 +1259,165 @@ Implement provider-aware routing and adaptive concurrency on top of durable stat
 - provider-family cooldown prevents immediate same-provider account hopping
 - portable work routes across provider families
 - low-portability sessions wait/retry same provider by default
-- route decisions are persisted before launch and fully auditable
+- route decisions are fully auditable
 ```
 
 ---
 
-## Phase 10 — Consumer Adapters
+## Phase 5 — Identity/Profile Isolation
 
 ### Goal
 
-Add optional governed-pipeline and agent-harness adapters without importing consumer internals.
+Support isolated provider auth lanes.
 
 ### Tasks
 
 ```text
-- define governed-pipeline public contract fixtures
-- define agent-harness public contract fixtures
-- implement governed-pipeline request/result mapper against fake provider
-- implement agent-harness launch request/result mapper against fake provider
-- preserve model/run-mode policy from consumer repos
-- preserve fallback and rate-limit metadata
+- implement identity profile config loader
+- support host env profile
+- support isolated HOME profile
+- support container profile metadata
+- support auth volume references
+- support per-profile env injection
+- implement health/preflight probes
+- implement secret redaction
 ```
 
 ### Acceptance criteria
 
 ```text
-- no adapter imports consumer private modules
-- governed-pipeline calls remain behind invokeAgenticHarness
-- agent-harness model_policy and run_mode remain authoritative
+- profiles can be listed
+- profiles can be marked available/cooling/needs_auth
+- no secret values appear in logs
+- profile env can be passed to Omnigent session creation/CLI mode
+- profile-level cooldown is enforced
+```
+
+---
+
+## Phase 6 — Worktree Leasing
+
+### Goal
+
+Provide reusable worktree leases for sequential handoff and parallel lane isolation.
+
+### Tasks
+
+```text
+- implement git worktree creation
+- implement lease registry
+- implement exclusive write locks
+- implement read-only/reviewer lease mode
+- implement stale lease detection
+- implement cleanup command
+- implement diff summary helper
+```
+
+### Acceptance criteria
+
+```text
+- same task can sequentially reuse same worktree
+- parallel writers cannot acquire same worktree
+- reviewers can get read-only/diff leases
+- handoff packets include branch/worktree/diff metadata
+```
+
+---
+
+## Phase 7 — Handoff Packet Builder
+
+### Goal
+
+Generate typed packets for cross-harness continuation.
+
+### Tasks
+
+```text
+- implement session history summarizer interface
+- implement worktree diff summarizer
+- implement command/test evidence collector
+- implement packet builder
+- implement packet rendering for target harness prompts
+- implement packet validation
+```
+
+### Acceptance criteria
+
+```text
+- handoff packet validates against schema
+- packet separates facts, assumptions, risks, open questions
+- packet includes changed files and test evidence
+- packet can be rendered as a target-agent prompt
+- raw history is optional and bounded
+```
+
+---
+
+## Phase 8 — Governed Pipeline Adapter
+
+### Goal
+
+Add an Omnigent-backed executor path to `governed-pipeline`.
+
+### Tasks
+
+```text
+- implement request mapper from invokeAgenticHarness shape
+- implement result mapper to executor_adapter_result.v0.1
+- add optional harness = "omnigent"
+- add targetHarness field
+- add fallback metadata preservation
+- add redacted log excerpts
+- add tests using injected fake provider
+```
+
+### Acceptance criteria
+
+```text
+- no workflow module imports provider directly
+- all calls remain behind invokeAgenticHarness
+- executor result schema validates
 - fallback reason is preserved
 - silent_downgrade remains false
+- rate-limit classifications become typed retry/blocker metadata
+```
+
+---
+
+## Phase 9 — Agent Harness Adapter
+
+### Goal
+
+Add Omnigent-backed execution as an optional backend for phase-loop.
+
+### Tasks
+
+```text
+- implement LaunchRequest mapper
+- implement LaunchResult mapper
+- preserve model_policy selection
+- preserve run_mode governance
+- support target_executor
+- support dry-run/capability checks
+- support phase-loop metadata
+```
+
+### Acceptance criteria
+
+```text
+- phase-loop can launch a dry-run Omnigent-backed executor
+- phase-loop can launch one real Omnigent-backed executor in an integration test
+- selected model/effort metadata is preserved
 - unsupported Omnigent state produces typed unavailable result
 ```
 
 ---
 
-## Phase 11 — CLI
+## Phase 10 — CLI
 
 ### Goal
 
-Provide local operator commands backed by durable state.
+Provide local operator commands.
 
 ### Commands
 
@@ -1846,12 +1440,11 @@ agent-runtime-provider-omnigent worktrees cleanup
 - human output is readable
 - secrets are redacted
 - nonzero exit codes are meaningful
-- repeated CLI invocations share state through the durable backend
 ```
 
 ---
 
-## Phase 12 — UI Control Surface
+## Phase 11 — UI Control Surface
 
 ### Goal
 
@@ -1877,13 +1470,12 @@ Build a minimal local UI or API-ready event model for a future UI.
 - user can inspect why a task was routed
 - user can see cooldown/reset times
 - user can see sessions and handoff packets
-- approval requests are visible and auditable
 - no secrets displayed
 ```
 
 ---
 
-## Phase 13 — Hardening
+## Phase 12 — Hardening
 
 ### Goal
 
@@ -1911,12 +1503,11 @@ Make the system reliable enough for daily use.
 - Omnigent missing/unavailable produces typed error
 - all durable records are bounded and redacted
 - worktree locks recover from crashed process
-- orchestrator crash does not leave unmanaged backend loops indefinitely
 ```
 
 ---
 
-## Phase 14 — Commercialization Readiness
+## Phase 13 — Commercialization Readiness
 
 ### Goal
 
@@ -1948,25 +1539,21 @@ Prepare for eventual packaging or commercial product use.
 
 ---
 
-## 20. Testing Strategy
+## 18. Testing Strategy
 
-### 20.1 Unit tests
+### 18.1 Unit tests
 
 ```text
 - schemas
 - redaction
 - classifier rules
 - route decisions
-- RuntimeFailure mapping
-- event envelope ordering
-- session/turn state transitions
-- idempotency handling
 - cooldown behavior
 - handoff packet builder
 - worktree lease locks
 ```
 
-### 20.2 Fixture tests
+### 18.2 Fixture tests
 
 ```text
 - Claude rate-limit strings
@@ -1978,14 +1565,9 @@ Prepare for eventual packaging or commercial product use.
 - Anthropic API rate-limit headers
 - Google RESOURCE_EXHAUSTED
 - ZAI/MiniMax quota messages
-- non-limit 429s
-- auth failures
-- provider outages
-- policy blocks
-- malicious transcript/log/diff prompt-injection payloads
 ```
 
-### 20.3 Integration tests
+### 18.3 Integration tests
 
 ```text
 - fake Omnigent server
@@ -1993,32 +1575,9 @@ Prepare for eventual packaging or commercial product use.
 - governed-pipeline adapter fake provider
 - agent-harness adapter fake provider
 - worktree handoff simulation
-- multi-process durable state sharing
-- worktree lease race acquisition
-- stale lease recovery with dirty worktree
-- event stream reconnect/replay/dedupe
-- cancel during active stream
-- approval allow/deny/timeout flow
-- concurrent identity isolation
-- orchestrator crash cleanup
 ```
 
-### 20.4 Mandatory validation gates
-
-```text
-- Omnigent conformance suite passes against pinned fake responses.
-- Duplicate sendTurn idempotency is deterministic.
-- Concurrent turn behavior is explicitly reject or queue and is tested.
-- Event stream sequence gaps produce typed protocol failure.
-- Secret values do not appear in config dumps, logs, events, handoffs, CLI JSON, route decisions, or ledger.
-- Malicious prior-agent output remains untrusted evidence when rendered.
-- Two CLI/provider processes share cooldowns and leases.
-- Two exclusive writers cannot acquire the same worktree.
-- Identity profiles cannot read each other's env, HOME, or auth material.
-- Retry storms stop at configured max attempts with jitter/cooldown.
-```
-
-### 20.5 Live tests
+### 18.4 Live tests
 
 All live tests must be opt-in:
 
@@ -2033,24 +1592,7 @@ No default CI test may require subscription credentials.
 
 ---
 
-## 21. Security and Secret Handling
-
-### Threat model
-
-The design must explicitly defend against:
-
-```text
-- auth bleed between identity profiles
-- host environment leakage into spawned CLIs
-- prompt injection from prior-agent transcripts, logs, diffs, and command output
-- untrusted handoff evidence being rendered as instructions
-- accidental persistence of secrets or full provider payloads
-- worktree path traversal or symlink escape
-- stale lease cleanup deleting active or dirty work
-- tool approval requests being approved by the wrong actor
-- retry storms after provider rate limits or billing caps
-- cross-user subscription/account pooling if the product later becomes multi-user
-```
+## 19. Security and Secret Handling
 
 ### Required rules
 
@@ -2059,13 +1601,9 @@ The design must explicitly defend against:
 - Redact stdout/stderr before storing excerpts.
 - Bound excerpts by character count.
 - Store auth profile ids, not auth material.
-- Store secret refs, not secret values.
-- Require env allowlists; never pass full host env by default.
 - Treat raw session history as untrusted input.
 - Do not render previous agent transcript as system instructions.
-- Separate trusted task contract from untrusted evidence in every handoff prompt.
 - Store route/fallback decisions for audit.
-- Persist approval requests and responses.
 ```
 
 ### Secret redaction patterns
@@ -2084,7 +1622,7 @@ The design must explicitly defend against:
 
 ---
 
-## 22. Provider Policy Posture
+## 20. Provider Policy Posture
 
 This product is for a single developer’s local orchestration first.
 
@@ -2103,7 +1641,7 @@ Policy posture:
 
 ---
 
-## 23. Configuration Example
+## 21. Configuration Example
 
 ```yaml
 runtime:
@@ -2133,21 +1671,16 @@ identity_profiles:
     harness: codex
     auth_mode: local_subscription
     isolation: isolated_home
-    env_allowlist:
-      - CODEX_HOME
     env:
-      CODEX_HOME:
-        redacted_value_ref: codex_primary_home
+      CODEX_HOME: ~/.agent-auth/codex/primary
     max_open_sessions: 20
     max_active_turns: 5
 
   gemini_primary:
     provider: google
-    harness: gemini-antigravity
+    harness: gemini
     auth_mode: oauth
-    isolation: isolated_home
-    env_allowlist:
-      - AGY_CONFIG_HOME
+    isolation: host_env
     max_open_sessions: 20
     max_active_turns: 4
 
@@ -2155,9 +1688,7 @@ identity_profiles:
     provider: zai
     harness: opencode
     auth_mode: api_key
-    isolation: isolated_home
-    secret_refs:
-      - op://project/zai_api_key
+    isolation: host_env
     max_open_sessions: 50
     max_active_turns: 10
 
@@ -2165,16 +1696,14 @@ identity_profiles:
     provider: minimax
     harness: opencode
     auth_mode: api_key
-    isolation: isolated_home
-    secret_refs:
-      - op://project/minimax_api_key
+    isolation: host_env
     max_open_sessions: 50
     max_active_turns: 10
 ```
 
 ---
 
-## 24. Agent Instructions for Roadmap Generation
+## 22. Agent Instructions for Roadmap Generation
 
 Give the following instruction to the roadmap-building agent.
 
@@ -2187,21 +1716,19 @@ Your job is not to implement code yet. Your job is to create implementation road
 
 Generate separate roadmaps for:
 
-A. Omnigent contract discovery and freeze
-B. repository bootstrap
-C. core contracts and fake provider
-D. durable state and audit ledger
-E. Omnigent transport
-F. rate-limit catalog
-G. identity/profile isolation
-H. worktree leasing
-I. handoff packet builder
-J. coordinator/router
-K. governed-pipeline adapter
-L. agent-harness adapter
-M. CLI
-N. UI/control surface
-O. hardening/commercialization readiness
+A. repository bootstrap
+B. core contracts
+C. Omnigent client
+D. rate-limit catalog
+E. scheduler/provider-state engine
+F. identity/profile isolation
+G. worktree leasing
+H. handoff packet builder
+I. governed-pipeline adapter
+J. agent-harness adapter
+K. CLI
+L. UI/control surface
+M. hardening/commercialization readiness
 
 For each roadmap, produce:
 
@@ -2219,42 +1746,41 @@ For each roadmap, produce:
 Rules:
 
 - Preserve dependency direction. The new provider repo must not depend on governed-pipeline or agent-harness core internals.
-- Freeze the Omnigent contract before implementing real transport or adapters.
-- Keep Omnigent behind a provider/transport boundary.
-- Do not rely on in-memory state for CLI, cooldown, lease, scheduler, or audit behavior.
+- Keep Omnigent behind a provider/client boundary.
 - Do not store raw unbounded logs, transcripts, prompts, provider payloads, or secrets.
 - Handoff packets are typed state, not prose summaries.
-- Prior-agent output, logs, diffs, and raw history are untrusted evidence.
 - Rate-limit classifications are first-class routing inputs.
 - Prefer provider-family diversity over same-provider account rotation.
 - Same-provider account failover after hard usage caps requires explicit policy and should default to manual confirmation.
 - All fallback metadata must be explicit. No silent downgrade.
-- Worktrees must be locked with durable cross-process leases, fencing tokens, and heartbeat renewal.
+- Worktrees must be locked for exclusive writes.
 - Parallel agents must not write to the same worktree.
 - Existing governed-pipeline and agent-harness semantics must remain authoritative in their own repos.
 ```
 
 ---
 
-## 25. First Implementation Slice
+## 23. First Implementation Slice
 
 The first coding slice should be small:
 
 ```text
-1. Produce `docs/omnigent-contract.md` from real Omnigent inspection or mark the missing source as a blocker.
-2. Create repo skeleton.
-3. Implement `packages/core-contracts` types + schemas.
-4. Implement fake provider and fake Omnigent fixtures only from the frozen contract.
-5. Implement session/turn/event/error state-machine tests.
-6. Implement redaction tests and prompt-injection handoff fixtures.
-7. Add docs and fixtures.
+1. Create repo skeleton.
+2. Implement packages/core types + schemas.
+3. Implement rate-limit classifier framework with three sample classifiers:
+   - Claude Code natural-language limit
+   - Codex natural-language limit
+   - OpenAI API 429 headers
+4. Implement fake Omnigent client.
+5. Implement governed-pipeline result mapper against fake provider.
+6. Add docs and fixtures.
 ```
 
-Do not start by integrating real Omnigent server calls, scheduler routing, real adapters, or UI. Establish the frozen backend contract and stable internal contract first.
+Do not start by integrating real Omnigent server calls. Establish the stable internal contract first.
 
 ---
 
-## 26. Final Architecture Decision
+## 24. Final Architecture Decision
 
 Build `agent-runtime-provider-omnigent` as a **separate TypeScript monorepo**.
 
@@ -2262,11 +1788,11 @@ Use it as:
 
 ```text
 - an Omnigent-backed runtime provider
-- a contract-first Omnigent transport boundary
-- a durable state, scheduler, rate-limit, and cooldown layer
+- a scheduler/rate-limit/cooldown layer
 - a handoff packet builder
 - a worktree/identity router
-- optional governed-pipeline and agent-harness adapter leaf packages
+- a governed-pipeline adapter
+- an agent-harness adapter
 ```
 
 Do **not** put this directly inside `governed-pipeline` or `agent-harness`.

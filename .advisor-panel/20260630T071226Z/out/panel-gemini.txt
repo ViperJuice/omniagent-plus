@@ -1,0 +1,38 @@
+1. **Consensus Verdict**  
+The spec successfully identifies the right abstraction layer (a TypeScript orchestration wrapper over a Python execution engine) and sets strong boundaries for rate-limiting, routing, and worktree leases. However, it contains fundamental architectural contradictions regarding state sharing across multiple Node processes, and a severe mismatch between its identity-isolation requirements and a shared HTTP server model. It cannot be implemented safely as written.
+
+2. **Critical Findings**
+
+*   **Severity 1: In-memory State vs. Multi-process/CLI Consumers**  
+    *Why it matters:* Section 5 designs the provider as a library consumed by `governed-pipeline` and `agent-harness`. Section 10 (CLI) demands commands like `sessions list` and `route-task`. Phase 4 tasks "implement IdentityPool" and "cooldown manager". If this state is held in-memory by the consuming Node process, every CLI invocation and pipeline run will have an isolated, blank state. Rate limits will be ignored, cooldowns will reset, and worktree locks will not protect against parallel processes.  
+    *Concrete spec change:* Explicitly mandate a local durable state backend (e.g., SQLite `provider_state.db` or shared daemon) for the `scheduler`, `rate-limit-catalog`, and `worktree-router` packages. The CLI must read/write to this shared state, not an in-memory pool.
+
+*   **Severity 1: Shared Server vs. Identity Isolation Contradiction**  
+    *Why it matters:* Section 12.1 prefers "HTTP/server mode" (talking to a single running Omnigent server). Section 8.2 defines `IdentityProfile` with `isolation` properties like `host_env`, `homeDir`, and `env` overrides. A single Python server process cannot safely hot-swap `process.env` or `$HOME` per-request for concurrent sessions. If Omnigent does not natively support multi-tenant containerized sessions via its HTTP API, auth bleed is guaranteed.  
+    *Concrete spec change:* Change the architecture to require a 1:1 mapping between active `IdentityProfile`s and spawned Omnigent backend processes (or clarify that Omnigent's HTTP API explicitly accepts and strictly isolates per-session credential injections). If using CLI mode as a fallback, define that the CLI is spawned with the profile's env.
+
+*   **Severity 2: Zombie Process & Lifecycle Leaks**  
+    *Why it matters:* Section 12.1 ("Hybrid mode: Starts a local Omnigent server if absent") glosses over process ownership. Agent sessions are long-running and stateful. If the TypeScript orchestrator crashes, SIGINTs, or is OOM-killed, the Python server and its child model-polling loops will become orphaned zombies, draining API credits and keeping worktrees dirty.  
+    *Concrete spec change:* Add a rigid lifecycle contract in Section 12 for Hybrid mode. Require the provider to use IPC, process groups (PID namespaces), or heartbeat files to ensure the Omnigent backend auto-terminates if the parent Node orchestrator dies.
+
+*   **Severity 3: Worktree Lease Expirations cause Deadlocks or Stealing**  
+    *Why it matters:* `WorktreeLease` (9.3) relies on a static `expiresAt`. Agent tasks have unpredictable durations (from seconds to hours). A fixed expiration will either cause a long-running session to have its lock stolen, or a crashed session to deadlock the branch permanently.  
+    *Concrete spec change:* Add a `renewLease(id)` method to `WorktreeLeaseRequest`/`AgentRuntimeProvider` and require the TS runtime to run a background heartbeat that periodically renews the lease while the Omnigent session is actively processing turns.
+
+3. **Missing Acceptance Tests or Validation Gates**
+*   **Auth Bleed Gate:** A test running two concurrent sessions on the same Omnigent server using different `IdentityProfile`s (e.g., `claude_primary` and `claude_secondary`) to mathematically prove that API credentials and `$HOME` isolation do not leak across sessions.
+*   **Crash Recovery Test:** A test that forcefully SIGKILLs the Node orchestrator mid-turn, verifying that (a) Python subprocesses are cleanly reaped, and (b) worktree locks are released or safely reclaimable upon restart.
+*   **Multi-process Lock Test:** Two separate `agent-runtime-provider-omnigent` CLI processes attempt to lease the same worktree branch simultaneously, proving that the locking mechanism is durable across process boundaries.
+
+4. **Ambiguities or Questions to Resolve**
+*   *Does Omnigent's HTTP API actually support accepting a `handoffPacket` and initializing a session's git worktree natively?* The spec assumes Omnigent can natively resume from the structured `HandoffPacket` metadata (12.3), but Omnigent may only understand raw string transcripts.
+*   *Who owns the "Session Tree"?* Section 13.2 says the UI shows the "Session tree... and dependent handoffs". If TS manages handoffs but Omnigent manages raw execution, does the TS layer stitch parent/child session IDs together in its own database, or is it pushing all metadata down into Omnigent's SQLite store?
+*   *Turn Cancellation semantics:* Does `cancelTurn(handle)` send a SIGINT to the model polling loop, or just drop the TS listener? If the model is mid-generation, does Omnigent actually stop the API request to prevent billing waste?
+
+5. **PARTIALLY AGREE**
+
+Top 3 concrete changes:
+1. Require a local durable state backend (SQLite) for identity pools, rate-limit state, and worktree leases to solve the multi-process / CLI isolation flaw.
+2. Require 1:1 Omnigent process spawning per `IdentityProfile` (or document strict Omnigent HTTP native-isolation capabilities) to prevent auth/env bleed across concurrent sessions.
+3. Replace static `expiresAt` on Worktree Leases with an active heartbeat/renewal pattern tied to the session's lifecycle.
+I have already completed the review of `agent-runtime-provider-omnigent-spec.md` as requested by `review-instructions.md`. Let me know if you need any further analysis.

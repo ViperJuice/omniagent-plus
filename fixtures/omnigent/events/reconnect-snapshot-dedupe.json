@@ -1,0 +1,27 @@
+{
+  "schema": "omnigent.event_fixture.v1",
+  "redaction": "metadata_only",
+  "fixture": "reconnect_snapshot_dedupe",
+  "reconnect_steps": [
+    "open_stream",
+    "get_snapshot",
+    "dedupe_snapshot_items_by_item_id"
+  ],
+  "transport_properties": {
+    "replay": false,
+    "stream_survives_across_turns": true
+  },
+  "dedupe_key": "item.id",
+  "provenance": [
+    {
+      "kind": "tagged_source",
+      "path": "omnigent/server/API.md",
+      "ref": "v0.3.0"
+    },
+    {
+      "kind": "tagged_source",
+      "path": "sdks/python-client/omnigent_client/_sessions.py",
+      "ref": "v0.3.0"
+    }
+  ]
+}
