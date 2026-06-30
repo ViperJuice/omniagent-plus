@@ -1,0 +1,28 @@
+{
+  "packetId": "handoff-handoff-8-no-raw-history",
+  "createdAt": "2026-06-30T20:05:00.000Z",
+  "sourceSessionIds": ["session-handoff"],
+  "sourceHarnesses": ["codex"],
+  "targetHarness": "custom",
+  "reason": "review",
+  "objective": "Review a handoff packet without raw transcript carry-over.",
+  "currentStatus": "in_progress",
+  "evidence": {
+    "changedFiles": [
+      "packages/core-contracts/src/handoff-packet.ts"
+    ],
+    "rawHistory": [
+      {
+        "speaker": "user",
+        "content": "This transcript should be omitted."
+      }
+    ]
+  },
+  "contextPolicy": {
+    "rawHistoryAllowed": false,
+    "mayEditFiles": true,
+    "mayRunCommands": true,
+    "mayUseNetwork": false,
+    "maySwitchProvider": false
+  }
+}

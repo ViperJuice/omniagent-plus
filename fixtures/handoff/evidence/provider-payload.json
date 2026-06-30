@@ -1,0 +1,25 @@
+{
+  "packetId": "handoff-provider-payload",
+  "createdAt": "2026-06-30T20:11:00.000Z",
+  "sourceSessionIds": ["session-provider"],
+  "sourceHarnesses": ["codex"],
+  "reason": "debug",
+  "objective": "Reject raw provider payload evidence.",
+  "currentStatus": "blocked",
+  "evidence": {
+    "priorAgentSummaries": [
+      {
+        "label": "provider payload",
+        "summary": "This should fail.",
+        "content": "{\"choices\":[{\"message\":{\"role\":\"assistant\",\"content\":\"raw provider payload\"}}]}"
+      }
+    ]
+  },
+  "contextPolicy": {
+    "rawHistoryAllowed": false,
+    "mayEditFiles": false,
+    "mayRunCommands": true,
+    "mayUseNetwork": false,
+    "maySwitchProvider": false
+  }
+}

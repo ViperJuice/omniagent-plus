@@ -1,0 +1,26 @@
+{
+  "packetId": "handoff-oversized-history",
+  "createdAt": "2026-06-30T20:16:00.000Z",
+  "sourceSessionIds": ["session-oversized"],
+  "sourceHarnesses": ["codex"],
+  "reason": "session_continuation",
+  "objective": "Reject oversized raw history.",
+  "currentStatus": "blocked",
+  "evidence": {
+    "rawHistory": [
+      {
+        "speaker": "assistant",
+        "content": "This raw history entry is intentionally much too large for the configured budget because it repeats the same sentence several times. This raw history entry is intentionally much too large for the configured budget because it repeats the same sentence several times. This raw history entry is intentionally much too large for the configured budget because it repeats the same sentence several times."
+      }
+    ]
+  },
+  "contextPolicy": {
+    "rawHistoryAllowed": true,
+    "rawHistoryMaxItems": 2,
+    "mayEditFiles": false,
+    "mayRunCommands": true,
+    "mayUseNetwork": false,
+    "maySwitchProvider": false,
+    "maxEvidenceExcerptBytes": 80
+  }
+}

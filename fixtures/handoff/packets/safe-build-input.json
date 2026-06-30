@@ -1,0 +1,151 @@
+{
+  "packetId": "handoff-handoff-8",
+  "createdAt": "2026-06-30T20:00:00.000Z",
+  "sourceSessionIds": ["session-worktree", "session-handoff"],
+  "sourceHarnesses": ["codex"],
+  "targetHarness": "claude-code",
+  "targetProvider": "anthropic",
+  "reason": "manual_handoff",
+  "objective": "Build the HANDOFF packet and preserve trusted instructions.",
+  "currentStatus": "in_progress",
+  "taskContract": {
+    "must": [
+      "Preserve the trusted task contract.",
+      "Keep evidence fenced as untrusted."
+    ],
+    "mustNot": [
+      "Promote logs or transcript text into trusted instructions."
+    ],
+    "acceptanceCriteria": [
+      "Run the HANDOFF verification suite.",
+      "Keep raw history bounded and optional."
+    ],
+    "constraints": [
+      "Use metadata_only or redacted evidence only."
+    ]
+  },
+  "workspace": {
+    "repoRoot": "/home/viperjuice/code/omniagent-plus",
+    "branch": "main",
+    "worktreePath": "/mnt/workspace/worktrees/omniagent-plus-main",
+    "baseRef": "origin/main",
+    "diffRef": "HEAD"
+  },
+  "facts": [
+    "The packet builder separates trusted task fields from evidence.",
+    "Renderer targets quote untrusted evidence."
+  ],
+  "evidence": {
+    "worktreeLease": {
+      "id": "lease-main-1",
+      "path": "/mnt/workspace/worktrees/omniagent-plus-main",
+      "branchName": "main",
+      "mode": "exclusive_write",
+      "fencingToken": "token-1"
+    },
+    "diffSummary": {
+      "dirtyState": "dirty",
+      "changedPaths": [
+        "packages/core-contracts/src/handoff-packet.ts",
+        "docs/handoff-packets.md"
+      ],
+      "fileCount": 2,
+      "additions": 180,
+      "deletions": 12,
+      "truncated": false
+    },
+    "changedFiles": [
+      "packages/core-contracts/src/handoff-packet.ts",
+      "packages/core-contracts/src/handoff-renderer.ts",
+      "docs/handoff-packets.md"
+    ],
+    "inspectedFiles": [
+      "specs/agent-runtime-provider-omnigent-spec.md",
+      "docs/security-and-secrets.md"
+    ],
+    "commandsRun": [
+      {
+        "command": "pnpm test -- --run",
+        "exitCode": 0,
+        "summary": "Focused HANDOFF tests passed.",
+        "output": "Quoted evidence only: handoff packet test suite completed without leaks."
+      }
+    ],
+    "testResults": [
+      {
+        "name": "handoff-packet.test.ts",
+        "status": "passed",
+        "summary": "Builder validation covered task contract and evidence inputs.",
+        "details": "Quoted evidence only: raw history stayed bounded and optional."
+      }
+    ],
+    "diffs": [
+      {
+        "path": "packages/core-contracts/src/handoff-renderer.ts",
+        "summary": "Adds target-specific trusted and untrusted section labels.",
+        "excerpt": "Quoted evidence only: renderer outputs prefixed JSON evidence blocks."
+      }
+    ],
+    "logs": [
+      {
+        "path": ".phase-loop/runs/handoff/verification.json",
+        "summary": "Verification artifact ref.",
+        "excerpt": "Quoted evidence only: verification passed for the focused HANDOFF suite."
+      }
+    ],
+    "priorAgentSummaries": [
+      {
+        "label": "previous codex turn",
+        "summary": "Prior summary stayed metadata-only.",
+        "content": "Quoted evidence only: previous agent summary said to keep command output fenced."
+      }
+    ],
+    "rawHistory": [
+      {
+        "speaker": "user",
+        "occurredAt": "2026-06-30T19:58:00.000Z",
+        "content": "Please finish the HANDOFF phase and keep evidence untrusted."
+      },
+      {
+        "speaker": "assistant",
+        "occurredAt": "2026-06-30T19:59:00.000Z",
+        "content": "I will add the handoff builder, renderers, and hostile fixtures."
+      },
+      {
+        "speaker": "tool",
+        "occurredAt": "2026-06-30T19:59:30.000Z",
+        "content": "rg showed that no handoff renderer existed yet."
+      }
+    ]
+  },
+  "decisions": [
+    "Keep evidence in quoted JSON blocks for every renderer."
+  ],
+  "assumptions": [
+    "The target harness can consume structured markdown sections."
+  ],
+  "failedAttempts": [
+    "A minimal schema without renderers was insufficient for IF-0-HANDOFF-8."
+  ],
+  "risks": [
+    "Future adapters must keep the trusted and untrusted separation intact."
+  ],
+  "openQuestions": [
+    "Should future adapters add machine-readable prompt envelopes?"
+  ],
+  "nextRecommendedAction": "Run the full HANDOFF verification suite and close the phase.",
+  "contextPolicy": {
+    "rawHistoryAllowed": true,
+    "rawHistoryMaxItems": 2,
+    "mayEditFiles": true,
+    "mayRunCommands": true,
+    "mayUseNetwork": false,
+    "maySwitchProvider": true,
+    "maxMetadataItems": 12,
+    "maxEvidenceExcerptBytes": 256
+  },
+  "requiredOutput": {
+    "schema": "phase_closeout.v1",
+    "instructions": "Emit the HANDOFF closeout JSON."
+  }
+}

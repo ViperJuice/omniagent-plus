@@ -1,0 +1,26 @@
+{
+  "codex": {
+    "trustedSection": "Trusted Task Contract",
+    "untrustedSection": "Untrusted Evidence Bundle"
+  },
+  "claude-code": {
+    "trustedSection": "Trusted Operator Context",
+    "untrustedSection": "Quoted Untrusted Evidence"
+  },
+  "gemini-antigravity": {
+    "trustedSection": "Trusted Handoff Contract",
+    "untrustedSection": "Escaped Untrusted Evidence"
+  },
+  "opencode": {
+    "trustedSection": "Trusted Execution Contract",
+    "untrustedSection": "Untrusted Evidence Records"
+  },
+  "pi": {
+    "trustedSection": "Trusted Continuation Contract",
+    "untrustedSection": "Quoted Evidence Records"
+  },
+  "custom": {
+    "trustedSection": "Trusted Task Contract",
+    "untrustedSection": "Untrusted Evidence Bundle"
+  }
+}

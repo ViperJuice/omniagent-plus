@@ -22,14 +22,40 @@
     "baseRef": "origin/main",
     "diffRef": "HEAD"
   },
+  "facts": [
+    "Trusted task instructions stay outside the evidence bundle."
+  ],
   "evidence": {
+    "worktreeLease": {
+      "id": "lease-bootcore-1",
+      "path": "/mnt/workspace/worktrees/omniagent-plus-main",
+      "branchName": "main",
+      "mode": "exclusive_write",
+      "fencingToken": "token-bootcore-1"
+    },
+    "diffSummary": {
+      "dirtyState": "dirty",
+      "changedPaths": ["packages/core-contracts/src/index.ts"],
+      "fileCount": 1,
+      "additions": 4,
+      "deletions": 0,
+      "truncated": false
+    },
     "changedFiles": ["packages/core-contracts/src/index.ts"],
     "inspectedFiles": ["docs/omnigent-contract.md"],
     "commandsRun": [
       {
         "command": "pnpm test -- --run",
         "exitCode": 0,
-        "summary": "Full BOOTCORE suite passes."
+        "summary": "Full BOOTCORE suite passes.",
+        "output": {
+          "schema": "redacted_text.v0.1",
+          "redaction": "content_redacted",
+          "reason": "command_output_excerpt",
+          "content": "Quoted evidence only: BOOTCORE verification completed cleanly.",
+          "byteLength": 60,
+          "truncated": false
+        }
       }
     ],
     "testResults": [
@@ -49,6 +75,20 @@
       {
         "path": ".phase-loop/runs/bootcore/verification.json",
         "summary": "Verification artifact."
+      }
+    ],
+    "priorAgentSummaries": [
+      {
+        "label": "prior codex turn",
+        "summary": "Carry forward the BOOTCORE constraints only.",
+        "excerpt": {
+          "schema": "redacted_text.v0.1",
+          "redaction": "content_redacted",
+          "reason": "prior_agent_summary_excerpt",
+          "content": "Quoted evidence only: logical close stays provider-owned.",
+          "byteLength": 56,
+          "truncated": false
+        }
       }
     ]
   },

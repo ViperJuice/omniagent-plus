@@ -25,14 +25,46 @@ export {
 } from "./errors.js";
 export { FakeEventStream, normalizeMalformedFrames, normalizeOmnigentFixture } from "./fake-event-stream.js";
 export { FakeAgentRuntimeProvider } from "./fake-provider.js";
-export type { HandoffPacket } from "./handoff-packet.js";
+export type {
+  CommandEvidence,
+  CommandEvidenceInput,
+  HandoffContextPolicy,
+  HandoffDiffSummary,
+  HandoffPacket,
+  HandoffPacketInput,
+  LogEvidence,
+  LogEvidenceInput,
+  PriorAgentSummaryEvidence,
+  PriorAgentSummaryInput,
+  RawHistoryEvidence,
+  RawHistoryInput,
+  RawHistorySpeaker,
+  TestEvidence,
+  TestEvidenceInput,
+} from "./handoff-packet.js";
 export {
+  buildHandoffPacket,
   commandEvidenceSchema,
   diffEvidenceSchema,
+  handoffContextPolicySchema,
+  handoffDiffSummarySchema,
   handoffPacketSchema,
+  handoffReasonSchema,
+  handoffStatusSchema,
   logEvidenceSchema,
+  priorAgentSummaryEvidenceSchema,
+  rawHistoryEvidenceSchema,
+  rawHistorySpeakerSchema,
   testEvidenceSchema,
 } from "./handoff-packet.js";
+export type {
+  HandoffRendererTarget,
+  RenderedHandoffPrompt,
+} from "./handoff-renderer.js";
+export {
+  handoffRendererTargetSchema,
+  renderHandoffPrompt,
+} from "./handoff-renderer.js";
 export type { IdentityProfile } from "./identity-profile.js";
 export {
   cooldownStateSchema,
@@ -44,15 +76,21 @@ export type { LimitClassification, LimitScope, LimitType } from "./rate-limit.js
 export { limitClassificationSchema } from "./rate-limit.js";
 export type {
   RedactedConfigValue,
+  RedactedText,
   RedactionStatus,
   RuntimeEvidenceRef,
 } from "./redaction.js";
 export {
   redactConfigRecord,
   redactConfigValue,
+  redactUntrustedText,
   redactedConfigValueSchema,
+  redactedTextSchema,
   redactionStatusSchema,
   runtimeEvidenceRefSchema,
+  sanitizeMetadataPath,
+  sanitizeMetadataText,
+  sanitizeWorkspacePath,
 } from "./redaction.js";
 export type {
   IdentityProfileStatus,
