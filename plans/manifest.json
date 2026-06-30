@@ -2,6 +2,35 @@
   "plans": [
     {
       "acceptance_criteria_count": 8,
+      "created_at": "2026-06-30T19:26:36Z",
+      "file": "plans/phase-plan-v1-HANDOFF.md",
+      "handoff_ref": ".dev-skills/handoffs/codex-plan-phase/20260630T192649Z-handoff-plan.md",
+      "if_gates_produced": [
+        "IF-0-HANDOFF-8"
+      ],
+      "lanes": [
+        "SL-0",
+        "SL-1",
+        "SL-2"
+      ],
+      "lifecycle": [],
+      "owner_skill": "codex-plan-phase",
+      "phase_alias": "HANDOFF",
+      "reflection_ref": "/home/viperjuice/.codex/skills/codex-plan-phase/reflections/fcd59ee94a74/main/20260630T192649Z-handoff-plan.md",
+      "roadmap_ref": {
+        "file": "specs/phase-plans-v1.md",
+        "slug": "phase-plans-v1",
+        "status": "committed",
+        "type": "roadmap"
+      },
+      "slug": "phase-plan-v1-HANDOFF",
+      "status": "committed",
+      "task_summary": "Plan HANDOFF packet builder phase from specs/phase-plans-v1.md.",
+      "type": "phase",
+      "updated_at": "2026-06-30T19:26:36Z"
+    },
+    {
+      "acceptance_criteria_count": 8,
       "created_at": "2026-06-30T15:29:17Z",
       "file": "plans/phase-plan-v1-BOOTCORE.md",
       "handoff_ref": ".dev-skills/handoffs/codex-plan-phase/20260630T152917Z-bootcore-plan.md",
@@ -115,6 +144,38 @@
       "task_summary": null,
       "type": "phase",
       "updated_at": "2026-06-30T09:06:46Z"
+    },
+    {
+      "acceptance_criteria_count": null,
+      "created_at": "2026-06-30T19:27:23Z",
+      "file": "plans/phase-plan-v1-HANDOFF.md",
+      "handoff_ref": null,
+      "if_gates_produced": [
+        "IF-0-BOOTCORE-2",
+        "IF-0-STATELEDGER-3",
+        "IF-0-WORKTREE-7",
+        "IF-0-HANDOFF-8"
+      ],
+      "lanes": [
+        "SL-0",
+        "SL-1",
+        "SL-2"
+      ],
+      "lifecycle": [],
+      "owner_skill": "codex-plan-phase",
+      "phase_alias": "HANDOFF",
+      "reflection_ref": null,
+      "roadmap_ref": {
+        "file": "specs/phase-plans-v1.md",
+        "slug": "phase-plans-v1",
+        "status": "imported",
+        "type": "phase"
+      },
+      "slug": "v1-HANDOFF",
+      "status": "imported",
+      "task_summary": null,
+      "type": "phase",
+      "updated_at": "2026-06-30T19:27:23Z"
     },
     {
       "acceptance_criteria_count": 10,
