@@ -1,0 +1,29 @@
+{
+  "sessionTransitions": {
+    "created": ["starting", "failed"],
+    "starting": ["idle", "failed"],
+    "idle": ["turn_active", "cancelling", "closed", "failed"],
+    "turn_active": ["blocked_on_approval", "cancelling", "idle", "failed"],
+    "blocked_on_approval": ["turn_active", "cancelling", "idle", "failed"],
+    "cancelling": ["idle", "closed", "failed"],
+    "closed": [],
+    "failed": []
+  },
+  "turnTransitions": {
+    "accepted": ["queued", "running", "failed", "cancelled"],
+    "queued": ["running", "cancelling", "timed_out", "failed", "cancelled"],
+    "running": [
+      "blocked_on_tool_approval",
+      "cancelling",
+      "completed",
+      "timed_out",
+      "failed"
+    ],
+    "blocked_on_tool_approval": ["running", "cancelling", "timed_out", "failed"],
+    "cancelling": ["cancelled", "failed"],
+    "cancelled": [],
+    "timed_out": [],
+    "completed": [],
+    "failed": []
+  }
+}

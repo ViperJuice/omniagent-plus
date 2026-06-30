@@ -1,0 +1,18 @@
+{
+  "id": "lease-bootcore",
+  "fencingToken": "token-bootcore",
+  "repoId": "omniagent-plus",
+  "path": "/mnt/workspace/worktrees/omniagent-plus-main",
+  "branchName": "main",
+  "mode": "exclusive_write",
+  "holder": {
+    "processId": 4242,
+    "host": "display",
+    "sessionId": "session-bootcore",
+    "turnId": "turn-bootcore-1"
+  },
+  "acquiredAt": "2026-06-30T00:00:00.000Z",
+  "renewedAt": "2026-06-30T00:05:00.000Z",
+  "expiresAt": "2026-06-30T00:10:00.000Z",
+  "dirtyState": "clean"
+}

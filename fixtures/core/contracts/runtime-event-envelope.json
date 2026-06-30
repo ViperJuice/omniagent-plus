@@ -1,0 +1,15 @@
+{
+  "schema": "runtime_event.v0.1",
+  "eventId": "event-bootcore-1",
+  "sequence": 4,
+  "sessionId": "session-bootcore",
+  "turnId": "turn-bootcore-1",
+  "type": "runtime.turn.completed",
+  "occurredAt": "2026-06-30T00:00:05.000Z",
+  "payload": {
+    "outcome": "completed",
+    "outputSummary": "Normalized terminal event."
+  },
+  "redaction": "metadata_only",
+  "terminal": true
+}

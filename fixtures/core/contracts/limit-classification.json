@@ -1,0 +1,24 @@
+{
+  "schema": "limit_classification.v0.1",
+  "type": "fixed_window_usage_cap",
+  "scope": "identity_profile",
+  "confidence": 0.96,
+  "provider": "openai",
+  "harness": "codex",
+  "identityProfileId": "profile-codex",
+  "sessionId": "session-bootcore",
+  "resetAt": "2026-07-01T00:00:00.000Z",
+  "rawSignal": {
+    "statusCode": 429,
+    "stderrExcerpt": "usage cap reached"
+  },
+  "routingAction": {
+    "retrySameSession": false,
+    "reduceConcurrency": true,
+    "routeNewWorkElsewhere": true,
+    "migrateExistingPortableWork": true,
+    "requireManualReview": false,
+    "sameProviderAccountSwitch": "manual_confirmation_required"
+  },
+  "notes": ["Prefer cross-provider fallback for portable work."]
+}

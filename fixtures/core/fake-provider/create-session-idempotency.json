@@ -1,0 +1,5 @@
+{
+  "idempotencyKey": "bootcore-create-1",
+  "title": "BOOTCORE fake session",
+  "expectedSessionId": "session-bootcore-create-1"
+}

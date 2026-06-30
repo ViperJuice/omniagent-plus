@@ -1,0 +1,19 @@
+{
+  "id": "session-bootcore",
+  "runtime": "omnigent",
+  "targetHarness": "codex",
+  "targetProvider": "openai",
+  "identityProfileId": "profile-codex",
+  "title": "Bootstrap BOOTCORE",
+  "state": "idle",
+  "createdAt": "2026-06-30T00:00:00.000Z",
+  "updatedAt": "2026-06-30T00:00:00.000Z",
+  "repoRoot": "/home/viperjuice/code/omniagent-plus",
+  "rootSessionId": "session-bootcore",
+  "worktree": {
+    "id": "lease-bootcore",
+    "path": "/mnt/workspace/worktrees/omniagent-plus-main",
+    "branchName": "main",
+    "mode": "sequential_continue"
+  }
+}

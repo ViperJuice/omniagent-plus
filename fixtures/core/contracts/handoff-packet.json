@@ -1,0 +1,71 @@
+{
+  "schema": "handoff_packet.v0.1",
+  "packetId": "handoff-bootcore-1",
+  "createdAt": "2026-06-30T00:00:00.000Z",
+  "sourceSessionIds": ["session-bootcore"],
+  "sourceHarnesses": ["codex"],
+  "targetHarness": "claude-code",
+  "targetProvider": "anthropic",
+  "reason": "manual_handoff",
+  "objective": "Bootstrap BOOTCORE and preserve the lifecycle contract.",
+  "currentStatus": "in_progress",
+  "taskContract": {
+    "must": ["Keep core-contracts runtime-neutral."],
+    "mustNot": ["Import real Omnigent transport."],
+    "acceptanceCriteria": ["Run the BOOTCORE verification suite."],
+    "constraints": ["Use metadata-only evidence."]
+  },
+  "workspace": {
+    "repoRoot": "/home/viperjuice/code/omniagent-plus",
+    "branch": "main",
+    "worktreePath": "/mnt/workspace/worktrees/omniagent-plus-main",
+    "baseRef": "origin/main",
+    "diffRef": "HEAD"
+  },
+  "evidence": {
+    "changedFiles": ["packages/core-contracts/src/index.ts"],
+    "inspectedFiles": ["docs/omnigent-contract.md"],
+    "commandsRun": [
+      {
+        "command": "pnpm test -- --run",
+        "exitCode": 0,
+        "summary": "Full BOOTCORE suite passes."
+      }
+    ],
+    "testResults": [
+      {
+        "name": "schemas.test.ts",
+        "status": "passed",
+        "summary": "All contract fixtures validated."
+      }
+    ],
+    "diffs": [
+      {
+        "path": "packages/core-contracts/src/index.ts",
+        "summary": "Exports runtime-neutral contracts."
+      }
+    ],
+    "logs": [
+      {
+        "path": ".phase-loop/runs/bootcore/verification.json",
+        "summary": "Verification artifact."
+      }
+    ]
+  },
+  "decisions": ["Treat logical close as provider-owned emulation."],
+  "assumptions": ["Node 22+ is available in the workspace."],
+  "risks": ["Real transport integration remains a later phase."],
+  "openQuestions": ["How should downstream adapters surface waiting drift?"],
+  "nextRecommendedAction": "Proceed to durable state planning once BOOTCORE closes.",
+  "contextPolicy": {
+    "rawHistoryAllowed": false,
+    "mayEditFiles": true,
+    "mayRunCommands": true,
+    "mayUseNetwork": false,
+    "maySwitchProvider": true
+  },
+  "requiredOutput": {
+    "schema": "phase_closeout.v1",
+    "instructions": "Emit the BOOTCORE closeout JSON."
+  }
+}

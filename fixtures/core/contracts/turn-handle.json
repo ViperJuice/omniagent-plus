@@ -1,0 +1,9 @@
+{
+  "sessionId": "session-bootcore",
+  "turnId": "turn-bootcore-1",
+  "idempotencyKey": "turn-bootcore-1",
+  "state": "completed",
+  "createdAt": "2026-06-30T00:00:01.000Z",
+  "updatedAt": "2026-06-30T00:00:05.000Z",
+  "eventCursor": 4
+}

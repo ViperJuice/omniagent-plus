@@ -1,0 +1,11 @@
+{
+  "schema": "runtime_failure.v0.1",
+  "category": "concurrency_limit",
+  "retryable": false,
+  "actor": "provider",
+  "scope": "session",
+  "message": "Only one active turn is allowed per session.",
+  "safeDiagnostics": {
+    "phase": "BOOTCORE"
+  }
+}

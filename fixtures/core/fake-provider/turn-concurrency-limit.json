@@ -1,0 +1,6 @@
+{
+  "firstTurnKey": "bootcore-turn-1",
+  "duplicateTurnKey": "bootcore-turn-1",
+  "secondTurnKey": "bootcore-turn-2",
+  "expectedFailureCategory": "concurrency_limit"
+}

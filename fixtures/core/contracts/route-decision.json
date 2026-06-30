@@ -1,0 +1,23 @@
+{
+  "schema": "route_decision.v0.1",
+  "taskId": "bootcore-route",
+  "selectedProvider": "openai",
+  "selectedHarness": "codex",
+  "selectedIdentityProfileId": "profile-codex",
+  "preferredProvider": "openai",
+  "preferredHarness": "codex",
+  "fallbackUsed": false,
+  "capabilityFit": 0.95,
+  "providerHealth": 0.88,
+  "currentCapacity": 0.72,
+  "contextPortability": "high",
+  "routeReason": "capability_fit",
+  "silentDowngrade": false,
+  "evidenceRefs": [
+    {
+      "kind": "test",
+      "label": "bootcore-fixture",
+      "path": "fixtures/core/contracts/route-decision.json"
+    }
+  ]
+}

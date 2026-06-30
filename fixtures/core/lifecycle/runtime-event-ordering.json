@@ -1,0 +1,12 @@
+{
+  "rules": [
+    "sequence is monotonic per session",
+    "heartbeats do not advance turn state",
+    "missing sequences are protocol failures",
+    "exactly one normalized terminal turn event is emitted"
+  ],
+  "upstreamDrift": {
+    "sessionStatusWaiting": true,
+    "source": "IF-0-CONTRACT-1"
+  }
+}

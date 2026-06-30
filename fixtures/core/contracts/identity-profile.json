@@ -1,0 +1,23 @@
+{
+  "id": "profile-codex",
+  "provider": "openai",
+  "harness": "codex",
+  "authMode": "local_subscription",
+  "isolation": "isolated_home",
+  "envAllowlist": ["OPENAI_API_BASE"],
+  "env": {
+    "OPENAI_API_KEY": {
+      "schema": "redacted_config_value.v0.1",
+      "value": "[redacted]",
+      "reason": "secret_ref"
+    }
+  },
+  "networkPolicy": "host",
+  "maxOpenSessions": 4,
+  "maxActiveTurns": 1,
+  "providerFamilyCooldown": {
+    "active": false,
+    "reason": "healthy"
+  },
+  "tags": ["bootcore", "metadata-only"]
+}
