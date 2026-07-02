@@ -232,7 +232,7 @@ export class FakeOmnigentServer {
     }
 
     const sessionIdMatch =
-      /^\/v1\/sessions\/([^/]+)(?:\/(items|stream|child_sessions|events|switch-agent))?$/.exec(
+      /^\/v1\/sessions\/([^/]+)(?:\/(items|stream|child_sessions|events|switch-agent|read-state))?$/.exec(
         path,
       );
     if (sessionIdMatch) {
@@ -277,6 +277,23 @@ export class FakeOmnigentServer {
 
       if (method === "GET" && action === "child_sessions") {
         writeJson(response, 200, []);
+        return;
+      }
+
+      if (method === "PUT" && action === "read-state") {
+        const payload = (body ?? {}) as Record<string, unknown>;
+        const lastSeen = Number(payload.last_seen);
+        const unread = Boolean(payload.unread);
+        record.snapshot = {
+          ...record.snapshot,
+          updatedAt: timestamp(750),
+          viewerLastSeen: lastSeen,
+          viewerUnread: unread,
+          viewer_last_seen: lastSeen,
+          viewer_unread: unread,
+        };
+        response.statusCode = 204;
+        response.end();
         return;
       }
 

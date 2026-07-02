@@ -34,6 +34,11 @@ const secretValuePatterns: Array<{
     pattern: /\b(?:password|token|credential|authorization|api_key)\s*=\s*\S+/i,
   },
   {
+    reason: "secret_env_assignment",
+    pattern:
+      /\bOMNIGENT_[A-Z0-9_]*(?:API_KEY|TOKEN|SECRET|CREDENTIAL|PASSWORD|KEY)\s*=\s*\S+/i,
+  },
+  {
     reason: "auth_header",
     pattern: /^authorization:\s*\S+/i,
   },

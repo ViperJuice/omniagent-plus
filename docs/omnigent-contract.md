@@ -12,9 +12,11 @@ It freezes the Omnigent surface that downstream phases may rely on for v0.1.
 - Authoritative downstream gate: `IF-0-CONTRACT-1`
 
 The upstream `main` branch remains ahead of the latest release
-(`f46a256df68f1c7f4a577f9b53f7902b14371c53` observed on `2026-07-01`), so
-`main` is not authoritative for this freeze. Unreleased-main readiness is
-tracked separately in `docs/omnigent-upstream-readiness.md`.
+(`3f4d1c8e0b3742579c5c96742086db9e0bd36def` observed on `2026-07-02`), so
+`main` is not authoritative for this freeze. Upstream also pushed a
+`v0.4.0dev0` tag at that commit, but it is not a GitHub release or PyPI
+release. Unreleased-main readiness is tracked separately in
+`docs/omnigent-upstream-readiness.md`.
 
 ## Source Provenance
 
@@ -69,7 +71,7 @@ Session event input types explicitly documented in `API.md` include:
 Session status drift that downstream code must handle:
 
 - `API.md` documents session statuses `idle`, `running`, `waiting`, `failed`
-- `session.status` SSE events also document `waiting`
+- `session.status` SSE events also document `launching` and `waiting`
 - `openapi.json` at `v0.3.0` exposes `SessionResponse.status` as only
   `idle`, `running`, `failed`
 

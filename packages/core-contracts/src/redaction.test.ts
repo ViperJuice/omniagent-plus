@@ -45,6 +45,12 @@ describe("handoff redaction helpers", () => {
       redactUntrustedText(envFixture.excerpt, { label: "envFixture.excerpt" }),
     ).toThrow(/environment dump/);
     expect(() =>
+      sanitizeMetadataText(
+        "OMNIGENT_ANTHROPIC_API_KEY=[redacted]",
+        "omnigentEnv",
+      ),
+    ).toThrow(/environment dump|secret_env_assignment/);
+    expect(() =>
       redactUntrustedText(providerFixture.excerpt, {
         label: "providerFixture.excerpt",
       }),

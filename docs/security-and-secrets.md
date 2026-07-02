@@ -9,6 +9,8 @@ evidence, and status persistence.
   placeholders, not raw secrets.
 - Reject bearer tokens, API keys, auth headers, password/token/credential
   fields, and full env dumps before any ledger or handoff write.
+- Treat `OMNIGENT_*` provider credential aliases, such as
+  `OMNIGENT_ANTHROPIC_API_KEY`, as secret-shaped even when values are redacted.
 - Treat raw events, route decisions, and handoff payloads as unsafe until the
   secret-leak scanner reduces them to metadata_only evidence.
 

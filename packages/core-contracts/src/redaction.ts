@@ -29,6 +29,11 @@ const secretTextPatterns: Array<{
     pattern: /\b(?:password|token|credential|authorization|api_key)\s*=\s*\S+/i,
   },
   {
+    reason: "secret_env_assignment",
+    pattern:
+      /\bOMNIGENT_[A-Z0-9_]*(?:API_KEY|TOKEN|SECRET|CREDENTIAL|PASSWORD|KEY)\s*=\s*\S+/i,
+  },
+  {
     reason: "private_key",
     pattern: /-----BEGIN [A-Z ]+PRIVATE KEY-----/,
   },
@@ -50,7 +55,7 @@ const providerPayloadPatterns = [
   /"messages"\s*:\s*\[/,
 ] as const;
 
-const envDumpPattern = /(^|\n)(?:HOME|PATH|PWD|OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY|AZURE_OPENAI_API_KEY)=/m;
+const envDumpPattern = /(^|\n)(?:HOME|PATH|PWD|OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY|AZURE_OPENAI_API_KEY|OMNIGENT_[A-Z0-9_]*(?:API_KEY|TOKEN|SECRET|CREDENTIAL|PASSWORD|KEY))=/m;
 
 export const redactionStatusSchema = z.enum(redactionStatuses);
 

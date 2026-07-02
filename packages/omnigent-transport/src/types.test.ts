@@ -30,14 +30,19 @@ describe("transport types", () => {
       createdAt: "2026-06-30T00:00:00.000Z",
       updatedAt: "2026-06-30T00:00:00.000Z",
       backend: "omnigent-http",
+      background_task_count: 1,
       items: [{ id: "item-1", event: rawEvent }],
+      viewer_last_seen: 1_780_000_000,
+      viewer_unread: false,
     };
 
     expect(httpOptions.baseUrl).toContain("127.0.0.1");
     expect(omnigentProviderModes).toEqual(["http", "cli", "hybrid"]);
     expect(omnigentCapabilityStatuses).toContain("emulated");
     expect(omnigentSessionStatuses).toContain("waiting");
+    expect(omnigentSessionStatuses).toContain("launching");
     expect(omnigentStreamEventTypes).toContain("response.output_text.delta");
     expect(snapshot.items[0]?.event.delta).toBe("hello");
+    expect(snapshot.background_task_count).toBe(1);
   });
 });

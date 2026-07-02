@@ -6,6 +6,7 @@ import type {
   OmnigentHistoryItem,
   OmnigentHttpClientOptions,
   OmnigentRawEvent,
+  OmnigentReadStateInput,
   OmnigentSendEventInput,
   OmnigentSessionSnapshot,
 } from "./types.js";
@@ -96,6 +97,20 @@ export class OmnigentHttpClient {
     return this.requestJson(
       "GET",
       `/v1/sessions/${encodeURIComponent(sessionId)}/child_sessions`,
+    );
+  }
+
+  async setReadState(
+    sessionId: string,
+    readState: OmnigentReadStateInput,
+  ): Promise<void> {
+    await this.requestJson(
+      "PUT",
+      `/v1/sessions/${encodeURIComponent(sessionId)}/read-state`,
+      {
+        last_seen: readState.lastSeen,
+        unread: readState.unread,
+      },
     );
   }
 

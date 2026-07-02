@@ -33,6 +33,10 @@ describe("http client", () => {
       await client.getSession(session.id);
       await client.getHistory(session.id);
       await client.listChildSessions(session.id);
+      await client.setReadState(session.id, {
+        lastSeen: 1_780_000_000,
+        unread: true,
+      });
       await collectAsync(client.streamSession(session.id));
 
       expect(
@@ -44,9 +48,20 @@ describe("http client", () => {
           `GET /v1/sessions/${session.id}`,
           `GET /v1/sessions/${session.id}/items`,
           `GET /v1/sessions/${session.id}/child_sessions`,
+          `PUT /v1/sessions/${session.id}/read-state`,
           `GET /v1/sessions/${session.id}/stream`,
         ]),
       );
+      expect(
+        server.requestLog.find(
+          (entry) =>
+            entry.method === "PUT" &&
+            entry.path === `/v1/sessions/${session.id}/read-state`,
+        )?.body,
+      ).toEqual({
+        last_seen: 1_780_000_000,
+        unread: true,
+      });
     } finally {
       await server.stop();
     }

@@ -1,7 +1,7 @@
 {
   "schema": "omnigent.source_metadata.v1",
   "redaction": "metadata_only",
-  "captured_at": "2026-07-01T22:23:57Z",
+  "captured_at": "2026-07-02T07:15:35Z",
   "repo": "omnigent-ai/omnigent",
   "freeze_target": {
     "tag": "v0.3.0",
@@ -12,9 +12,18 @@
   },
   "head_probe": {
     "branch": "main",
-    "commit": "f46a256df68f1c7f4a577f9b53f7902b14371c53",
-    "observed_at": "2026-07-01T22:23:57Z",
+    "commit": "3f4d1c8e0b3742579c5c96742086db9e0bd36def",
+    "observed_at": "2026-07-02T07:15:35Z",
     "authority": "latest remote head probe only; not part of IF-0-CONTRACT-1"
+  },
+  "pre_release_probe": {
+    "tag": "v0.4.0dev0",
+    "commit": "3f4d1c8e0b3742579c5c96742086db9e0bd36def",
+    "package_version": "0.3.0.dev0",
+    "observed_at": "2026-07-02T07:15:35Z",
+    "github_release": false,
+    "pypi_release": false,
+    "authority": "pre-release tag only; supported as additive forward compatibility"
   },
   "local_cli_probe": {
     "omnigent_on_path": false,
@@ -34,7 +43,12 @@
     {
       "kind": "remote_head_probe",
       "path": "refs/heads/main",
-      "ref": "f46a256df68f1c7f4a577f9b53f7902b14371c53"
+      "ref": "3f4d1c8e0b3742579c5c96742086db9e0bd36def"
+    },
+    {
+      "kind": "pre_release_tag_probe",
+      "path": "refs/tags/v0.4.0dev0",
+      "ref": "3f4d1c8e0b3742579c5c96742086db9e0bd36def"
     }
   ]
 }

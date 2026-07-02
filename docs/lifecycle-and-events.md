@@ -63,4 +63,5 @@ CONTRACT froze release drift where Omnigent documents `waiting` in `API.md` and
 from the session enum. BOOTCORE records that drift as fixture semantics rather
 than pretending the release schema is exhaustive. Upstream `main` now includes
 `waiting` in OpenAPI, but this repo keeps the drift note until a published
-release supersedes `v0.3.0`.
+release supersedes `v0.3.0`. The `session.status` SSE enum also includes
+`launching`; the transport treats it as the neutral `starting` session state.

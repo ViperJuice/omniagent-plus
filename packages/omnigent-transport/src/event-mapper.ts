@@ -7,16 +7,16 @@ import {
 import type { OmnigentRawEvent } from "./types.js";
 
 function sessionCreatedState(rawEvent: OmnigentRawEvent): "created" | "starting" | "idle" | "failed" {
-  if (rawEvent.type === "session.created") {
-    return "created";
-  }
-
   if (rawEvent.status === "failed") {
     return "failed";
   }
 
-  if (rawEvent.status === "running") {
+  if (rawEvent.status === "launching" || rawEvent.status === "running") {
     return "starting";
+  }
+
+  if (rawEvent.type === "session.created") {
+    return "created";
   }
 
   return "idle";

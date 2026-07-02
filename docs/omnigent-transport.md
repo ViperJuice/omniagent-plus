@@ -8,6 +8,9 @@ contract, the runtime-neutral core contracts, and the durable state ledger.
 
 - `HTTP` mode uses only the pinned session, items, stream, event, child-session,
   fork, patch, and switch-agent endpoints from `docs/omnigent-contract.md`.
+  It also exposes additive `v0.4.0dev0` forward compatibility for
+  `PUT /v1/sessions/{session_id}/read-state`; that endpoint stays optional
+  until a published Omnigent release supersedes the freeze.
 - `CLI` mode uses only documented `omnigent run`, `resume`, `attach`, and
   `server start/status/stop` commands. It keeps `cancel` as a typed blocked
   capability because the freeze does not publish a stable cancel command.
@@ -23,6 +26,7 @@ exporting raw Omnigent payload types from the public package boundary.
 - reconnect opens the stream, reads the snapshot, and dedupes by `item.id`
 - malformed SSE frames are skipped instead of poisoning the stream
 - duplicate upstream terminal markers collapse into one normalized terminal turn
+- upstream `launching` session status maps to the neutral `starting` state
 - HTTP, CLI, stream, process, auth/billing, policy, rate-limit-like, and
   unsupported-capability failures normalize to `RuntimeFailure`
 - auth/billing, policy, and rate-limit-like signals also produce bounded

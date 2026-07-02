@@ -61,6 +61,28 @@ describe("event mapper", () => {
     );
   });
 
+  it("maps launching session-created status to starting", () => {
+    const runtimeEvents = mapOmnigentEventSequence("session-1", [
+      {
+        id: "session-created-launching",
+        itemId: "session-created-launching",
+        occurredAt: "2026-06-30T00:00:00.000Z",
+        sessionId: "session-1",
+        status: "launching",
+        type: "session.created",
+      },
+    ]);
+
+    expect(runtimeEvents[0]).toEqual(
+      expect.objectContaining({
+        payload: expect.objectContaining({
+          state: "starting",
+        }),
+        type: "runtime.session.created",
+      }),
+    );
+  });
+
   it("skips raw duplicates by item id during reconnect dedupe", () => {
     const rawEvents = fixtureToRawEvents("normal-terminal");
     const runtimeEvents = mapOmnigentEventSequence("session-1", rawEvents, {

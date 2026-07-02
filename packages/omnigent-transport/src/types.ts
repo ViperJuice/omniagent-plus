@@ -20,6 +20,7 @@ export type OmnigentCapabilityStatus =
 
 export const omnigentSessionStatuses = [
   "idle",
+  "launching",
   "running",
   "waiting",
   "failed",
@@ -94,7 +95,13 @@ export interface OmnigentSessionSnapshot {
   readonly backend: `omnigent-${OmnigentProviderMode}`;
   readonly items: OmnigentHistoryItem[];
   readonly activeTurnId?: string;
+  readonly backgroundTaskCount?: number | null;
+  readonly background_task_count?: number | null;
   readonly metadata?: Record<string, unknown>;
+  readonly viewerLastSeen?: number | null;
+  readonly viewerUnread?: boolean;
+  readonly viewer_last_seen?: number | null;
+  readonly viewer_unread?: boolean;
 }
 
 export interface OmnigentEventFailure {
@@ -111,6 +118,8 @@ export interface OmnigentRawEvent {
   readonly sessionId: string;
   readonly turnId?: string;
   readonly occurredAt: string;
+  readonly backgroundTaskCount?: number | null;
+  readonly background_task_count?: number | null;
   readonly itemId?: string;
   readonly terminal?: boolean;
   readonly status?: OmnigentSessionStatus | OmnigentResponseStatus;
@@ -119,6 +128,11 @@ export interface OmnigentRawEvent {
   readonly delta?: string;
   readonly outputText?: string;
   readonly failure?: OmnigentEventFailure;
+}
+
+export interface OmnigentReadStateInput {
+  readonly lastSeen: number;
+  readonly unread: boolean;
 }
 
 export interface OmnigentHistoryItem {

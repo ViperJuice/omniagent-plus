@@ -46,6 +46,13 @@
       "sourceType": "redacted_excerpt",
       "sourceCategory": "env_dump",
       "excerpt": "HOME=/tmp/test\nPATH=/usr/bin"
+    },
+    {
+      "kind": "log",
+      "label": "omnigent provider env",
+      "sourceType": "redacted_excerpt",
+      "sourceCategory": "runtime_log",
+      "excerpt": "OMNIGENT_ANTHROPIC_API_KEY=[redacted]"
     }
   ]
 }

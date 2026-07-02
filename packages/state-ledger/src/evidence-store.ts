@@ -13,6 +13,7 @@ const SECRET_PATTERNS = [
   /Bearer\s+[A-Za-z0-9._-]{12,}/i,
   /-----BEGIN [A-Z ]+PRIVATE KEY-----/,
   /(OPENAI|ANTHROPIC|GOOGLE|AZURE)_[A-Z0-9_]*KEY=/,
+  /OMNIGENT_[A-Z0-9_]*(API_KEY|TOKEN|SECRET|CREDENTIAL|PASSWORD|KEY)=/,
 ] as const;
 
 export interface EvidenceInput {
@@ -103,7 +104,11 @@ export class EvidenceStore {
       }
     }
 
-    if (/(^|\n)(HOME|PATH|PWD|OPENAI_API_KEY|ANTHROPIC_API_KEY)=/m.test(input.excerpt)) {
+    if (
+      /(^|\n)(HOME|PATH|PWD|OPENAI_API_KEY|ANTHROPIC_API_KEY|OMNIGENT_[A-Z0-9_]*(?:API_KEY|TOKEN|SECRET|CREDENTIAL|PASSWORD|KEY))=/m.test(
+        input.excerpt,
+      )
+    ) {
       throw new Error("Environment dumps cannot be persisted.");
     }
   }
