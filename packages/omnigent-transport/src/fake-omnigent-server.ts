@@ -8,6 +8,7 @@ import {
 } from "./contract-fixtures.js";
 import type {
   OmnigentEventAck,
+  OmnigentHarnessCatalogResponse,
   OmnigentRawEvent,
   OmnigentSendEventInput,
   OmnigentSessionSnapshot,
@@ -110,6 +111,58 @@ function buildCancelEvents(sessionId: string, turnId: string): OmnigentRawEvent[
   }));
 }
 
+function buildV04NoopEvents(sessionId: string, turnId: string): OmnigentRawEvent[] {
+  const fixture = loadOmnigentEventFixture("v0-4-noop-events");
+  return (fixture.events ?? []).map((event, index) => ({
+    attempt: event.type === "response.retry" ? 1 : undefined,
+    delay_seconds: event.type === "response.retry" ? 2 : undefined,
+    elicitation_id:
+      event.type === "response.elicitation_request" ? `${turnId}-elicitation` : undefined,
+    error:
+      event.type === "response.error"
+        ? { message: "metadata-only error event" }
+        : undefined,
+    id: `${turnId}-v04-${index + 1}`,
+    itemId: `${turnId}-v04-${index + 1}`,
+    occurredAt: timestamp((index + 30) * 1000),
+    reason: event.reason,
+    reasoning_effort:
+      event.type === "session.reasoning_effort" ? "medium" : undefined,
+    response_id: event.type.startsWith("response.") ? turnId : undefined,
+    sessionId,
+    terminal: event.terminal,
+    total_cost_usd: event.type === "session.usage" ? 0 : undefined,
+    turnId: event.type.startsWith("response.") ? turnId : undefined,
+    type: event.type as OmnigentRawEvent["type"],
+    usage_by_model:
+      event.type === "session.usage" ? { "metadata-only": {} } : undefined,
+  }));
+}
+
+function harnessCatalog(): OmnigentHarnessCatalogResponse {
+  return {
+    local: [
+      {
+        capability: "native-terminal",
+        name: "codex",
+        public_session_override: false,
+      },
+      {
+        capability: "native-terminal",
+        name: "claude",
+        public_session_override: false,
+      },
+    ],
+    sdk: [
+      {
+        capability: "sdk",
+        name: "openai-agents",
+        public_session_override: false,
+      },
+    ],
+  };
+}
+
 function readBody(request: IncomingMessage): Promise<unknown> {
   return new Promise((resolve, reject) => {
     let body = "";
@@ -192,6 +245,11 @@ export class FakeOmnigentServer {
     const path = stripQuery(request.url ?? "/");
     const body = method === "GET" ? undefined : await readBody(request);
     this.requestLog.push({ body, method, path });
+
+    if (method === "GET" && path === "/v1/harnesses") {
+      writeJson(response, 200, harnessCatalog());
+      return;
+    }
 
     if (method === "POST" && path === "/v1/sessions") {
       const payload = (body ?? {}) as Record<string, unknown>;
@@ -331,11 +389,15 @@ export class FakeOmnigentServer {
         if (event.type === "message") {
           const turnId = `turn-${record.snapshot.items.length + 1}`;
           const message = String(event.data.message ?? "send turn");
-          const rawEvents = buildNormalTerminalEvents(sessionId, turnId, message);
+          const rawEvents = [
+            ...buildNormalTerminalEvents(sessionId, turnId, message),
+            ...buildV04NoopEvents(sessionId, turnId),
+          ];
           record.stream.push(...rawEvents);
           record.snapshot = {
             ...record.snapshot,
             activeTurnId: undefined,
+            active_response_id: turnId,
             items: [
               ...record.snapshot.items,
               ...rawEvents
