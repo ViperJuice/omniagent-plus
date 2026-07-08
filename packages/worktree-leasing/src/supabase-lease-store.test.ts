@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -121,5 +122,15 @@ describe("Supabase lease store RPC mapping", () => {
 
     expect(result.granted).toBe(true);
     expect(calls[0]).toContain("coordination_acquire_lease");
+  });
+
+  it("keeps Supabase hard lease arbitration serialized in the migration", () => {
+    const migration = readFileSync(
+      new URL("../../../supabase/migrations/20260708215513_coordination_leases.sql", import.meta.url),
+      "utf8",
+    );
+
+    expect(migration).toContain("pg_advisory_xact_lock(hashtext('coordination_acquire_lease:v1'))");
+    expect(migration).toContain("now() < heartbeat_at + make_interval(secs => ttl_seconds)");
   });
 });

@@ -60,6 +60,10 @@ function selectorsIntersect(
   return left.some((selector) => right.includes(selector));
 }
 
+function pathOverlaps(left: string, right: string): boolean {
+  return left === right || left.startsWith(`${right}/`) || right.startsWith(`${left}/`);
+}
+
 function scopeMatches(
   message: CoordinationMessage,
   scope: ConsiliencyLeaseScope | undefined,
@@ -72,7 +76,13 @@ function scopeMatches(
   }
   return (
     message.scope.granularity === scope.granularity
-    && selectorsIntersect(message.scope.selector, scope.selector)
+    && (
+      message.scope.granularity === "path-set"
+        ? message.scope.selector.some((leftSelector) =>
+            scope.selector.some((rightSelector) => pathOverlaps(leftSelector, rightSelector)),
+          )
+        : selectorsIntersect(message.scope.selector, scope.selector)
+    )
   );
 }
 

@@ -152,7 +152,7 @@ declare
   lease_payload jsonb;
   conflict_payload jsonb;
 begin
-  perform pg_advisory_xact_lock(hashtext(scope_kind || ':' || array_to_string(scope_selector, ',')));
+  perform pg_advisory_xact_lock(hashtext('coordination_acquire_lease:v1'));
   perform public.coordination_expire_leases(now_at);
 
   select payload into conflict_payload
@@ -341,6 +341,10 @@ as $$
   )
   from public.coordination_current_leases
   where state = 'active'
+    and (
+      request->>'include_expired' = 'true'
+      or now() < heartbeat_at + make_interval(secs => ttl_seconds)
+    )
     and (request->>'lease_id' is null or lease_id = request->>'lease_id')
     and (
       request->'scope' is null

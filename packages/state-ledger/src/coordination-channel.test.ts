@@ -41,6 +41,29 @@ describe("coordination channel", () => {
     expect(doneMessages).toHaveLength(0);
   });
 
+  it("matches ancestor and descendant path scopes", async () => {
+    const rootDir = await mkdtemp(join(tmpdir(), "coordination-channel-"));
+    const channel = new LocalCoordinationChannel({ rootDir });
+
+    await channel.send({
+      type: "announce-intent",
+      sender: "holder-a",
+      scope: {
+        granularity: "path-set",
+        selector: ["packages"],
+      },
+    });
+
+    const messages = await channel.list({
+      scope: {
+        granularity: "path-set",
+        selector: ["packages/state-ledger/src"],
+      },
+    });
+
+    expect(messages).toHaveLength(1);
+  });
+
   it("maps send/list to Supabase RPC calls", async () => {
     const calls: string[] = [];
     const client: SupabaseCoordinationRpcClient = {
