@@ -98,6 +98,8 @@ as $$
 declare
   expired_count integer;
 begin
+  perform pg_advisory_xact_lock(hashtext('coordination_acquire_lease:v1'));
+
   with expired as (
     update public.coordination_current_leases
        set state = 'expired',
@@ -249,6 +251,7 @@ declare
   lease_row public.coordination_current_leases%rowtype;
   renewed_payload jsonb;
 begin
+  perform pg_advisory_xact_lock(hashtext('coordination_acquire_lease:v1'));
   perform public.coordination_expire_leases(now_at);
   select * into lease_row from public.coordination_current_leases
     where lease_id = request->>'lease_id';
@@ -304,6 +307,8 @@ declare
   now_at timestamptz := coalesce((request->>'now')::timestamptz, now());
   lease_row public.coordination_current_leases%rowtype;
 begin
+  perform pg_advisory_xact_lock(hashtext('coordination_acquire_lease:v1'));
+
   select * into lease_row from public.coordination_current_leases
     where lease_id = request->>'lease_id';
 

@@ -235,6 +235,7 @@ describe("Supabase lease store RPC mapping", () => {
     );
 
     expect(migration).toContain("pg_advisory_xact_lock(hashtext('coordination_acquire_lease:v1'))");
+    expect(migration.split("pg_advisory_xact_lock(hashtext('coordination_acquire_lease:v1'))")).toHaveLength(5);
     expect(migration).toContain("set search_path = public, pg_temp");
     expect(migration).toContain("revoke all on function public.coordination_acquire_lease(jsonb)");
     expect(migration).toContain("grant execute on function public.coordination_acquire_lease(jsonb) to service_role");
