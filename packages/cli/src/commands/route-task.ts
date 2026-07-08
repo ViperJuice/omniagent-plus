@@ -76,6 +76,7 @@ async function arbitrateCoordinationLease(request: Extract<ParsedCliRequest, { c
   if (request.coordinationHolder === undefined) {
     throw createCliError("argument_error", "coordination-holder is required when coordination-scope is provided.");
   }
+  const scope = parseCoordinationScope(request.coordinationScope);
 
   const store =
     request.coordinationBackend === "local"
@@ -91,8 +92,39 @@ async function arbitrateCoordinationLease(request: Extract<ParsedCliRequest, { c
       status: "coordination_unavailable" as const,
       mode: request.coordinationMode,
       holder: request.coordinationHolder,
-      scope: parseCoordinationScope(request.coordinationScope),
+      scope,
     };
+  }
+
+  if (!request.record) {
+    try {
+      const snapshot = await store.query({ scope });
+      const conflict = request.coordinationMode === "hard"
+        ? snapshot.leases.find((lease) => lease.mode === "hard")
+        : undefined;
+      if (conflict !== undefined) {
+        return {
+          status: "blocked_hard_conflict" as const,
+          mode: "hard" as const,
+          conflictLeaseId: conflict.lease_id,
+          holder: request.coordinationHolder,
+          scope,
+        };
+      }
+      return {
+        status: "not_requested" as const,
+        mode: request.coordinationMode,
+        holder: request.coordinationHolder,
+        scope,
+      };
+    } catch {
+      return {
+        status: "coordination_unavailable" as const,
+        mode: request.coordinationMode,
+        holder: request.coordinationHolder,
+        scope,
+      };
+    }
   }
 
   const decision = await new LeaseArbiter({
@@ -103,7 +135,7 @@ async function arbitrateCoordinationLease(request: Extract<ParsedCliRequest, { c
     holder: request.coordinationHolder,
     ttlSeconds: request.coordinationTtlSeconds,
     mode: request.coordinationMode,
-    scope: parseCoordinationScope(request.coordinationScope),
+    scope,
     phase: "CS-2.2",
     sendYieldRequest: request.coordinationRequestYield,
   });

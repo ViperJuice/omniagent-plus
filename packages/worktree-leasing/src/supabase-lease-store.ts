@@ -121,7 +121,7 @@ export class SupabaseLeaseStore implements LeaseStore {
     const response = await rpcOrUnavailable<{ readonly expired: number }>(
       this.client,
       "coordination_expire_leases",
-      { now },
+      now === undefined ? {} : { now_at: now },
     );
     return response.expired;
   }

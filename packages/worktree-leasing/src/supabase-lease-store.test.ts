@@ -208,6 +208,25 @@ describe("Supabase lease store RPC mapping", () => {
     expect(calls[0]).toContain("coordination_acquire_lease");
   });
 
+  it("passes explicit expiry time with the Supabase RPC parameter name", async () => {
+    const calls: string[] = [];
+    const client: SupabaseLeaseRpcClient = {
+      async rpc(fn, args) {
+        calls.push(`${fn}:${JSON.stringify(args)}`);
+        return {
+          data: { expired: 0 },
+          error: null,
+        };
+      },
+    };
+    const store = new SupabaseLeaseStore(client);
+
+    await store.expire("2026-07-08T21:02:00Z");
+
+    expect(calls[0]).toContain("coordination_expire_leases");
+    expect(calls[0]).toContain('"now_at":"2026-07-08T21:02:00Z"');
+  });
+
   it("keeps Supabase hard lease arbitration serialized in the migration", () => {
     const migration = readFileSync(
       new URL("../../../supabase/migrations/20260708215513_coordination_leases.sql", import.meta.url),
@@ -215,6 +234,10 @@ describe("Supabase lease store RPC mapping", () => {
     );
 
     expect(migration).toContain("pg_advisory_xact_lock(hashtext('coordination_acquire_lease:v1'))");
-    expect(migration).toContain("now() < heartbeat_at + make_interval(secs => ttl_seconds)");
+    expect(migration).toContain("set search_path = public, pg_temp");
+    expect(migration).toContain("revoke all on function public.coordination_acquire_lease(jsonb)");
+    expect(migration).toContain("grant execute on function public.coordination_acquire_lease(jsonb) to service_role");
+    expect(migration).toContain("alter table public.coordination_current_leases enable row level security");
+    expect(migration).toContain("coalesce((request->>'now')::timestamptz, now()) < heartbeat_at");
   });
 });

@@ -93,6 +93,7 @@ create or replace function public.coordination_expire_leases(now_at timestamptz 
 returns jsonb
 language plpgsql
 security definer
+set search_path = public, pg_temp
 as $$
 declare
   expired_count integer;
@@ -139,6 +140,7 @@ create or replace function public.coordination_acquire_lease(request jsonb)
 returns jsonb
 language plpgsql
 security definer
+set search_path = public, pg_temp
 as $$
 declare
   now_at timestamptz := coalesce((request->>'now')::timestamptz, now());
@@ -240,6 +242,7 @@ create or replace function public.coordination_renew_lease(request jsonb)
 returns jsonb
 language plpgsql
 security definer
+set search_path = public, pg_temp
 as $$
 declare
   now_at timestamptz := coalesce((request->>'now')::timestamptz, now());
@@ -295,6 +298,7 @@ create or replace function public.coordination_release_lease(request jsonb)
 returns jsonb
 language plpgsql
 security definer
+set search_path = public, pg_temp
 as $$
 declare
   now_at timestamptz := coalesce((request->>'now')::timestamptz, now());
@@ -334,6 +338,7 @@ returns jsonb
 language sql
 stable
 security definer
+set search_path = public, pg_temp
 as $$
   select jsonb_build_object(
     'leases',
@@ -343,7 +348,7 @@ as $$
   where state = 'active'
     and (
       request->>'include_expired' = 'true'
-      or now() < heartbeat_at + make_interval(secs => ttl_seconds)
+      or coalesce((request->>'now')::timestamptz, now()) < heartbeat_at + make_interval(secs => ttl_seconds)
     )
     and (request->>'lease_id' is null or lease_id = request->>'lease_id')
     and (
@@ -361,6 +366,7 @@ create or replace function public.coordination_send_message(message jsonb)
 returns jsonb
 language plpgsql
 security definer
+set search_path = public, pg_temp
 as $$
 declare
   now_at timestamptz := coalesce((message->>'now')::timestamptz, now());
@@ -413,6 +419,7 @@ returns jsonb
 language sql
 stable
 security definer
+set search_path = public, pg_temp
 as $$
   select jsonb_build_object(
     'messages',
@@ -430,3 +437,31 @@ as $$
       )
     );
 $$;
+
+alter table public.coordination_lease_events enable row level security;
+alter table public.coordination_current_leases enable row level security;
+alter table public.coordination_inbox_messages enable row level security;
+
+revoke all on table public.coordination_lease_events from public, anon, authenticated;
+revoke all on table public.coordination_current_leases from public, anon, authenticated;
+revoke all on table public.coordination_inbox_messages from public, anon, authenticated;
+
+grant select, insert, update on table public.coordination_lease_events to service_role;
+grant select, insert, update on table public.coordination_current_leases to service_role;
+grant select, insert, update on table public.coordination_inbox_messages to service_role;
+
+revoke all on function public.coordination_expire_leases(timestamptz) from public, anon, authenticated;
+revoke all on function public.coordination_acquire_lease(jsonb) from public, anon, authenticated;
+revoke all on function public.coordination_renew_lease(jsonb) from public, anon, authenticated;
+revoke all on function public.coordination_release_lease(jsonb) from public, anon, authenticated;
+revoke all on function public.coordination_query_leases(jsonb) from public, anon, authenticated;
+revoke all on function public.coordination_send_message(jsonb) from public, anon, authenticated;
+revoke all on function public.coordination_list_messages(jsonb) from public, anon, authenticated;
+
+grant execute on function public.coordination_expire_leases(timestamptz) to service_role;
+grant execute on function public.coordination_acquire_lease(jsonb) to service_role;
+grant execute on function public.coordination_renew_lease(jsonb) to service_role;
+grant execute on function public.coordination_release_lease(jsonb) to service_role;
+grant execute on function public.coordination_query_leases(jsonb) to service_role;
+grant execute on function public.coordination_send_message(jsonb) to service_role;
+grant execute on function public.coordination_list_messages(jsonb) to service_role;

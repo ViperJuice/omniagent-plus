@@ -142,6 +142,54 @@ describe("coordination commands", () => {
     expect(leaseEnvelope.result.count).toBe(1);
   });
 
+  it("does not acquire coordination leases during route-task dry-run", async () => {
+    const stateRoot = await mkdtemp(join(tmpdir(), "cli-coordination-"));
+    const routed = await executeCli(
+      [
+        "route-task",
+        "--task-id",
+        "task-coordination-preview",
+        "--coordination-scope",
+        "path-set:packages/cli",
+        "--coordination-holder",
+        "holder-a",
+        "--state-root",
+        stateRoot,
+        "--json",
+      ],
+      COMMAND_REGISTRY,
+    );
+    const leases = await executeCli(
+      [
+        "coordination",
+        "leases",
+        "list",
+        "--state-root",
+        stateRoot,
+        "--json",
+      ],
+      COMMAND_REGISTRY,
+    );
+    const routeEnvelope = JSON.parse(routed.stdout) as {
+      readonly result: {
+        readonly routeDecision: {
+          readonly leaseArbitration?: {
+            readonly status: string;
+          };
+        };
+      };
+    };
+    const leaseEnvelope = JSON.parse(leases.stdout) as {
+      readonly result: {
+        readonly count: number;
+      };
+    };
+
+    expect(routed.exitCode).toBe(0);
+    expect(routeEnvelope.result.routeDecision.leaseArbitration?.status).toBe("not_requested");
+    expect(leaseEnvelope.result.count).toBe(0);
+  });
+
   it("blocks route-task before launch when a hard coordination lease conflicts", async () => {
     const stateRoot = await mkdtemp(join(tmpdir(), "cli-coordination-"));
     await executeCli(
@@ -200,5 +248,23 @@ describe("coordination commands", () => {
     expect(envelope.error.details?.result?.routeDecision?.leaseArbitration?.status).toBe(
       "blocked_hard_conflict",
     );
+
+    const messages = await executeCli(
+      [
+        "coordination",
+        "inbox",
+        "list",
+        "--state-root",
+        stateRoot,
+        "--json",
+      ],
+      COMMAND_REGISTRY,
+    );
+    const messageEnvelope = JSON.parse(messages.stdout) as {
+      readonly result: {
+        readonly count: number;
+      };
+    };
+    expect(messageEnvelope.result.count).toBe(0);
   });
 });
