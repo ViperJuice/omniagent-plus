@@ -146,7 +146,7 @@ set search_path = public, pg_temp
 as $$
 declare
   now_at timestamptz := coalesce((request->>'now')::timestamptz, now());
-  lease_id text := coalesce(request->>'leaseId', 'lease:' || gen_random_uuid()::text);
+  requested_lease_id text := coalesce(request->>'leaseId', 'lease:' || gen_random_uuid()::text);
   holder text := request->>'holder';
   ttl_seconds integer := (request->>'ttlSeconds')::integer;
   lease_mode text := request->>'mode';
@@ -158,6 +158,16 @@ declare
 begin
   perform pg_advisory_xact_lock(hashtext('coordination_acquire_lease:v1'));
   perform public.coordination_expire_leases(now_at);
+
+  select payload into conflict_payload
+    from public.coordination_current_leases
+   where coordination_current_leases.lease_id = requested_lease_id
+     and state = 'active'
+   limit 1;
+
+  if conflict_payload is not null then
+    return jsonb_build_object('granted', false, 'failure', 'conflict', 'conflict', conflict_payload);
+  end if;
 
   select payload into conflict_payload
     from public.coordination_current_leases
@@ -174,7 +184,7 @@ begin
 
   lease_payload := jsonb_build_object(
     'schema', 'consiliency.lease.v1',
-    'lease_id', lease_id,
+    'lease_id', requested_lease_id,
     'holder', holder,
     'acquired_at', to_char(now_at at time zone 'utc', 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
     'ttl_seconds', ttl_seconds,
@@ -198,7 +208,7 @@ begin
     payload,
     updated_at
   ) values (
-    lease_id,
+    requested_lease_id,
     holder,
     now_at,
     ttl_seconds,
@@ -210,7 +220,20 @@ begin
     'active',
     lease_payload,
     now_at
-  );
+  )
+  on conflict (lease_id) do update
+     set holder = excluded.holder,
+         acquired_at = excluded.acquired_at,
+         ttl_seconds = excluded.ttl_seconds,
+         heartbeat_at = excluded.heartbeat_at,
+         mode = excluded.mode,
+         scope_kind = excluded.scope_kind,
+         scope_selector = excluded.scope_selector,
+         phase = excluded.phase,
+         state = 'active',
+         payload = excluded.payload,
+         updated_at = excluded.updated_at,
+         released_at = null;
 
   insert into public.coordination_lease_events (
     event_type,
@@ -225,7 +248,7 @@ begin
     created_at
   ) values (
     'acquire',
-    lease_id,
+    requested_lease_id,
     holder,
     scope_kind,
     scope_selector,
