@@ -12,6 +12,7 @@ import type {
   RouteDecisionCooldownState,
   RuntimeEvidenceRef,
   RuntimeFailure,
+  RouteDecisionLeaseArbitration,
   SendTurnRequest,
   WorktreeLease,
 } from "@omniagent-plus/core-contracts";
@@ -115,6 +116,7 @@ export interface RoutePlannerInput {
   readonly evidenceRefs?: readonly RuntimeEvidenceRef[];
   readonly manualConfirmationProvided?: boolean;
   readonly worktreeLease?: WorktreeLease;
+  readonly leaseArbitration?: RouteDecisionLeaseArbitration;
   readonly handoffPacket?: HandoffPacket;
 }
 

@@ -11,6 +11,13 @@ export {
   CoordinationStore,
   type LeaseAcquisitionResult,
 } from "./coordination.js";
+export {
+  LocalCoordinationChannel,
+  type CoordinationChannel,
+  type CoordinationMessageInput,
+  type CoordinationMessageQuery,
+  type CoordinationMessageReceipt,
+} from "./coordination-channel.js";
 export { EvidenceStore, type EvidenceInput } from "./evidence-store.js";
 export {
   migrateStoreManifest,
@@ -41,7 +48,14 @@ export {
   payloadByteLength,
   readJsonFile,
   storeManifestSchema,
+  writeJsonAtomic,
   type StateLedgerIndexSnapshot,
   type StateLedgerPaths,
   type StoreManifest,
 } from "./schema.js";
+export {
+  createSupabaseCoordinationChannel,
+  createSupabaseCoordinationChannelFromEnv,
+  SupabaseCoordinationChannel,
+  type SupabaseCoordinationRpcClient,
+} from "./supabase-coordination-channel.js";

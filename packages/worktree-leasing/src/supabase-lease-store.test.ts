@@ -1,0 +1,125 @@
+import { mkdtemp } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
+import { describe, expect, it } from "vitest";
+
+import {
+  LocalLeaseStore,
+  leaseScopesOverlap,
+  normalizeLeaseScope,
+} from "./lease-store.js";
+import { SupabaseLeaseStore, type SupabaseLeaseRpcClient } from "./supabase-lease-store.js";
+
+const holderA = "display:100:session-a";
+const holderB = "claw:200:session-b";
+
+function request(holder: string, selector: string[], mode: "soft" | "hard" = "hard") {
+  return {
+    holder,
+    ttlSeconds: 60,
+    mode,
+    scope: {
+      granularity: "path-set" as const,
+      selector,
+    },
+    phase: "CS-2.2",
+    now: "2026-07-08T21:00:00Z",
+  };
+}
+
+describe("lease store scope overlap", () => {
+  it("detects repo, ancestor, descendant, and symbol overlap", () => {
+    expect(leaseScopesOverlap(
+      { granularity: "repo", selector: ["omniagent-plus"] },
+      { granularity: "path-set", selector: ["packages/cli"] },
+    )).toBe(true);
+    expect(leaseScopesOverlap(
+      { granularity: "path-set", selector: ["packages"] },
+      { granularity: "path-set", selector: ["packages/cli/src"] },
+    )).toBe(true);
+    expect(leaseScopesOverlap(
+      { granularity: "symbol", selector: ["LeaseStore.acquire"] },
+      { granularity: "symbol", selector: ["LeaseStore.release"] },
+    )).toBe(false);
+    expect(normalizeLeaseScope({
+      granularity: "path-set",
+      selector: ["packages/cli/", "packages/cli"],
+    }).selector).toEqual(["packages/cli"]);
+  });
+});
+
+describe("local lease store conformance", () => {
+  it("rejects overlapping hard acquires but permits non-overlap and soft intent", async () => {
+    const store = new LocalLeaseStore({
+      rootDir: await mkdtemp(join(tmpdir(), "lease-store-")),
+    });
+    const first = await store.acquire(request(holderA, ["packages"]));
+    const second = await store.acquire(request(holderB, ["packages/cli"]));
+    const third = await store.acquire(request(holderB, ["docs"]));
+    const soft = await store.acquire(request(holderB, ["packages/cli"], "soft"));
+
+    expect(first.granted).toBe(true);
+    expect(second).toMatchObject({ granted: false, failure: "conflict" });
+    expect(third.granted).toBe(true);
+    expect(soft.granted).toBe(true);
+  });
+
+  it("renews, rejects non-holder release, expires, and allows reacquire", async () => {
+    const store = new LocalLeaseStore({
+      rootDir: await mkdtemp(join(tmpdir(), "lease-store-")),
+    });
+    const acquired = await store.acquire(request(holderA, ["packages"]));
+    expect(acquired.lease).toBeDefined();
+
+    const renewed = await store.renew(acquired.lease!.lease_id, holderA, {
+      now: "2026-07-08T21:00:30Z",
+    });
+    const rejectedRelease = await store.release(acquired.lease!.lease_id, holderB, {
+      now: "2026-07-08T21:00:31Z",
+    });
+    const expired = await store.expire("2026-07-08T21:01:31Z");
+    const reacquired = await store.acquire({
+      ...request(holderB, ["packages"]),
+      now: "2026-07-08T21:01:32Z",
+    });
+
+    expect(renewed.renewed).toBe(true);
+    expect(rejectedRelease).toMatchObject({ released: false, failure: "not-holder" });
+    expect(expired).toBe(1);
+    expect(reacquired.granted).toBe(true);
+  });
+});
+
+describe("Supabase lease store RPC mapping", () => {
+  it("uses RPC acquire so hard-mode atomicity lives in the database transaction", async () => {
+    const calls: string[] = [];
+    const client: SupabaseLeaseRpcClient = {
+      async rpc(fn, args) {
+        calls.push(`${fn}:${JSON.stringify(args)}`);
+        return {
+          data: {
+            granted: true,
+            lease: {
+              schema: "consiliency.lease.v1",
+              lease_id: "lease:rpc",
+              holder: holderA,
+              acquired_at: "2026-07-08T21:00:00Z",
+              ttl_seconds: 60,
+              heartbeat_at: "2026-07-08T21:00:00Z",
+              mode: "hard",
+              scope: { granularity: "path-set", selector: ["packages"] },
+              phase: "CS-2.2",
+            },
+          },
+          error: null,
+        };
+      },
+    };
+    const store = new SupabaseLeaseStore(client);
+    const result = await store.acquire(request(holderA, ["packages"]));
+
+    expect(result.granted).toBe(true);
+    expect(calls[0]).toContain("coordination_acquire_lease");
+  });
+});

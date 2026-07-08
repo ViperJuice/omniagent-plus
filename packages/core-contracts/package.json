@@ -16,6 +16,7 @@
     "test": "pnpm --dir ../.. exec vitest --config vitest.config.ts"
   },
   "dependencies": {
+    "@consiliency/contract": "0.6.3",
     "zod": "^3.25.76"
   }
 }

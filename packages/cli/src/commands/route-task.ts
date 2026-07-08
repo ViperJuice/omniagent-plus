@@ -7,16 +7,26 @@ import type {
 import {
   buildActiveTurnSnapshot,
   buildIdentityPool,
+  LeaseArbiter,
   persistRouteDecision,
   planRoute,
 } from "@omniagent-plus/coordinator";
 import { listIdentityProfiles } from "@omniagent-plus/identity-isolation";
-import { AuditLedger } from "@omniagent-plus/state-ledger";
-import { WorktreeLeaseManager } from "@omniagent-plus/worktree-leasing";
+import {
+  AuditLedger,
+  createSupabaseCoordinationChannelFromEnv,
+  LocalCoordinationChannel,
+} from "@omniagent-plus/state-ledger";
+import {
+  createSupabaseLeaseStoreFromEnv,
+  LocalLeaseStore,
+  WorktreeLeaseManager,
+} from "@omniagent-plus/worktree-leasing";
 
 import { createCliError } from "../errors.js";
 import type { ParsedCliRequest } from "../args.js";
 import { routeTaskResultSchema } from "../types.js";
+import { parseCoordinationScope } from "./coordination.js";
 
 function latestBySequence<T>(
   entries: readonly T[],
@@ -57,6 +67,47 @@ async function readWorktreeLease(
     });
   }
   return stored.lease;
+}
+
+async function arbitrateCoordinationLease(request: Extract<ParsedCliRequest, { command: "route-task" }>) {
+  if (request.coordinationScope === undefined) {
+    return undefined;
+  }
+  if (request.coordinationHolder === undefined) {
+    throw createCliError("argument_error", "coordination-holder is required when coordination-scope is provided.");
+  }
+
+  const store =
+    request.coordinationBackend === "local"
+      ? new LocalLeaseStore({ rootDir: request.stateRoot })
+      : createSupabaseLeaseStoreFromEnv();
+  const channel =
+    request.coordinationBackend === "local"
+      ? new LocalCoordinationChannel({ rootDir: request.stateRoot })
+      : createSupabaseCoordinationChannelFromEnv();
+
+  if (store === undefined) {
+    return {
+      status: "coordination_unavailable" as const,
+      mode: request.coordinationMode,
+      holder: request.coordinationHolder,
+      scope: parseCoordinationScope(request.coordinationScope),
+    };
+  }
+
+  const decision = await new LeaseArbiter({
+    store,
+    channel,
+  }).arbitrate({
+    taskId: request.taskId,
+    holder: request.coordinationHolder,
+    ttlSeconds: request.coordinationTtlSeconds,
+    mode: request.coordinationMode,
+    scope: parseCoordinationScope(request.coordinationScope),
+    phase: "CS-2.2",
+    sendYieldRequest: request.coordinationRequestYield,
+  });
+  return decision.routeDecision;
 }
 
 export async function runRouteTaskCommand(
@@ -118,6 +169,7 @@ export async function runRouteTaskCommand(
     request.stateRoot,
     request.worktreeLeaseId,
   );
+  const leaseArbitration = await arbitrateCoordinationLease(request);
   const identityPool = buildIdentityPool({
     profiles: profiles.map((entry) => entry.profile),
     statuses: latestStatuses,
@@ -142,6 +194,7 @@ export async function runRouteTaskCommand(
     },
     manualConfirmationProvided: request.manualConfirmationProvided,
     worktreeLease,
+    leaseArbitration,
   });
   let routeDecision = planned.decision;
   let persistedRecord:

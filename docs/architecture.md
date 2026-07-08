@@ -76,6 +76,9 @@ still own the reusable metadata-only operator primitives:
   allows it
 - durable route persistence that is persisted before launch and fails closed if
   append-before-launch cannot complete
+- CS-2.2 lease arbitration that can acquire a published Consiliency soft/hard
+  lease before launch and fail closed on hard conflicts or unavailable hard
+  backends
 - retry storm guardrails, failure policy, and replay-safe route explanations
   that stay `metadata_only`
 
@@ -98,6 +101,8 @@ still own the reusable metadata-only operator primitives:
 - typed exit code categories for argument errors, missing records, validation
   failures, policy blocks, cleanup blocks, route blocks, and unexpected
   internal failures
+- coordination lease and inbox commands for local or Supabase-backed
+  control-plane state, with metadata-only output and no secret values
 - dry-run-by-default `classify-limit` and `route-task` behavior that records
   durable metadata only when `--record` is passed
 

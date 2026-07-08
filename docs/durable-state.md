@@ -19,6 +19,8 @@ state-root/
   coordination/
     provider-cooldowns.json
     worktree-leases.json
+    consiliency-leases.json
+    coordination-inbox.json
   locks/
     store.lock
 ```
@@ -70,6 +72,11 @@ Shared provider-family cooldowns and exclusive worktree leases use the ledger
 plus coordination sidecars so two independent Node processes observe the same
 state. Exclusive write leases reject a second claimant while the active lease
 remains unexpired.
+
+CS-2.2 adds a second coordination sidecar for the published Consiliency
+`consiliency.lease.v1` shape and an append-only local inbox for negotiation
+messages. The inbox is not part of lease projection and cannot mutate lease
+state.
 
 ## Release Surface
 

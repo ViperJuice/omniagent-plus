@@ -10,6 +10,10 @@
   and `expiresAt`.
 - The package builds on the durable `@omniagent-plus/state-ledger` record
   surface so worktree lease history stays metadata_only and cross-process.
+- CS-2.2 also exports a Consiliency `LeaseStore` adapter for soft/hard
+  off-device coordination leases. The local file backend supports deterministic
+  tests and operator dry runs; the Supabase backend delegates hard-mode atomic
+  acquire to database RPCs.
 
 ## Placement And Branch Rules
 
@@ -41,6 +45,7 @@
 
 ## Release Surfaces
 
-This phase updates `docs/worktree-leasing.md` only for the package contract.
-README, CHANGELOG, and release-note surfaces stay `no_doc_delta` because
-WORKTREE is a non-dispatch phase.
+This phase updates `docs/worktree-leasing.md` and
+`docs/coordination-backend.md` for the CS-2.2 coordination contract. CHANGELOG
+and release-note surfaces stay unchanged because CS-2.2 is a non-dispatch
+implementation PR.

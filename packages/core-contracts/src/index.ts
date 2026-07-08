@@ -25,6 +25,29 @@ export {
 } from "./errors.js";
 export { FakeEventStream, normalizeMalformedFrames, normalizeOmnigentFixture } from "./fake-event-stream.js";
 export { FakeAgentRuntimeProvider } from "./fake-provider.js";
+export {
+  consiliencyLeaseScopeSchema,
+  consiliencyLeaseSchema,
+  coordinationContractSchemaPaths,
+  coordinationContractVectorPaths,
+  coordinationContractVersion,
+  coordinationMessageSchema,
+  coordinationMessageTypes,
+  expiresAtForLease,
+  isLeaseExpired,
+  loadCoordinationContractArtifact,
+  loadCoordinationContractSchemas,
+  loadCoordinationContractVectors,
+  toContractTimestamp,
+} from "./coordination-contract.js";
+export type {
+  ConsiliencyLease,
+  ConsiliencyLeaseScope,
+  CoordinationContractSchemaPath,
+  CoordinationContractVectorPath,
+  CoordinationMessage,
+  CoordinationMessageType,
+} from "./coordination-contract.js";
 export type {
   CommandEvidence,
   CommandEvidenceInput,
@@ -141,12 +164,14 @@ export {
 export type {
   RouteDecision,
   RouteDecisionCooldownState,
+  RouteDecisionLeaseArbitration,
   RouteDecisionLaunchGate,
   RouteDecisionLaunchGateAction,
   RouteDecisionPreferredTarget,
 } from "./route-decision.js";
 export {
   routeDecisionCooldownStateSchema,
+  routeDecisionLeaseArbitrationSchema,
   routeDecisionLaunchGateActions,
   routeDecisionLaunchGateSchema,
   routeDecisionPreferredTargetSchema,

@@ -2,6 +2,7 @@ export { buildActiveTurnSnapshot, createEmptyActiveTurnSnapshot, incrementActive
 export { evaluateAdaptiveConcurrency } from "./adaptive-concurrency.js";
 export { deriveProviderFamilyCooldown, evaluateCooldownState } from "./cooldowns.js";
 export { evaluateFailurePolicy } from "./failure-policy.js";
+export { LeaseArbiter } from "./lease-arbiter.js";
 export { buildIdentityPool } from "./identity-pool.js";
 export { coordinatorInterfaceFreezeGate } from "./types.js";
 export { createSessionWithRouteDecision, sendTurnWithRouteDecision } from "./launch-gate.js";
@@ -35,3 +36,7 @@ export type {
   RouteStoreReader,
   RouteStoreWriter,
 } from "./types.js";
+export type {
+  LeaseArbitrationDecision as LeaseArbiterDecision,
+  LeaseArbitrationRequest as LeaseArbiterRequest,
+} from "./lease-arbiter.js";

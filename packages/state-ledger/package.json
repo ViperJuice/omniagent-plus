@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@omniagent-plus/core-contracts": "workspace:*",
+    "@supabase/supabase-js": "^2.52.1",
     "zod": "^3.25.76"
   }
 }

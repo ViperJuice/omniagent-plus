@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@omniagent-plus/core-contracts": "workspace:*",
-    "@omniagent-plus/state-ledger": "workspace:*"
+    "@omniagent-plus/state-ledger": "workspace:*",
+    "@supabase/supabase-js": "^2.52.1"
   }
 }
