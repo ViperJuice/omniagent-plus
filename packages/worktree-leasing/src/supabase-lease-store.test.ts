@@ -130,6 +130,26 @@ describe("local lease store conformance", () => {
     expect(soft.granted).toBe(true);
   });
 
+  it("rejects active lease id reuse across non-overlapping scopes", async () => {
+    const store = new LocalLeaseStore({
+      rootDir: await mkdtemp(join(tmpdir(), "lease-store-")),
+    });
+    const first = await store.acquire({
+      ...request(holderA, ["packages"]),
+      leaseId: "lease:fixed",
+    });
+    const second = await store.acquire({
+      ...request(holderB, ["docs"]),
+      leaseId: "lease:fixed",
+    });
+    const snapshot = await store.query({ now: "2026-07-08T21:00:30Z" });
+
+    expect(first.granted).toBe(true);
+    expect(second).toMatchObject({ granted: false, failure: "conflict" });
+    expect(snapshot.leases).toHaveLength(1);
+    expect(snapshot.leases[0]?.holder).toBe(holderA);
+  });
+
   it("renews, rejects non-holder release, expires, and allows reacquire", async () => {
     const store = new LocalLeaseStore({
       rootDir: await mkdtemp(join(tmpdir(), "lease-store-")),

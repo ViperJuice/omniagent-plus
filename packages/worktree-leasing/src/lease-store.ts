@@ -178,6 +178,15 @@ export class LocalLeaseStore implements LeaseStore {
       const state = await this.readState(now);
       this.expireState(state, now);
       const lease = createLeaseFromAcquireRequest({ ...request, now });
+      const existingLeaseId = state.leases[lease.lease_id];
+      if (existingLeaseId !== undefined) {
+        await this.writeState(state, now);
+        return {
+          granted: false,
+          conflict: existingLeaseId,
+          failure: "conflict",
+        };
+      }
       const conflict = Object.values(state.leases).find(
         (existing) =>
           existing.mode === "hard"
