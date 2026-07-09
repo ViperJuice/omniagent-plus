@@ -16,6 +16,14 @@ The upstream `main` branch remains ahead of the freeze
 `2026-07-05`), so `main` is not authoritative for this contract. Current main
 movement is tracked separately in `docs/omnigent-upstream-readiness.md`.
 
+CS-2.2 rechecked upstream on `2026-07-08`: release `v0.4.0` remains the
+supported target, upstream `main` was at
+`f1226aaa51068ace55f7d31a4b379b138ae7e221`, and `main` added
+`/v1/hosts/{host_id}/worktrees` plus
+`/v1/sessions/{session_id}/resources/files:copy`. Neither release nor `main`
+exposes lease, lock, coordination, or inbox APIs, so the CS-2.2 lease layer is
+owned by `omniagent-plus`.
+
 ## Source Provenance
 
 This phase used metadata-only source inspection and safe command probes. No

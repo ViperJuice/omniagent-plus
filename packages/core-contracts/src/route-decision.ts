@@ -36,6 +36,24 @@ export interface RouteDecisionLaunchGate {
   readonly manualConfirmationProvided: boolean;
 }
 
+export interface RouteDecisionLeaseArbitration {
+  readonly status:
+    | "not_requested"
+    | "acquired"
+    | "soft_conflict"
+    | "blocked_hard_conflict"
+    | "expired_reclaimed"
+    | "coordination_unavailable";
+  readonly mode: "soft" | "hard";
+  readonly leaseId?: string;
+  readonly conflictLeaseId?: string;
+  readonly holder?: string;
+  readonly scope: {
+    readonly granularity: "repo" | "path-set" | "symbol";
+    readonly selector: readonly string[];
+  };
+}
+
 export interface RouteDecision {
   readonly schema: "route_decision.v0.1";
   readonly taskId: string;
@@ -55,6 +73,7 @@ export interface RouteDecision {
   readonly activeTurnTarget?: number;
   readonly cooldownState?: RouteDecisionCooldownState;
   readonly launchGate?: RouteDecisionLaunchGate;
+  readonly leaseArbitration?: RouteDecisionLeaseArbitration;
   readonly routeReason:
     | "explicit_override"
     | "capability_fit"
@@ -93,6 +112,25 @@ export const routeDecisionLaunchGateSchema = z.object({
   manualConfirmationProvided: z.boolean(),
 });
 
+export const routeDecisionLeaseArbitrationSchema = z.object({
+  status: z.enum([
+    "not_requested",
+    "acquired",
+    "soft_conflict",
+    "blocked_hard_conflict",
+    "expired_reclaimed",
+    "coordination_unavailable",
+  ]),
+  mode: z.enum(["soft", "hard"]),
+  leaseId: z.string().min(1).optional(),
+  conflictLeaseId: z.string().min(1).optional(),
+  holder: z.string().min(1).optional(),
+  scope: z.object({
+    granularity: z.enum(["repo", "path-set", "symbol"]),
+    selector: z.array(z.string().min(1)),
+  }),
+});
+
 export const routeDecisionSchema = z.object({
   schema: z.literal("route_decision.v0.1"),
   taskId: z.string().min(1),
@@ -112,6 +150,7 @@ export const routeDecisionSchema = z.object({
   activeTurnTarget: z.number().int().nonnegative().optional(),
   cooldownState: routeDecisionCooldownStateSchema.optional(),
   launchGate: routeDecisionLaunchGateSchema.optional(),
+  leaseArbitration: routeDecisionLeaseArbitrationSchema.optional(),
   routeReason: z.enum([
     "explicit_override",
     "capability_fit",

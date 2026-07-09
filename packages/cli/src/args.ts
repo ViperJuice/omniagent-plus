@@ -7,6 +7,8 @@ import { sanitizeWorkspacePath } from "@omniagent-plus/core-contracts";
 import { createCliError } from "./errors.js";
 import type { CliCommandKey } from "./types.js";
 
+export type CoordinationBackend = "local" | "supabase";
+
 type ParseConfigOptions = NonNullable<Parameters<typeof parseArgs>[0]>["options"];
 
 export interface ParsedCliBase {
@@ -59,6 +61,56 @@ export interface ParsedWorktreesCleanupRequest extends ParsedCliBase {
   readonly allowReadOnlyCleanup: boolean;
 }
 
+export interface ParsedCoordinationLeasesListRequest extends ParsedCliBase {
+  readonly command: "coordination leases list";
+  readonly backend: CoordinationBackend;
+  readonly scope?: string;
+}
+
+export interface ParsedCoordinationLeasesAcquireRequest extends ParsedCliBase {
+  readonly command: "coordination leases acquire";
+  readonly backend: CoordinationBackend;
+  readonly holder: string;
+  readonly scope: string;
+  readonly mode: "soft" | "hard";
+  readonly ttlSeconds: number;
+  readonly phase: string;
+  readonly leaseId?: string;
+}
+
+export interface ParsedCoordinationLeasesRenewRequest extends ParsedCliBase {
+  readonly command: "coordination leases renew";
+  readonly backend: CoordinationBackend;
+  readonly leaseId: string;
+  readonly holder: string;
+  readonly ttlSeconds?: number;
+}
+
+export interface ParsedCoordinationLeasesReleaseRequest extends ParsedCliBase {
+  readonly command: "coordination leases release";
+  readonly backend: CoordinationBackend;
+  readonly leaseId: string;
+  readonly holder: string;
+}
+
+export interface ParsedCoordinationInboxSendRequest extends ParsedCliBase {
+  readonly command: "coordination inbox send";
+  readonly backend: CoordinationBackend;
+  readonly type: "request-yield" | "announce-intent" | "handoff" | "done";
+  readonly sender: string;
+  readonly scope: string;
+  readonly targetHolder?: string;
+  readonly leaseId?: string;
+  readonly handoffPacketId?: string;
+}
+
+export interface ParsedCoordinationInboxListRequest extends ParsedCliBase {
+  readonly command: "coordination inbox list";
+  readonly backend: CoordinationBackend;
+  readonly scope?: string;
+  readonly type?: "request-yield" | "announce-intent" | "handoff" | "done";
+}
+
 export interface ParsedClassifyLimitRequest extends ParsedCliBase {
   readonly command: "classify-limit";
   readonly provider?: string;
@@ -89,6 +141,12 @@ export interface ParsedRouteTaskRequest extends ParsedCliBase {
   readonly rawHistoryAttached: boolean;
   readonly localFilesystemDependency: boolean;
   readonly allowCrossProviderMigration?: boolean;
+  readonly coordinationBackend: CoordinationBackend;
+  readonly coordinationScope?: string;
+  readonly coordinationHolder?: string;
+  readonly coordinationMode: "soft" | "hard";
+  readonly coordinationTtlSeconds: number;
+  readonly coordinationRequestYield: boolean;
   readonly record: boolean;
 }
 
@@ -101,6 +159,12 @@ export type ParsedCliRequest =
   | ParsedIdentitiesPreflightRequest
   | ParsedWorktreesListRequest
   | ParsedWorktreesCleanupRequest
+  | ParsedCoordinationLeasesListRequest
+  | ParsedCoordinationLeasesAcquireRequest
+  | ParsedCoordinationLeasesRenewRequest
+  | ParsedCoordinationLeasesReleaseRequest
+  | ParsedCoordinationInboxSendRequest
+  | ParsedCoordinationInboxListRequest
   | ParsedClassifyLimitRequest
   | ParsedRouteTaskRequest;
 
@@ -140,6 +204,38 @@ function parseInteger(
     throw createCliError("argument_error", `${label} must be an integer >= ${minimum}.`);
   }
   return parsed;
+}
+
+function parseCoordinationBackend(value: string | undefined): CoordinationBackend {
+  const resolved = value ?? process.env.OMNIAGENT_COORDINATION_BACKEND;
+  if (resolved === undefined || resolved === "local") {
+    return "local";
+  }
+  if (resolved === "supabase") {
+    return "supabase";
+  }
+  throw createCliError("argument_error", "backend must be local or supabase.");
+}
+
+function parseCoordinationMode(value: string | undefined): "soft" | "hard" {
+  if (value === "soft" || value === "hard") {
+    return value;
+  }
+  throw createCliError("argument_error", "mode must be soft or hard.");
+}
+
+function parseCoordinationMessageType(
+  value: string | undefined,
+): "request-yield" | "announce-intent" | "handoff" | "done" {
+  if (
+    value === "request-yield"
+    || value === "announce-intent"
+    || value === "handoff"
+    || value === "done"
+  ) {
+    return value;
+  }
+  throw createCliError("argument_error", "type must be request-yield, announce-intent, handoff, or done.");
 }
 
 function pickRequiredIdentifier(
@@ -456,6 +552,143 @@ export function parseCliArgs(
     };
   }
 
+  if (first === "coordination" && second === "leases") {
+    const [action, ...actionRest] = rest;
+    if (action === "list") {
+      const base = buildBase("coordination leases list", cwd, globals);
+      const parsed = parseCommandArgs(actionRest, {
+        backend: { type: "string" },
+        scope: { type: "string" },
+      });
+      assertNoPositionals(parsed.positionals, "coordination leases list");
+      return {
+        ...base,
+        backend: parseCoordinationBackend(parsed.values.backend as string | undefined),
+        scope: parsed.values.scope as string | undefined,
+      };
+    }
+    if (action === "acquire") {
+      const base = buildBase("coordination leases acquire", cwd, globals);
+      const parsed = parseCommandArgs(actionRest, {
+        backend: { type: "string" },
+        holder: { type: "string" },
+        scope: { type: "string" },
+        mode: { type: "string" },
+        "ttl-seconds": { type: "string" },
+        phase: { type: "string" },
+        "lease-id": { type: "string" },
+      });
+      assertNoPositionals(parsed.positionals, "coordination leases acquire");
+      if (!parsed.values.holder || !parsed.values.scope || !parsed.values["ttl-seconds"]) {
+        throw createCliError("argument_error", "holder, scope, and ttl-seconds are required.");
+      }
+      return {
+        ...base,
+        backend: parseCoordinationBackend(parsed.values.backend as string | undefined),
+        holder: parsed.values.holder as string,
+        scope: parsed.values.scope as string,
+        mode: parseCoordinationMode(parsed.values.mode as string | undefined),
+        ttlSeconds: parseInteger(
+          parsed.values["ttl-seconds"] as string | undefined,
+          "ttl-seconds",
+          { minimum: 1 },
+        )!,
+        phase: (parsed.values.phase as string | undefined) ?? "CS-2.2",
+        leaseId: parsed.values["lease-id"] as string | undefined,
+      };
+    }
+    if (action === "renew") {
+      const base = buildBase("coordination leases renew", cwd, globals);
+      const parsed = parseCommandArgs(actionRest, {
+        backend: { type: "string" },
+        "lease-id": { type: "string" },
+        holder: { type: "string" },
+        "ttl-seconds": { type: "string" },
+      });
+      assertNoPositionals(parsed.positionals, "coordination leases renew");
+      if (!parsed.values["lease-id"] || !parsed.values.holder) {
+        throw createCliError("argument_error", "lease-id and holder are required.");
+      }
+      return {
+        ...base,
+        backend: parseCoordinationBackend(parsed.values.backend as string | undefined),
+        leaseId: parsed.values["lease-id"] as string,
+        holder: parsed.values.holder as string,
+        ttlSeconds: parseInteger(
+          parsed.values["ttl-seconds"] as string | undefined,
+          "ttl-seconds",
+          { minimum: 1 },
+        ),
+      };
+    }
+    if (action === "release") {
+      const base = buildBase("coordination leases release", cwd, globals);
+      const parsed = parseCommandArgs(actionRest, {
+        backend: { type: "string" },
+        "lease-id": { type: "string" },
+        holder: { type: "string" },
+      });
+      assertNoPositionals(parsed.positionals, "coordination leases release");
+      if (!parsed.values["lease-id"] || !parsed.values.holder) {
+        throw createCliError("argument_error", "lease-id and holder are required.");
+      }
+      return {
+        ...base,
+        backend: parseCoordinationBackend(parsed.values.backend as string | undefined),
+        leaseId: parsed.values["lease-id"] as string,
+        holder: parsed.values.holder as string,
+      };
+    }
+  }
+
+  if (first === "coordination" && second === "inbox") {
+    const [action, ...actionRest] = rest;
+    if (action === "send") {
+      const base = buildBase("coordination inbox send", cwd, globals);
+      const parsed = parseCommandArgs(actionRest, {
+        backend: { type: "string" },
+        type: { type: "string" },
+        sender: { type: "string" },
+        scope: { type: "string" },
+        "target-holder": { type: "string" },
+        "lease-id": { type: "string" },
+        "handoff-packet-id": { type: "string" },
+      });
+      assertNoPositionals(parsed.positionals, "coordination inbox send");
+      if (!parsed.values.type || !parsed.values.sender || !parsed.values.scope) {
+        throw createCliError("argument_error", "type, sender, and scope are required.");
+      }
+      return {
+        ...base,
+        backend: parseCoordinationBackend(parsed.values.backend as string | undefined),
+        type: parseCoordinationMessageType(parsed.values.type as string | undefined),
+        sender: parsed.values.sender as string,
+        scope: parsed.values.scope as string,
+        targetHolder: parsed.values["target-holder"] as string | undefined,
+        leaseId: parsed.values["lease-id"] as string | undefined,
+        handoffPacketId: parsed.values["handoff-packet-id"] as string | undefined,
+      };
+    }
+    if (action === "list") {
+      const base = buildBase("coordination inbox list", cwd, globals);
+      const parsed = parseCommandArgs(actionRest, {
+        backend: { type: "string" },
+        type: { type: "string" },
+        scope: { type: "string" },
+      });
+      assertNoPositionals(parsed.positionals, "coordination inbox list");
+      return {
+        ...base,
+        backend: parseCoordinationBackend(parsed.values.backend as string | undefined),
+        type:
+          parsed.values.type === undefined
+            ? undefined
+            : parseCoordinationMessageType(parsed.values.type as string | undefined),
+        scope: parsed.values.scope as string | undefined,
+      };
+    }
+  }
+
   if (first === "classify-limit") {
     const base = buildBase("classify-limit", cwd, globals);
     const parsed = parseCommandArgs([second, ...rest].filter(Boolean) as string[], {
@@ -518,6 +751,12 @@ export function parseCliArgs(
       "raw-history-attached": { type: "boolean" },
       "local-filesystem-dependency": { type: "boolean" },
       "allow-cross-provider-migration": { type: "boolean" },
+      "coordination-backend": { type: "string" },
+      "coordination-scope": { type: "string" },
+      "coordination-holder": { type: "string" },
+      "coordination-mode": { type: "string" },
+      "coordination-ttl-seconds": { type: "string" },
+      "coordination-request-yield": { type: "boolean" },
       record: { type: "boolean" },
     });
     assertNoPositionals(parsed.positionals, "route-task");
@@ -551,6 +790,25 @@ export function parseCliArgs(
         parsed.values["allow-cross-provider-migration"] === true
           ? true
           : undefined,
+      coordinationBackend: parseCoordinationBackend(
+        parsed.values["coordination-backend"] as string | undefined,
+      ),
+      coordinationScope:
+        parsed.values["coordination-scope"] as string | undefined,
+      coordinationHolder:
+        parsed.values["coordination-holder"] as string | undefined,
+      coordinationMode:
+        parsed.values["coordination-mode"] === undefined
+          ? "hard"
+          : parseCoordinationMode(parsed.values["coordination-mode"] as string | undefined),
+      coordinationTtlSeconds:
+        parseInteger(
+          parsed.values["coordination-ttl-seconds"] as string | undefined,
+          "coordination-ttl-seconds",
+          { minimum: 1 },
+        ) ?? 300,
+      coordinationRequestYield:
+        parsed.values["coordination-request-yield"] === true,
       record: parsed.values.record === true,
     };
   }

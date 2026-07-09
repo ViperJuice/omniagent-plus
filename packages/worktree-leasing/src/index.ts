@@ -9,8 +9,21 @@ export {
   removeGitWorktree,
 } from "./git.js";
 export { renewLeaseHeartbeat } from "./heartbeat.js";
+export {
+  assertLeaseStoreGranted,
+  createLeaseFromAcquireRequest,
+  leaseScopesOverlap,
+  LocalLeaseStore,
+  normalizeLeaseScope,
+} from "./lease-store.js";
 export { WorktreeLeaseManager } from "./lease-manager.js";
 export { FilesystemLockBackend } from "./locks.js";
+export {
+  createSupabaseLeaseStore,
+  createSupabaseLeaseStoreFromEnv,
+  queryScopeForRepo,
+  SupabaseLeaseStore,
+} from "./supabase-lease-store.js";
 export {
   branchNameToSlug,
   resolveMountedWorkspacePlacement,
@@ -28,6 +41,16 @@ export {
   WorktreeLeasingError,
   worktreeInterfaceFreezeGate,
 } from "./types.js";
+export type {
+  LeaseAcquireRequest,
+  LeaseAcquireResult,
+  LeaseQuery,
+  LeaseReleaseResult,
+  LeaseRenewResult,
+  LeaseSnapshot,
+  LeaseStore,
+} from "./lease-store.js";
+export type { SupabaseLeaseRpcClient } from "./supabase-lease-store.js";
 export type {
   AcquireWorktreeLeaseOptions,
   BranchCollisionDecision,

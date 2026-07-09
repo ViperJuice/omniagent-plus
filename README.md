@@ -18,6 +18,12 @@ blocks, and unexpected internal failures.
 The current release remains alpha and local-operator focused. It is not production,
 not public beta, and not multi-user SaaS.
 
+CS-2.2 adds an opt-in off-device coordination backend for fleet leases. The
+lease/channel contract is pinned to `@consiliency/contract@0.6.3`, the local
+backend remains available under `--state-root`, and the Supabase backend is
+enabled only when redacted coordinator credentials are provided. See
+`docs/coordination-backend.md`.
+
 ## Workspace Surface
 
 - `packages/core-contracts` exports the runtime-neutral contracts, schemas,
@@ -32,13 +38,15 @@ not public beta, and not multi-user SaaS.
   metadata-only identity preflight and worktree cleanup primitives consumed by
   the operator CLI.
 - `packages/coordinator` owns the route planner, portability scoring, retry
-  guardrails, and durable route-decision persistence used by `route-task`.
+  guardrails, lease arbitration, and durable route-decision persistence used by
+  `route-task`.
 - `packages/cli` registers `health`, `sessions list`, `sessions show`,
   `control snapshot`, `route-task`, `classify-limit`, `identities list`,
-  `identities preflight`, `worktrees list`, and `worktrees cleanup` under one
-  local entrypoint. `control snapshot` replays durable state without writing
-  records, while `classify-limit` and `route-task` default to dry-run and only
-  persist metadata-only records when `--record` is passed.
+  `identities preflight`, `worktrees list`, `worktrees cleanup`, and
+  `coordination leases/inbox` commands under one local entrypoint. `control
+  snapshot` replays durable state without writing records, while
+  `classify-limit` and `route-task` default to dry-run and only persist
+  metadata-only records when `--record` is passed.
 - `fixtures/cli/` carries metadata_only JSON fixtures for the operator CLI
   suites, `fixtures/ui/` carries the frozen read-model fixtures, and
   `fixtures/identity/`, `fixtures/state-ledger/`, and `fixtures/worktree/`

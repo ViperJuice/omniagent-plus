@@ -1,6 +1,7 @@
 import { runHealthCommand } from "./commands/health.js";
 import { runSessionsCommand } from "./commands/sessions.js";
 import { runControlCommand } from "./commands/control.js";
+import { runCoordinationCommand } from "./commands/coordination.js";
 import { runIdentitiesCommand } from "./commands/identities.js";
 import { runWorktreesCommand } from "./commands/worktrees.js";
 import { runClassifyLimitCommand } from "./commands/classify-limit.js";
@@ -47,6 +48,36 @@ export const COMMAND_REGISTRY: readonly CliCommandRegistration[] = [
     key: "worktrees cleanup",
     description: "Clean up a single lease only when cleanup blocks do not apply.",
     handle: runWorktreesCommand,
+  },
+  {
+    key: "coordination leases list",
+    description: "List active off-device coordination leases.",
+    handle: runCoordinationCommand,
+  },
+  {
+    key: "coordination leases acquire",
+    description: "Acquire a soft or hard coordination lease.",
+    handle: runCoordinationCommand,
+  },
+  {
+    key: "coordination leases renew",
+    description: "Renew a coordination lease heartbeat.",
+    handle: runCoordinationCommand,
+  },
+  {
+    key: "coordination leases release",
+    description: "Release a coordination lease.",
+    handle: runCoordinationCommand,
+  },
+  {
+    key: "coordination inbox send",
+    description: "Append a non-authoritative coordination inbox message.",
+    handle: runCoordinationCommand,
+  },
+  {
+    key: "coordination inbox list",
+    description: "List non-authoritative coordination inbox messages.",
+    handle: runCoordinationCommand,
   },
   {
     key: "classify-limit",

@@ -11,6 +11,12 @@
     "identities preflight",
     "worktrees list",
     "worktrees cleanup",
+    "coordination leases list",
+    "coordination leases acquire",
+    "coordination leases renew",
+    "coordination leases release",
+    "coordination inbox send",
+    "coordination inbox list",
     "classify-limit",
     "route-task"
   ]

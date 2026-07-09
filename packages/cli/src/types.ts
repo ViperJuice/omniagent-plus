@@ -1,4 +1,6 @@
 import {
+  consiliencyLeaseSchema,
+  coordinationMessageSchema,
   identityProfileStatusSchema,
   limitClassificationSchema,
   redactedConfigValueSchema,
@@ -16,6 +18,12 @@ export const cliCommandKeys = [
   "identities preflight",
   "worktrees list",
   "worktrees cleanup",
+  "coordination leases list",
+  "coordination leases acquire",
+  "coordination leases renew",
+  "coordination leases release",
+  "coordination inbox send",
+  "coordination inbox list",
   "classify-limit",
   "route-task",
 ] as const;
@@ -217,6 +225,57 @@ export const worktreesCleanupResultSchema = z.object({
   metadataOnlyEvidence: cleanupEvidenceSchema,
 });
 
+export const coordinationBackendSchema = z.enum(["local", "supabase"]);
+
+const coordinationLeaseSummarySchema = consiliencyLeaseSchema.extend({
+  expires_at: z.string().datetime({ offset: true }),
+});
+
+export const coordinationLeasesListResultSchema = z.object({
+  schema: z.literal("cli.coordination.leases.list.result.v0.1"),
+  backend: coordinationBackendSchema,
+  count: z.number().int().nonnegative(),
+  leases: z.array(coordinationLeaseSummarySchema),
+});
+
+export const coordinationLeasesAcquireResultSchema = z.object({
+  schema: z.literal("cli.coordination.leases.acquire.result.v0.1"),
+  backend: coordinationBackendSchema,
+  granted: z.boolean(),
+  lease: coordinationLeaseSummarySchema.optional(),
+  conflict: coordinationLeaseSummarySchema.optional(),
+  failure: z.string().min(1).optional(),
+});
+
+export const coordinationLeasesRenewResultSchema = z.object({
+  schema: z.literal("cli.coordination.leases.renew.result.v0.1"),
+  backend: coordinationBackendSchema,
+  renewed: z.boolean(),
+  lease: coordinationLeaseSummarySchema.optional(),
+  failure: z.string().min(1).optional(),
+});
+
+export const coordinationLeasesReleaseResultSchema = z.object({
+  schema: z.literal("cli.coordination.leases.release.result.v0.1"),
+  backend: coordinationBackendSchema,
+  released: z.boolean(),
+  failure: z.string().min(1).optional(),
+});
+
+export const coordinationInboxSendResultSchema = z.object({
+  schema: z.literal("cli.coordination.inbox.send.result.v0.1"),
+  backend: coordinationBackendSchema,
+  messageId: z.string().min(1),
+  createdAt: z.string().datetime({ offset: true }),
+});
+
+export const coordinationInboxListResultSchema = z.object({
+  schema: z.literal("cli.coordination.inbox.list.result.v0.1"),
+  backend: coordinationBackendSchema,
+  count: z.number().int().nonnegative(),
+  messages: z.array(coordinationMessageSchema),
+});
+
 const recordModeSchema = z.enum(["dry_run", "recorded"]);
 
 export const classifyLimitResultSchema = z.object({
@@ -260,6 +319,12 @@ export const commandResultSchema = z.discriminatedUnion("schema", [
   identitiesPreflightResultSchema,
   worktreesListResultSchema,
   worktreesCleanupResultSchema,
+  coordinationLeasesListResultSchema,
+  coordinationLeasesAcquireResultSchema,
+  coordinationLeasesRenewResultSchema,
+  coordinationLeasesReleaseResultSchema,
+  coordinationInboxSendResultSchema,
+  coordinationInboxListResultSchema,
   classifyLimitResultSchema,
   routeTaskResultSchema,
 ]);

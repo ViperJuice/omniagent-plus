@@ -1,0 +1,114 @@
+import type {
+  CoordinationMessageInput,
+  CoordinationChannel,
+} from "@omniagent-plus/state-ledger";
+import type {
+  LeaseAcquireRequest,
+  LeaseStore,
+} from "@omniagent-plus/worktree-leasing";
+import type { RouteDecisionLeaseArbitration } from "@omniagent-plus/core-contracts";
+
+export interface LeaseArbitrationRequest extends LeaseAcquireRequest {
+  readonly taskId: string;
+  readonly sendYieldRequest?: boolean;
+}
+
+export interface LeaseArbitrationDecision {
+  readonly routeDecision: RouteDecisionLeaseArbitration;
+  readonly acquired: boolean;
+  readonly launchAllowed: boolean;
+  readonly inboxMessage?: CoordinationMessageInput;
+}
+
+export class LeaseArbiter {
+  private readonly store: LeaseStore;
+
+  private readonly channel?: CoordinationChannel;
+
+  constructor(options: {
+    readonly store: LeaseStore;
+    readonly channel?: CoordinationChannel;
+  }) {
+    this.store = options.store;
+    this.channel = options.channel;
+  }
+
+  async arbitrate(
+    request: LeaseArbitrationRequest,
+  ): Promise<LeaseArbitrationDecision> {
+    const result = await this.store.acquire(request);
+
+    if (result.granted && result.lease !== undefined) {
+      return {
+        acquired: true,
+        launchAllowed: true,
+        routeDecision: {
+          status: "acquired",
+          mode: result.lease.mode,
+          leaseId: result.lease.lease_id,
+          holder: result.lease.holder,
+          scope: result.lease.scope,
+        },
+      };
+    }
+
+    if (result.failure === "backend-unavailable") {
+      return {
+        acquired: false,
+        launchAllowed: request.mode === "soft",
+        routeDecision: {
+          status: "coordination_unavailable",
+          mode: request.mode,
+          holder: request.holder,
+          scope: request.scope,
+        },
+      };
+    }
+
+    if (request.mode === "soft") {
+      return {
+        acquired: false,
+        launchAllowed: true,
+        routeDecision: {
+          status: "soft_conflict",
+          mode: "soft",
+          conflictLeaseId: result.conflict?.lease_id,
+          holder: request.holder,
+          scope: request.scope,
+        },
+      };
+    }
+
+    const inboxMessage: CoordinationMessageInput | undefined =
+      request.sendYieldRequest === true && result.conflict !== undefined
+        ? {
+            type: "request-yield",
+            sender: request.holder,
+            targetHolder: result.conflict.holder,
+            leaseId: result.conflict.lease_id,
+            scope: request.scope,
+            body: {
+              taskId: request.taskId,
+              phase: request.phase,
+            },
+            now: request.now,
+          }
+        : undefined;
+    if (inboxMessage !== undefined) {
+      await this.channel?.send(inboxMessage);
+    }
+
+    return {
+      acquired: false,
+      launchAllowed: false,
+      inboxMessage,
+      routeDecision: {
+        status: "blocked_hard_conflict",
+        mode: "hard",
+        conflictLeaseId: result.conflict?.lease_id,
+        holder: request.holder,
+        scope: request.scope,
+      },
+    };
+  }
+}

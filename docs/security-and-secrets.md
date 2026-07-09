@@ -46,3 +46,14 @@ evidence, and status persistence.
   inferred from shared repo state.
 - Shared or hosted account management is out of scope for the current alpha
   release.
+
+## Coordination Backend Secrets
+
+- Supabase coordination uses
+  `OMNIAGENT_COORDINATION_SUPABASE_URL` and
+  `OMNIAGENT_COORDINATION_SUPABASE_SERVICE_ROLE_KEY`.
+- The service role key is coordinator-only. Agents should interact through the
+  coordinator/CLI surface and must not receive the raw key.
+- CLI diagnostics may report missing env var names and backend availability,
+  but must not print URL values, service role keys, bearer tokens, or raw env
+  dumps.

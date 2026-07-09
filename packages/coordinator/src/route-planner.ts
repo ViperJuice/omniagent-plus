@@ -130,6 +130,25 @@ function determineLaunchGate(
   fallbackUsed: boolean,
   input: RoutePlannerInput,
 ): { action: LaunchGateAction; reason: string } {
+  if (input.leaseArbitration?.status === "blocked_hard_conflict") {
+    return {
+      action: "blocked",
+      reason:
+        input.leaseArbitration.conflictLeaseId === undefined
+          ? "hard coordination lease conflict blocks launch"
+          : `hard coordination lease conflict ${input.leaseArbitration.conflictLeaseId} blocks launch`,
+    };
+  }
+  if (
+    input.leaseArbitration?.status === "coordination_unavailable"
+    && input.leaseArbitration.mode === "hard"
+  ) {
+    return {
+      action: "blocked",
+      reason: "hard coordination lease backend is unavailable",
+    };
+  }
+
   if (!candidate.available) {
     if (
       preferredCandidate !== undefined
@@ -288,6 +307,7 @@ function buildDecision(
       labelsMatch: true,
       manualConfirmationProvided: input.manualConfirmationProvided ?? false,
     },
+    leaseArbitration: input.leaseArbitration,
     routeReason: determineRouteReason(
       input,
       fallbackUsed,

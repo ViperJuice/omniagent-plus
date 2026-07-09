@@ -18,6 +18,7 @@
   "dependencies": {
     "@omniagent-plus/core-contracts": "workspace:*",
     "@omniagent-plus/rate-limit-catalog": "workspace:*",
-    "@omniagent-plus/state-ledger": "workspace:*"
+    "@omniagent-plus/state-ledger": "workspace:*",
+    "@omniagent-plus/worktree-leasing": "workspace:*"
   }
 }
