@@ -1,0 +1,7 @@
+Scope: 3 of 11 workspace projects
+packages/core-contracts build$ tsc -p tsconfig.build.json --pretty false
+packages/core-contracts build: Done
+packages/governed-pipeline-adapter build$ tsc -p tsconfig.build.json --pretty false
+packages/omnigent-transport build$ tsc -p tsconfig.build.json --pretty false
+packages/governed-pipeline-adapter build: Done
+packages/omnigent-transport build: Done

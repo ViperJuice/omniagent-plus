@@ -1,0 +1,1 @@
+P0a OK: session=session-p0a-smoke-session turn=turn-p0a-smoke-turn events=[runtime.session.created, runtime.turn.started, runtime.turn.started, runtime.text.delta, runtime.turn.completed] state=closed

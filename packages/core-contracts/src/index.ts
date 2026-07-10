@@ -21,6 +21,9 @@ export type {
 export {
   createRuntimeFailure,
   isRuntimeFailure,
+  runtimeFailureActors,
+  runtimeFailureCategories,
+  runtimeFailureScopes,
   runtimeFailureSchema,
 } from "./errors.js";
 export { FakeEventStream, normalizeMalformedFrames, normalizeOmnigentFixture } from "./fake-event-stream.js";

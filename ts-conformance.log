@@ -1,0 +1,10 @@
+
+ RUN  v3.2.6 /mnt/HC_Volume_105438154/worktrees/omniagent-plus-pubharden
+
+ ✓ packages/governed-pipeline-adapter/src/test_ts_conformance.test.ts (3 tests) 6ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  17:15:07
+   Duration  540ms (transform 135ms, setup 0ms, collect 210ms, tests 6ms, environment 0ms, prepare 86ms)
+
