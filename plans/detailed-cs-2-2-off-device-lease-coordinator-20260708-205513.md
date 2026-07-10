@@ -195,8 +195,8 @@ Verification:
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm --filter @omniagent-plus/core-contracts test -- --run packages/core-contracts/src/coordination-contract.test.ts
-pnpm --filter @omniagent-plus/core-contracts typecheck
+pnpm --filter @consiliency/runtime-provider test -- --run packages/core-contracts/src/coordination-contract.test.ts
+pnpm --filter @consiliency/runtime-provider typecheck
 ```
 
 Exit criteria:

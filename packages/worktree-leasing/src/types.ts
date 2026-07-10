@@ -1,4 +1,4 @@
-import type { WorktreeLease, WorktreeLeaseRequest } from "@omniagent-plus/core-contracts";
+import type { WorktreeLease, WorktreeLeaseRequest } from "@consiliency/runtime-provider";
 
 export const worktreeInterfaceFreezeGate = "IF-0-WORKTREE-7";
 

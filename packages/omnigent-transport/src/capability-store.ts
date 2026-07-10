@@ -1,4 +1,4 @@
-import type { OmnigentCapabilitySnapshot } from "@omniagent-plus/core-contracts";
+import type { OmnigentCapabilitySnapshot } from "@consiliency/runtime-provider";
 import type { AuditLedger } from "@omniagent-plus/state-ledger";
 
 export class OmnigentCapabilityStore {

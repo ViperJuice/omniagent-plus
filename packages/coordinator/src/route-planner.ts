@@ -1,7 +1,7 @@
 import type {
   LimitClassification,
   RouteDecision,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import { scoreTaskPortability } from "./portability.js";
 import type {

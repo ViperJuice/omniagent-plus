@@ -6,7 +6,7 @@ import {
   type CreateSessionRequest,
   type HarnessId,
   type ProviderFamilyId,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import {
   adapterBlockerClasses,

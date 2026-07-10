@@ -1,10 +1,10 @@
 import {
   stateLedgerRecordKinds,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 import type {
   StateLedgerEntry,
   StateLedgerRecordKind,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import type { AuditLedger } from "./audit-ledger.js";
 

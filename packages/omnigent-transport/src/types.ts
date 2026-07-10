@@ -5,7 +5,7 @@ import type {
   RuntimeFailureCategory,
   SendTurnRequest,
   TurnHandle,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 export const omnigentProviderModes = ["http", "cli", "hybrid"] as const;
 export type OmnigentProviderMode = (typeof omnigentProviderModes)[number];

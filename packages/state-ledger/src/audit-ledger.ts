@@ -13,7 +13,7 @@ import {
   type StateLedgerRecordKind,
   type TurnHandle,
   type WorktreeLease,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import {
   AppendOnlyStore,

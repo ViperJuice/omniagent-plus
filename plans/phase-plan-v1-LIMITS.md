@@ -16,7 +16,7 @@ This phase consumes `IF-0-BOOTCORE-2` from `packages/core-contracts`, especially
 ## Interface Freeze Gates
 
 - [ ] IF-0-LIMITS-5 - Rate-limit classifier fixtures and routing actions distinguish retryable limits, hard caps, auth/billing failures, policy blocks, outages, and unknown signals.
-  - Required package surface: `@omniagent-plus/rate-limit-catalog` exports deterministic classifier APIs, fixture loading helpers, and routing-action mapping helpers that return `LimitClassification` objects from `@omniagent-plus/core-contracts` without exposing raw secret-bearing payloads.
+  - Required package surface: `@omniagent-plus/rate-limit-catalog` exports deterministic classifier APIs, fixture loading helpers, and routing-action mapping helpers that return `LimitClassification` objects from `@consiliency/runtime-provider` without exposing raw secret-bearing payloads.
   - Required classifier proof: regex, status/header, reset-time, retry-after, confidence, and unknown-capture rules distinguish burst limits, token limits, concurrency limits, fixed-window usage caps, monthly spend/quota caps, acceleration limits, transient overload, auth/billing problems, policy blocks, non-limit signals, and unknown signals.
   - Required fixture proof: the fixture corpus covers Claude Code, Codex, Gemini/Antigravity, OpenCode, Pi, OpenAI API, Anthropic API, Google/Gemini API, ZAI, MiniMax, and generic OpenAI-compatible APIs, with expected classifications checked in package tests.
   - Required negative proof: non-limit 429s, auth failures, policy blocks, provider outages, and malformed or low-confidence signals are not misclassified as quota or burst limits; unknown fixtures map to `unknown_limit` rather than success.

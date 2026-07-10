@@ -1,4 +1,4 @@
-import type { HarnessId, RouteDecision } from "@omniagent-plus/core-contracts";
+import type { HarnessId, RouteDecision } from "@consiliency/runtime-provider";
 
 export const adaptersInterfaceFreezeGate = "IF-0-ADAPTERS-10";
 

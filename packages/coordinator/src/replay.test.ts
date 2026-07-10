@@ -9,7 +9,7 @@ import { AuditLedger } from "@omniagent-plus/state-ledger";
 import type {
   LimitClassification,
   RouteDecision,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import { explainRouteDecision, replayTaskRouting } from "./index.js";
 

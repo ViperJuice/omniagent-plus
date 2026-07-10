@@ -1,22 +1,21 @@
 {
-  "name": "@omniagent-plus/governed-pipeline-adapter",
-  "version": "0.1.0",
-  "private": true,
+  "name": "@consiliency/pipeline-provider-adapter",
+  "version": "0.2.0",
   "type": "module",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./conformance": "./conformance.v0.1.json"
   },
-  "files": ["src", "conformance.v0.1.json"],
+  "files": ["dist", "conformance.v0.1.json"],
   "scripts": {
-    "build": "tsc -p tsconfig.json --pretty false",
+    "build": "tsc -p tsconfig.build.json --pretty false",
     "typecheck": "tsc -p tsconfig.json --pretty false",
     "test": "pnpm --dir ../.. exec vitest --config vitest.config.ts"
   },
   "dependencies": {
-    "@omniagent-plus/core-contracts": "workspace:*"
+    "@consiliency/runtime-provider": "workspace:*"
   }
 }

@@ -1,4 +1,4 @@
-import type { RuntimeEvent, SessionHistory } from "@omniagent-plus/core-contracts";
+import type { RuntimeEvent, SessionHistory } from "@consiliency/runtime-provider";
 
 import { OmnigentEventMapper, type OmnigentEventMapperOptions } from "./event-mapper.js";
 import type { OmnigentHistoryItem } from "./types.js";

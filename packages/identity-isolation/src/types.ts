@@ -7,7 +7,7 @@ import {
   type RuntimeFailureActor,
   type RuntimeFailureCategory,
   type RuntimeFailureScope,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 import type { OmnigentProviderMode } from "../../omnigent-transport/src/types.js";
 
 export const identityInterfaceFreezeGate = "IF-0-IDENTITY-6";

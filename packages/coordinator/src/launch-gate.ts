@@ -5,7 +5,7 @@ import {
   type RouteDecision,
   type SendTurnRequest,
   type TurnHandle,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import { persistRouteDecision } from "./route-store.js";
 import type { GuardedRequest, LaunchGateInput } from "./types.js";

@@ -1,0 +1,78 @@
+name: publish
+
+# Tokenless publish of the three public @consiliency/* seam packages via npm OIDC
+# trusted publishing (no NODE_AUTH_TOKEN). Modeled on consiliency-contract's
+# publish.yml (node 24, id-token: write, `npm publish` with no token), adapted for
+# this pnpm workspace: only the three non-private seam packages publish; the seven
+# `"private": true` @omniagent-plus/* workspace packages are skipped by npm/pnpm.
+#
+# Requires (per package, one-time, maintainer's gate):
+#   - a Trusted Publisher configured on npmjs.com for
+#     @consiliency/{runtime-provider,pipeline-provider-adapter,omnigent-transport}
+#     pointing at repo ViperJuice/omniagent-plus + workflow `publish.yml`.
+#   - a first authenticated `npm publish` for each package to create it (a Trusted
+#     Publisher can only attach to an existing package — same constraint as the gp
+#     packages). After that, releases publish tokenlessly here.
+#
+# Mechanic note: this uses `pnpm pack` + `npm publish <tarball>` rather than
+# `pnpm publish`. `pnpm pack` resolves `workspace:*` deps to real versions in the
+# tarball; `npm publish` (node 24 bundles npm >= 11.5, OIDC-capable) performs the
+# OIDC id-token exchange. This sidesteps pnpm#11513 (pnpm 11 `pnpm publish` OIDC
+# 404). Publish order is topological: runtime-provider first (the others depend on
+# it).
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.1.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r build
+      - run: pnpm -r test
+
+  publish-npm:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # npm OIDC trusted publishing (no NODE_AUTH_TOKEN)
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.1.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"   # bundles an OIDC-capable npm (>= 11.5) — no self-upgrade needed
+          registry-url: "https://registry.npmjs.org"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r build
+      # Topological order: runtime-provider first (the adapter + transport depend on it).
+      - name: Publish @consiliency/runtime-provider
+        working-directory: packages/core-contracts
+        run: |
+          tarball=$(pnpm pack | tail -n1)
+          npm publish "$tarball" --access public
+      - name: Publish @consiliency/pipeline-provider-adapter
+        working-directory: packages/governed-pipeline-adapter
+        run: |
+          tarball=$(pnpm pack | tail -n1)
+          npm publish "$tarball" --access public
+      - name: Publish @consiliency/omnigent-transport
+        working-directory: packages/omnigent-transport
+        run: |
+          tarball=$(pnpm pack | tail -n1)
+          npm publish "$tarball" --access public

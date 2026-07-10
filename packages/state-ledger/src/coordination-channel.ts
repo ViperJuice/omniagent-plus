@@ -6,7 +6,7 @@ import {
   type CoordinationMessage,
   type CoordinationMessageType,
   type ConsiliencyLeaseScope,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import { getStateLedgerPaths, nowIsoString, readJsonFile, writeJsonAtomic } from "./schema.js";
 import { withFilesystemLock } from "./append-only-store.js";

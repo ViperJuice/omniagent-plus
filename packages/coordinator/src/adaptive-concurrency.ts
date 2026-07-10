@@ -1,4 +1,4 @@
-import type { LimitClassification } from "@omniagent-plus/core-contracts";
+import type { LimitClassification } from "@consiliency/runtime-provider";
 
 import type {
   AdaptiveConcurrencyDecision,

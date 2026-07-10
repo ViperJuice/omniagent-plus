@@ -1,6 +1,6 @@
 import { nowIsoString } from "@omniagent-plus/state-ledger";
 
-import type { WorktreeLease } from "@omniagent-plus/core-contracts";
+import type { WorktreeLease } from "@consiliency/runtime-provider";
 
 import type { WorktreeLeaseManager } from "./lease-manager.js";
 import type {

@@ -12,7 +12,7 @@ import {
   stateLedgerRecordSchema,
   type StateLedgerEntry,
   type StateLedgerRecordKind,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import {
   assertBoundedPayload,

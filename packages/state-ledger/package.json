@@ -16,7 +16,7 @@
     "test": "pnpm --dir ../.. exec vitest --config vitest.config.ts"
   },
   "dependencies": {
-    "@omniagent-plus/core-contracts": "workspace:*",
+    "@consiliency/runtime-provider": "workspace:*",
     "@supabase/supabase-js": "^2.52.1",
     "zod": "^3.25.76"
   }

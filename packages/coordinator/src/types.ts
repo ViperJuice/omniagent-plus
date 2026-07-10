@@ -15,7 +15,7 @@ import type {
   RouteDecisionLeaseArbitration,
   SendTurnRequest,
   WorktreeLease,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 export const coordinatorInterfaceFreezeGate = "IF-0-COORDINATOR-9";
 

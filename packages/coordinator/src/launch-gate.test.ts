@@ -13,7 +13,7 @@ import type {
   SessionHistory,
   StreamOptions,
   TurnHandle,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import {
   createSessionWithRouteDecision,

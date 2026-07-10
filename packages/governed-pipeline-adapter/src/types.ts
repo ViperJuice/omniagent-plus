@@ -3,7 +3,7 @@ import type {
   RedactedText,
   RouteDecision,
   RuntimeEvidenceRef,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 export const adaptersInterfaceFreezeGate = "IF-0-ADAPTERS-10";
 

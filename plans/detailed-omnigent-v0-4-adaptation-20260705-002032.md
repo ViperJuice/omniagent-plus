@@ -162,7 +162,7 @@ Do not update release notes or changelog surfaces unless the repo already has a 
 Do not run these during planning. The implementation runner should run:
 
 ```bash
-pnpm --filter @omniagent-plus/omnigent-transport test -- --run packages/omnigent-transport/src
+pnpm --filter @consiliency/omnigent-transport test -- --run packages/omnigent-transport/src
 pnpm test -- --run packages/omnigent-transport/src packages/core-contracts/src/fake-event-stream.test.ts
 pnpm build
 pnpm lint
@@ -177,7 +177,7 @@ phase-loop validate-roadmap specs/phase-plans-v1.md
 Effective automation suite:
 
 ```bash
-pnpm --filter @omniagent-plus/omnigent-transport test -- --run packages/omnigent-transport/src && pnpm test -- --run packages/omnigent-transport/src packages/core-contracts/src/fake-event-stream.test.ts && pnpm build && pnpm lint && pnpm typecheck && pnpm test && find fixtures/omnigent -name '*.json' -print | sort | xargs -r -n1 python3 -m json.tool >/dev/null && sh -c 'rg -n "v0\\.3\\.0|v0\\.4\\.0dev0|4edb4d9|waiting.*OpenAPI|OpenAPI.*waiting" docs fixtures packages/omnigent-transport || true' && git diff --check && phase-loop validate-roadmap specs/phase-plans-v1.md
+pnpm --filter @consiliency/omnigent-transport test -- --run packages/omnigent-transport/src && pnpm test -- --run packages/omnigent-transport/src packages/core-contracts/src/fake-event-stream.test.ts && pnpm build && pnpm lint && pnpm typecheck && pnpm test && find fixtures/omnigent -name '*.json' -print | sort | xargs -r -n1 python3 -m json.tool >/dev/null && sh -c 'rg -n "v0\\.3\\.0|v0\\.4\\.0dev0|4edb4d9|waiting.*OpenAPI|OpenAPI.*waiting" docs fixtures packages/omnigent-transport || true' && git diff --check && phase-loop validate-roadmap specs/phase-plans-v1.md
 ```
 
 The `rg` sweep is an audit step: remaining matches are acceptable only when they are intentionally labeled as historical previous-release context. If the implementation needs a hard-fail variant, add a short repository-local assertion script instead of relying on raw `rg` exit semantics.

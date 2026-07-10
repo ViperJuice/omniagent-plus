@@ -1,7 +1,7 @@
 import type {
   RuntimeEvidenceRef,
   StateLedgerEntry,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import type { AuditLedger } from "./audit-ledger.js";
 import { DEFAULT_MAX_EVIDENCE_EXCERPT_BYTES } from "./schema.js";

@@ -2,7 +2,7 @@ import {
   createRuntimeEvent,
   createRuntimeFailure,
   type RuntimeEvent,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import type { OmnigentRawEvent } from "./types.js";
 

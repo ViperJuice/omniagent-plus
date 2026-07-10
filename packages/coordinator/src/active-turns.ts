@@ -1,5 +1,5 @@
-import type { ProviderFamilyId } from "@omniagent-plus/core-contracts";
-import type { IdentityProfileStatus } from "@omniagent-plus/core-contracts";
+import type { ProviderFamilyId } from "@consiliency/runtime-provider";
+import type { IdentityProfileStatus } from "@consiliency/runtime-provider";
 
 import type { ActiveTurnSnapshot } from "./types.js";
 

@@ -13,7 +13,7 @@ import {
   type SessionHistory,
   type StreamOptions,
   type TurnHandle,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import { OmnigentEventMapper } from "./event-mapper.js";
 import { mapOmnigentHistory } from "./history-mapper.js";

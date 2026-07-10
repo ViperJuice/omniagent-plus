@@ -1,4 +1,4 @@
-import type { ConsiliencyLeaseScope } from "@omniagent-plus/core-contracts";
+import type { ConsiliencyLeaseScope } from "@consiliency/runtime-provider";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 import type {

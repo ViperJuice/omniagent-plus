@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
-import type { LimitClassification } from "@omniagent-plus/core-contracts";
+import type { LimitClassification } from "@consiliency/runtime-provider";
 import { classifyLimitSignal } from "@omniagent-plus/rate-limit-catalog";
 
 import { evaluateFailurePolicy, evaluateRetryGuardrails } from "./index.js";

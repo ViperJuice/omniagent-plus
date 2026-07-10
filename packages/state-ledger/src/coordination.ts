@@ -7,7 +7,7 @@ import {
   type ProviderFamilyCooldown,
   type WorktreeLease,
   type WorktreeLeaseRequest,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 import { z } from "zod";
 
 import { AuditLedger } from "./audit-ledger.js";

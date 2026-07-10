@@ -11,7 +11,7 @@ import type {
   SessionHistory,
   StreamOptions,
   TurnHandle,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import { OmnigentHttpProvider } from "./http-provider.js";
 import type { OmnigentProcessManager } from "./process-manager.js";

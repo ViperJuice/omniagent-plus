@@ -38,18 +38,18 @@ importers:
 
   packages/agent-harness-adapter:
     dependencies:
-      '@omniagent-plus/core-contracts':
+      '@consiliency/runtime-provider':
         specifier: workspace:*
         version: link:../core-contracts
 
   packages/cli:
     dependencies:
+      '@consiliency/runtime-provider':
+        specifier: workspace:*
+        version: link:../core-contracts
       '@omniagent-plus/coordinator':
         specifier: workspace:*
         version: link:../coordinator
-      '@omniagent-plus/core-contracts':
-        specifier: workspace:*
-        version: link:../core-contracts
       '@omniagent-plus/identity-isolation':
         specifier: workspace:*
         version: link:../identity-isolation
@@ -71,7 +71,7 @@ importers:
 
   packages/coordinator:
     dependencies:
-      '@omniagent-plus/core-contracts':
+      '@consiliency/runtime-provider':
         specifier: workspace:*
         version: link:../core-contracts
       '@omniagent-plus/rate-limit-catalog':
@@ -95,25 +95,25 @@ importers:
 
   packages/governed-pipeline-adapter:
     dependencies:
-      '@omniagent-plus/core-contracts':
+      '@consiliency/runtime-provider':
         specifier: workspace:*
         version: link:../core-contracts
 
   packages/identity-isolation:
     dependencies:
-      '@omniagent-plus/core-contracts':
-        specifier: workspace:*
-        version: link:../core-contracts
-      '@omniagent-plus/omnigent-transport':
+      '@consiliency/omnigent-transport':
         specifier: workspace:*
         version: link:../omnigent-transport
+      '@consiliency/runtime-provider':
+        specifier: workspace:*
+        version: link:../core-contracts
       '@omniagent-plus/state-ledger':
         specifier: workspace:*
         version: link:../state-ledger
 
   packages/omnigent-transport:
     dependencies:
-      '@omniagent-plus/core-contracts':
+      '@consiliency/runtime-provider':
         specifier: workspace:*
         version: link:../core-contracts
       '@omniagent-plus/state-ledger':
@@ -122,13 +122,13 @@ importers:
 
   packages/rate-limit-catalog:
     dependencies:
-      '@omniagent-plus/core-contracts':
+      '@consiliency/runtime-provider':
         specifier: workspace:*
         version: link:../core-contracts
 
   packages/state-ledger:
     dependencies:
-      '@omniagent-plus/core-contracts':
+      '@consiliency/runtime-provider':
         specifier: workspace:*
         version: link:../core-contracts
       '@supabase/supabase-js':
@@ -140,7 +140,7 @@ importers:
 
   packages/worktree-leasing:
     dependencies:
-      '@omniagent-plus/core-contracts':
+      '@consiliency/runtime-provider':
         specifier: workspace:*
         version: link:../core-contracts
       '@omniagent-plus/state-ledger':

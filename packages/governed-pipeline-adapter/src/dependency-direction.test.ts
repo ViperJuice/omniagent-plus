@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const packageRoot = new URL("../", import.meta.url);
-const allowedPackageImports = new Set(["@omniagent-plus/core-contracts"]);
+const allowedPackageImports = new Set(["@consiliency/runtime-provider"]);
 const disallowedImportPatterns = [
   /^(?!\.{1,2}\/).*agent-harness/i,
   /^(?!\.{1,2}\/).*phase[_-]loop/i,

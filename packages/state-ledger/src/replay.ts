@@ -13,7 +13,7 @@ import {
   type TurnHandle,
   type UiControlSnapshot,
   uiControlSnapshotSchema,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import type { AuditLedger } from "./audit-ledger.js";
 import { getStateLedgerPaths, isMissingFileError, nowIsoString } from "./schema.js";

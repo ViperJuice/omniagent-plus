@@ -6,7 +6,7 @@ import type {
   LeaseAcquireRequest,
   LeaseStore,
 } from "@omniagent-plus/worktree-leasing";
-import type { RouteDecisionLeaseArbitration } from "@omniagent-plus/core-contracts";
+import type { RouteDecisionLeaseArbitration } from "@consiliency/runtime-provider";
 
 export interface LeaseArbitrationRequest extends LeaseAcquireRequest {
   readonly taskId: string;
