@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { resolve, dirname, join } from "node:path";
 import { parseArgs } from "node:util";
 
-import { sanitizeWorkspacePath } from "@omniagent-plus/core-contracts";
+import { sanitizeWorkspacePath } from "@consiliency/runtime-provider";
 
 import { createCliError } from "./errors.js";
 import type { CliCommandKey } from "./types.js";

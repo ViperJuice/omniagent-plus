@@ -1,4 +1,4 @@
-import { sanitizeMetadataText } from "@omniagent-plus/core-contracts";
+import { sanitizeMetadataText } from "@consiliency/runtime-provider";
 import { classifyLimitSignal } from "@omniagent-plus/rate-limit-catalog";
 import { AuditLedger } from "@omniagent-plus/state-ledger";
 

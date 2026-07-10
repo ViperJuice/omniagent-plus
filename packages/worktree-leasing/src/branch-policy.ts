@@ -1,4 +1,4 @@
-import type { WorktreeLease, WorktreeLeaseRequest } from "@omniagent-plus/core-contracts";
+import type { WorktreeLease, WorktreeLeaseRequest } from "@consiliency/runtime-provider";
 
 import { validateBranchName } from "./mounted-workspace.js";
 import type {

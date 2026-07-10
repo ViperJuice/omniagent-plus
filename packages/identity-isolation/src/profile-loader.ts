@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import {
   identityProfileSchema,
   type IdentityProfile,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import { assertNoSecretLeaks } from "./secret-redaction.js";
 import { detectIdentityProfileKind, type IdentityProfileKind } from "./types.js";

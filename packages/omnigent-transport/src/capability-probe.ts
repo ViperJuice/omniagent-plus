@@ -3,7 +3,7 @@ import type {
   HarnessId,
   OmnigentCapabilitySnapshot,
   ProviderHealth,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import {
   loadOmnigentCapabilityMatrix,

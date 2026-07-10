@@ -3,7 +3,7 @@ import type {
   LimitClassification,
   ProviderFamilyCooldown,
   WorktreeLease,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 import {
   buildActiveTurnSnapshot,
   buildIdentityPool,

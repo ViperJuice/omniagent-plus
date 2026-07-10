@@ -94,9 +94,9 @@ SL-5 — Documentation and phase verification reducer
 
 | Task ID | Type | Depends on | Files in scope | Tests owned | Test command |
 | --- | --- | --- | --- | --- | --- |
-| SL-1-T1 | test | SL-0-T3 | `packages/core-contracts/src/schemas.test.ts`, `fixtures/core/contracts/*.json` | schema validation tests | `pnpm --filter @omniagent-plus/core-contracts test -- --run packages/core-contracts/src/schemas.test.ts` |
+| SL-1-T1 | test | SL-0-T3 | `packages/core-contracts/src/schemas.test.ts`, `fixtures/core/contracts/*.json` | schema validation tests | `pnpm --filter @consiliency/runtime-provider test -- --run packages/core-contracts/src/schemas.test.ts` |
 | SL-1-T2 | impl | SL-1-T1 | `packages/core-contracts/src/*.ts`, `fixtures/core/contracts/*.json` | n/a | n/a |
-| SL-1-T3 | verify | SL-1-T2 | `packages/core-contracts/src/*.ts`, `fixtures/core/contracts/*.json` | schema validation tests | `pnpm --filter @omniagent-plus/core-contracts test -- --run packages/core-contracts/src/schemas.test.ts && pnpm --filter @omniagent-plus/core-contracts typecheck` |
+| SL-1-T3 | verify | SL-1-T2 | `packages/core-contracts/src/*.ts`, `fixtures/core/contracts/*.json` | schema validation tests | `pnpm --filter @consiliency/runtime-provider test -- --run packages/core-contracts/src/schemas.test.ts && pnpm --filter @consiliency/runtime-provider typecheck` |
 
 ### SL-2 - Lifecycle state machines and event fixtures
 
@@ -108,9 +108,9 @@ SL-5 — Documentation and phase verification reducer
 
 | Task ID | Type | Depends on | Files in scope | Tests owned | Test command |
 | --- | --- | --- | --- | --- | --- |
-| SL-2-T1 | test | SL-1-T3 | `packages/core-contracts/src/state-machines.test.ts`, `fixtures/core/lifecycle/*.json`, `docs/lifecycle-and-events.md` | lifecycle transition tests | `pnpm --filter @omniagent-plus/core-contracts test -- --run packages/core-contracts/src/state-machines.test.ts` |
+| SL-2-T1 | test | SL-1-T3 | `packages/core-contracts/src/state-machines.test.ts`, `fixtures/core/lifecycle/*.json`, `docs/lifecycle-and-events.md` | lifecycle transition tests | `pnpm --filter @consiliency/runtime-provider test -- --run packages/core-contracts/src/state-machines.test.ts` |
 | SL-2-T2 | impl | SL-2-T1 | `packages/core-contracts/src/state-machines.ts`, `fixtures/core/lifecycle/*.json`, `docs/lifecycle-and-events.md` | n/a | n/a |
-| SL-2-T3 | verify | SL-2-T2 | lifecycle source, fixtures, and documentation | lifecycle transition tests | `pnpm --filter @omniagent-plus/core-contracts test -- --run packages/core-contracts/src/state-machines.test.ts && test -f docs/lifecycle-and-events.md` |
+| SL-2-T3 | verify | SL-2-T2 | lifecycle source, fixtures, and documentation | lifecycle transition tests | `pnpm --filter @consiliency/runtime-provider test -- --run packages/core-contracts/src/state-machines.test.ts && test -f docs/lifecycle-and-events.md` |
 
 ### SL-3 - Fake provider and fake event stream
 
@@ -122,9 +122,9 @@ SL-5 — Documentation and phase verification reducer
 
 | Task ID | Type | Depends on | Files in scope | Tests owned | Test command |
 | --- | --- | --- | --- | --- | --- |
-| SL-3-T1 | test | SL-2-T3 | `packages/core-contracts/src/fake-provider.test.ts`, `packages/core-contracts/src/fake-event-stream.test.ts`, `fixtures/core/fake-provider/*.json` | fake provider behavior tests | `pnpm --filter @omniagent-plus/core-contracts test -- --run packages/core-contracts/src/fake-provider.test.ts packages/core-contracts/src/fake-event-stream.test.ts` |
+| SL-3-T1 | test | SL-2-T3 | `packages/core-contracts/src/fake-provider.test.ts`, `packages/core-contracts/src/fake-event-stream.test.ts`, `fixtures/core/fake-provider/*.json` | fake provider behavior tests | `pnpm --filter @consiliency/runtime-provider test -- --run packages/core-contracts/src/fake-provider.test.ts packages/core-contracts/src/fake-event-stream.test.ts` |
 | SL-3-T2 | impl | SL-3-T1 | `packages/core-contracts/src/fake-provider.ts`, `packages/core-contracts/src/fake-event-stream.ts`, `fixtures/core/fake-provider/*.json` | n/a | n/a |
-| SL-3-T3 | verify | SL-3-T2 | fake provider source, tests, and fixtures | fake provider behavior tests | `pnpm --filter @omniagent-plus/core-contracts test -- --run packages/core-contracts/src/fake-provider.test.ts packages/core-contracts/src/fake-event-stream.test.ts` |
+| SL-3-T3 | verify | SL-3-T2 | fake provider source, tests, and fixtures | fake provider behavior tests | `pnpm --filter @consiliency/runtime-provider test -- --run packages/core-contracts/src/fake-provider.test.ts packages/core-contracts/src/fake-event-stream.test.ts` |
 
 ### SL-4 - Pre-closeout verification reducer
 

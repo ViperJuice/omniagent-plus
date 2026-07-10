@@ -1,6 +1,6 @@
 # Lifecycle And Events
 
-`@omniagent-plus/core-contracts` freezes the session and turn lifecycle that
+`@consiliency/runtime-provider` freezes the session and turn lifecycle that
 BOOTCORE exposes to later phases. The package consumes
 `IF-0-CONTRACT-1` without importing real Omnigent transport code and keeps the
 runtime surface metadata-only.

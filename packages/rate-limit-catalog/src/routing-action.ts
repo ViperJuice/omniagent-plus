@@ -1,7 +1,7 @@
 import type {
   LimitClassification,
   LimitType,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 type RoutingAction = LimitClassification["routingAction"];
 

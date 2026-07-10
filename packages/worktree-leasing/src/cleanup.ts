@@ -1,6 +1,6 @@
 import { rm } from "node:fs/promises";
 
-import type { WorktreeLease } from "@omniagent-plus/core-contracts";
+import type { WorktreeLease } from "@consiliency/runtime-provider";
 
 import { removeGitWorktree } from "./git.js";
 import { checkProcessLiveness } from "./process-liveness.js";

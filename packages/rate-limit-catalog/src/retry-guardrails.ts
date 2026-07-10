@@ -1,4 +1,4 @@
-import type { LimitClassification, LimitType } from "@omniagent-plus/core-contracts";
+import type { LimitClassification, LimitType } from "@consiliency/runtime-provider";
 
 import { dedupeNotes } from "./rules.js";
 import type {

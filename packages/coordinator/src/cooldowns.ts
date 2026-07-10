@@ -5,7 +5,7 @@ import {
   type LimitClassification,
   type ProviderFamilyCooldown,
   type ProviderFamilyId,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import type { CooldownEvaluation } from "./types.js";
 

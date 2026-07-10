@@ -7,11 +7,11 @@ handoff metadata, and cooldown state through one local entrypoint:
 
 ```text
 consumer repos
-  -> @omniagent-plus/core-contracts
+  -> @consiliency/runtime-provider
   -> @omniagent-plus/state-ledger
   -> @omniagent-plus/identity-isolation
   -> @omniagent-plus/worktree-leasing
-  -> @omniagent-plus/omnigent-transport
+  -> @consiliency/omnigent-transport
   -> @omniagent-plus/coordinator
   -> @omniagent-plus/cli
   -> Omnigent runtime boundary
@@ -19,7 +19,7 @@ consumer repos
 
 ## Package Boundary
 
-`@omniagent-plus/core-contracts` still owns the runtime-neutral public
+`@consiliency/runtime-provider` still owns the runtime-neutral public
 contract:
 
 - `AgentRuntimeProvider`
@@ -53,7 +53,7 @@ still own the reusable metadata-only operator primitives:
 - worktree lease registry state, active-process checks, dirty-state checks, and
   cleanup blocking reasons
 
-`@omniagent-plus/omnigent-transport` still owns the real transport boundary for
+`@consiliency/omnigent-transport` still owns the real transport boundary for
 `IF-0-TRANSPORT-4`:
 
 - HTTP session creation, history reads, event posts, stream parsing, reconnect
@@ -110,7 +110,7 @@ still own the reusable metadata-only operator primitives:
 
 `IF-0-UI-12` deliberately stops at an API-ready surface:
 
-- `@omniagent-plus/core-contracts` validates the exported session tree, active
+- `@consiliency/runtime-provider` validates the exported session tree, active
   turn, route decision, approval, cooldown, worktree lease, handoff, limit
   classification, and evidence-ref summaries.
 - `@omniagent-plus/state-ledger` replays durable records into

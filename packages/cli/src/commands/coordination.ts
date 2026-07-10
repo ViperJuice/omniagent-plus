@@ -3,7 +3,7 @@ import {
   expiresAtForLease,
   type ConsiliencyLease,
   type ConsiliencyLeaseScope,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 import {
   createSupabaseCoordinationChannelFromEnv,
   LocalCoordinationChannel,

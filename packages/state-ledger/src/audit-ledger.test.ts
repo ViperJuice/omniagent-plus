@@ -18,7 +18,7 @@ import type {
   WorktreeLease,
   AgentSession,
   TurnHandle,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import { AuditLedger } from "./audit-ledger.js";
 

@@ -1,5 +1,5 @@
 {
-  "name": "@omniagent-plus/governed-pipeline-adapter",
+  "name": "@consiliency/pipeline-provider-adapter",
   "version": "0.2.0",
   "type": "module",
   "exports": {
@@ -16,6 +16,6 @@
     "test": "pnpm --dir ../.. exec vitest --config vitest.config.ts"
   },
   "dependencies": {
-    "@omniagent-plus/core-contracts": "workspace:*"
+    "@consiliency/runtime-provider": "workspace:*"
   }
 }

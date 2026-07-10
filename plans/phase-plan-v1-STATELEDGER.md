@@ -74,9 +74,9 @@ SL-4 — Replay, docs, and phase verification reducer
 
 | Task ID | Type | Depends on | Files in scope | Tests owned | Test command |
 | --- | --- | --- | --- | --- | --- |
-| SL-0-T1 | test | (none) | `packages/core-contracts/src/state-ledger.test.ts`, `fixtures/state-ledger/contracts/*.json` | state-ledger contract schema tests | `test ! -e packages/core-contracts/src/state-ledger.test.ts || pnpm --filter @omniagent-plus/core-contracts test -- --run packages/core-contracts/src/state-ledger.test.ts` |
+| SL-0-T1 | test | (none) | `packages/core-contracts/src/state-ledger.test.ts`, `fixtures/state-ledger/contracts/*.json` | state-ledger contract schema tests | `test ! -e packages/core-contracts/src/state-ledger.test.ts || pnpm --filter @consiliency/runtime-provider test -- --run packages/core-contracts/src/state-ledger.test.ts` |
 | SL-0-T2 | impl | SL-0-T1 | package metadata, root scripts, lockfile, core state-ledger contracts, and contract fixtures | n/a | n/a |
-| SL-0-T3 | verify | SL-0-T2 | package metadata and core contract bridge | state-ledger contract schema tests | `pnpm install --frozen-lockfile && pnpm --filter @omniagent-plus/core-contracts test -- --run packages/core-contracts/src/state-ledger.test.ts && pnpm --filter @omniagent-plus/core-contracts typecheck` |
+| SL-0-T3 | verify | SL-0-T2 | package metadata and core contract bridge | state-ledger contract schema tests | `pnpm install --frozen-lockfile && pnpm --filter @consiliency/runtime-provider test -- --run packages/core-contracts/src/state-ledger.test.ts && pnpm --filter @consiliency/runtime-provider typecheck` |
 
 ### SL-1 — Schema, migrations, retention, and append-only store
 

@@ -1,5 +1,5 @@
 {
-  "name": "@omniagent-plus/core-contracts",
+  "name": "@consiliency/runtime-provider",
   "version": "0.2.0",
   "type": "module",
   "exports": {

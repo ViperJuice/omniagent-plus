@@ -2,7 +2,7 @@ import {
   redactConfigRecord,
   redactConfigValue,
   type RedactedConfigValue,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import { IdentityIsolationError } from "./types.js";
 

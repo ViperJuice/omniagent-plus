@@ -11,12 +11,12 @@ roadmap_sha256: cd559015ff6624aeb1ccbb8a708835c06a747d77d3c62c6a1894af1d8e21bb90
 
 `HANDOFF` is Phase 8 from `specs/phase-plans-v1.md`. Canonical `.phase-loop/events.jsonl` records `BOOTCORE`, `STATELEDGER`, and `WORKTREE` complete, with `WORKTREE` closing at `65b4eb42b220a7d072bf479b8726096c855fb0c2` and verification passed. `.phase-loop/state.json` and `.phase-loop/tui-handoff.md` can lag the newer ledger, so this plan treats the canonical event ledger plus the clean live git topology as authoritative. Legacy `.codex/phase-loop/` files are compatibility artifacts only and must not block or supersede canonical `.phase-loop/` state.
 
-This phase consumes `IF-0-BOOTCORE-2`, `IF-0-STATELEDGER-3`, and `IF-0-WORKTREE-7`. It strengthens the existing `HandoffPacket` contract in `@omniagent-plus/core-contracts`, adds packet builders and bounded evidence collectors, adds target-harness prompt renderers, and proves with hostile fixtures that untrusted logs, diffs, command output, prior-agent summaries, and optional raw history cannot become trusted instructions. It must not implement routing policy, summarize unlimited transcripts, call real Omnigent, persist secrets, or mutate upstream state-ledger/worktree contracts unless execution proves a repairable `contract_bug` in those already-produced gates.
+This phase consumes `IF-0-BOOTCORE-2`, `IF-0-STATELEDGER-3`, and `IF-0-WORKTREE-7`. It strengthens the existing `HandoffPacket` contract in `@consiliency/runtime-provider`, adds packet builders and bounded evidence collectors, adds target-harness prompt renderers, and proves with hostile fixtures that untrusted logs, diffs, command output, prior-agent summaries, and optional raw history cannot become trusted instructions. It must not implement routing policy, summarize unlimited transcripts, call real Omnigent, persist secrets, or mutate upstream state-ledger/worktree contracts unless execution proves a repairable `contract_bug` in those already-produced gates.
 
 ## Interface Freeze Gates
 
 - [ ] IF-0-HANDOFF-8 - Handoff packets and prompt renderers preserve trusted task instructions while fencing untrusted evidence.
-  - Required packet surface: `@omniagent-plus/core-contracts` exposes a typed handoff packet schema, packet builder, context policy model, evidence collector inputs, and redaction-aware validation that separate trusted objective/task contract/output requirements from untrusted evidence.
+  - Required packet surface: `@consiliency/runtime-provider` exposes a typed handoff packet schema, packet builder, context policy model, evidence collector inputs, and redaction-aware validation that separate trusted objective/task contract/output requirements from untrusted evidence.
   - Required evidence proof: workspace, worktree lease, diff, command, test, log, decision, assumption, risk, and raw-history refs are bounded, metadata-only or redacted, and reject secrets, env dumps, provider payloads, absolute secret paths, and unbounded transcript content.
   - Required renderer proof: Codex, Claude Code, Gemini Antigravity, OpenCode, Pi, and custom-target renderers put trusted task instructions in explicit trusted sections and put logs, diffs, command output, summaries, and raw history only in labeled untrusted evidence sections.
   - Required injection proof: hostile fixtures containing system/developer/operator-style text, markdown fences, XML-ish tags, shell commands, JSON schema claims, and prompt-leak requests remain quoted or escaped evidence and cannot alter the trusted task contract.
@@ -65,9 +65,9 @@ SL-2 — Prompt-injection fixtures, docs, and phase verification reducer
 
 | Task ID | Type | Depends on | Files in scope | Tests owned | Test command |
 | --- | --- | --- | --- | --- | --- |
-| SL-0-T1 | test | (none) | handoff packet schema tests, redaction tests, packet fixtures, and evidence fixtures | builder, context policy, bounded evidence, redaction, and fixture parsing tests | `test ! -e packages/core-contracts/src/handoff-packet.test.ts || pnpm --filter @omniagent-plus/core-contracts test -- --run packages/core-contracts/src/handoff-packet.test.ts packages/core-contracts/src/redaction.test.ts` |
+| SL-0-T1 | test | (none) | handoff packet schema tests, redaction tests, packet fixtures, and evidence fixtures | builder, context policy, bounded evidence, redaction, and fixture parsing tests | `test ! -e packages/core-contracts/src/handoff-packet.test.ts || pnpm --filter @consiliency/runtime-provider test -- --run packages/core-contracts/src/handoff-packet.test.ts packages/core-contracts/src/redaction.test.ts` |
 | SL-0-T2 | impl | SL-0-T1 | handoff packet contract, builder helpers, context policy validation, evidence collector input normalization, redaction helpers, core contract fixture, and handoff packet/evidence fixtures | n/a | n/a |
-| SL-0-T3 | verify | SL-0-T2 | packet builder source/tests and packet/evidence fixtures | builder, context policy, bounded evidence, redaction, and fixture parsing tests | `pnpm --filter @omniagent-plus/core-contracts test -- --run packages/core-contracts/src/handoff-packet.test.ts packages/core-contracts/src/redaction.test.ts && find fixtures/handoff/packets fixtures/handoff/evidence -name '*.json' -print | sort | xargs -r -n1 python3 -m json.tool >/dev/null` |
+| SL-0-T3 | verify | SL-0-T2 | packet builder source/tests and packet/evidence fixtures | builder, context policy, bounded evidence, redaction, and fixture parsing tests | `pnpm --filter @consiliency/runtime-provider test -- --run packages/core-contracts/src/handoff-packet.test.ts packages/core-contracts/src/redaction.test.ts && find fixtures/handoff/packets fixtures/handoff/evidence -name '*.json' -print | sort | xargs -r -n1 python3 -m json.tool >/dev/null` |
 
 ### SL-1 — Target-harness prompt renderers
 
@@ -79,9 +79,9 @@ SL-2 — Prompt-injection fixtures, docs, and phase verification reducer
 
 | Task ID | Type | Depends on | Files in scope | Tests owned | Test command |
 | --- | --- | --- | --- | --- | --- |
-| SL-1-T1 | test | SL-0-T3 | renderer tests and renderer fixtures for Codex, Claude Code, Gemini Antigravity, OpenCode, Pi, and custom targets | trusted section separation, target-specific labels, and untrusted evidence rendering tests | `pnpm --filter @omniagent-plus/core-contracts test -- --run packages/core-contracts/src/handoff-renderer.test.ts` |
+| SL-1-T1 | test | SL-0-T3 | renderer tests and renderer fixtures for Codex, Claude Code, Gemini Antigravity, OpenCode, Pi, and custom targets | trusted section separation, target-specific labels, and untrusted evidence rendering tests | `pnpm --filter @consiliency/runtime-provider test -- --run packages/core-contracts/src/handoff-renderer.test.ts` |
 | SL-1-T2 | impl | SL-1-T1 | target renderer source and renderer fixtures | n/a | n/a |
-| SL-1-T3 | verify | SL-1-T2 | renderer source/tests and renderer fixtures | trusted section separation, target-specific labels, and untrusted evidence rendering tests | `pnpm --filter @omniagent-plus/core-contracts test -- --run packages/core-contracts/src/handoff-renderer.test.ts && find fixtures/handoff/renderers -name '*.json' -print | sort | xargs -r -n1 python3 -m json.tool >/dev/null` |
+| SL-1-T3 | verify | SL-1-T2 | renderer source/tests and renderer fixtures | trusted section separation, target-specific labels, and untrusted evidence rendering tests | `pnpm --filter @consiliency/runtime-provider test -- --run packages/core-contracts/src/handoff-renderer.test.ts && find fixtures/handoff/renderers -name '*.json' -print | sort | xargs -r -n1 python3 -m json.tool >/dev/null` |
 
 ### SL-2 — Prompt-injection fixtures, docs, and phase verification reducer
 
@@ -93,7 +93,7 @@ SL-2 — Prompt-injection fixtures, docs, and phase verification reducer
 
 | Task ID | Type | Depends on | Files in scope | Tests owned | Test command |
 | --- | --- | --- | --- | --- | --- |
-| SL-2-T1 | test | SL-1-T3 | public exports, security tests, hostile injection fixtures, redaction fixtures, and handoff docs | prompt-injection fencing, raw-history bounds, secret redaction, public export, and documentation tests | `test -f docs/handoff-packets.md && pnpm --filter @omniagent-plus/core-contracts test -- --run packages/core-contracts/src/handoff-security.test.ts` |
+| SL-2-T1 | test | SL-1-T3 | public exports, security tests, hostile injection fixtures, redaction fixtures, and handoff docs | prompt-injection fencing, raw-history bounds, secret redaction, public export, and documentation tests | `test -f docs/handoff-packets.md && pnpm --filter @consiliency/runtime-provider test -- --run packages/core-contracts/src/handoff-security.test.ts` |
 | SL-2-T2 | impl | SL-2-T1 | package exports, security test suite, injection/redaction fixtures, and handoff packet docs | n/a | n/a |
 | SL-2-T3 | verify | SL-2-T2 | full HANDOFF owned surface | phase verification suite | `test -f docs/handoff-packets.md && rg -n "IF-0-HANDOFF-8|trusted|untrusted|metadata_only|raw history|prompt injection|redacted" docs/handoff-packets.md packages/core-contracts/src && pnpm install --frozen-lockfile && pnpm build && pnpm lint && pnpm typecheck && pnpm test -- --run packages/core-contracts/src/handoff-packet.test.ts packages/core-contracts/src/redaction.test.ts packages/core-contracts/src/handoff-renderer.test.ts packages/core-contracts/src/handoff-security.test.ts && find fixtures/handoff -name '*.json' -print | sort | xargs -r -n1 python3 -m json.tool >/dev/null && git diff --check && phase-loop validate-roadmap specs/phase-plans-v1.md` |
 

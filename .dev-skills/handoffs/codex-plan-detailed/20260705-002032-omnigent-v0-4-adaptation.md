@@ -47,7 +47,7 @@ artifact_state: dirty
 ## Verification To Run During Implementation
 
 ```bash
-pnpm --filter @omniagent-plus/omnigent-transport test -- --run packages/omnigent-transport/src
+pnpm --filter @consiliency/omnigent-transport test -- --run packages/omnigent-transport/src
 pnpm test -- --run packages/omnigent-transport/src packages/core-contracts/src/fake-event-stream.test.ts
 pnpm build
 pnpm lint

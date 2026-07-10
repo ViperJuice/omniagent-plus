@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@omniagent-plus/coordinator": "workspace:*",
-    "@omniagent-plus/core-contracts": "workspace:*",
+    "@consiliency/runtime-provider": "workspace:*",
     "@omniagent-plus/identity-isolation": "workspace:*",
     "@omniagent-plus/rate-limit-catalog": "workspace:*",
     "@omniagent-plus/state-ledger": "workspace:*",

@@ -1,4 +1,4 @@
-import type { IdentityProfile } from "@omniagent-plus/core-contracts";
+import type { IdentityProfile } from "@consiliency/runtime-provider";
 import type { OmnigentProviderMode } from "../../omnigent-transport/src/types.js";
 
 import { buildOmnigentProcessProfiles } from "./process-profile.js";

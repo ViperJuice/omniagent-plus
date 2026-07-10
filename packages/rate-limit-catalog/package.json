@@ -16,6 +16,6 @@
     "test": "pnpm --dir ../.. exec vitest --config vitest.config.ts"
   },
   "dependencies": {
-    "@omniagent-plus/core-contracts": "workspace:*"
+    "@consiliency/runtime-provider": "workspace:*"
   }
 }

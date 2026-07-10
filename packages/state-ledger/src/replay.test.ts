@@ -5,7 +5,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { buildHandoffPacket } from "@omniagent-plus/core-contracts";
+import { buildHandoffPacket } from "@consiliency/runtime-provider";
 
 import { AuditLedger } from "./audit-ledger.js";
 import {

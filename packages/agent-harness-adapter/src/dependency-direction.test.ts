@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-const allowedPackageImports = new Set(["@omniagent-plus/core-contracts"]);
+const allowedPackageImports = new Set(["@consiliency/runtime-provider"]);
 const disallowedImportPatterns = [
   /governed-pipeline/i,
   /agent-harness\/(?!adapter)/i,

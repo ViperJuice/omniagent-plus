@@ -6,7 +6,7 @@ import type {
   CoordinationMessageQuery,
   CoordinationMessageReceipt,
 } from "./coordination-channel.js";
-import type { CoordinationMessage } from "@omniagent-plus/core-contracts";
+import type { CoordinationMessage } from "@consiliency/runtime-provider";
 
 type RpcResult<T> = {
   readonly data: T | null;

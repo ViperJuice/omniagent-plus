@@ -2,7 +2,7 @@ import {
   createRuntimeFailure,
   type RuntimeFailure,
   type LimitClassification,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import type { OmnigentHttpError } from "./http-client.js";
 import type { OmnigentCliCommandResult } from "./types.js";

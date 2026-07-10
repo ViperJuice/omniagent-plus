@@ -69,7 +69,7 @@ documentation of the API-ready control surface.
 
 ```bash
 pnpm --filter @omniagent-plus/cli cli -- control snapshot --json
-pnpm --filter @omniagent-plus/core-contracts test -- --run packages/core-contracts/src/ui-read-model.test.ts
+pnpm --filter @consiliency/runtime-provider test -- --run packages/core-contracts/src/ui-read-model.test.ts
 pnpm --filter @omniagent-plus/state-ledger test -- --run packages/state-ledger/src/replay.test.ts
 pnpm --filter @omniagent-plus/cli test -- --run packages/cli/src/control.test.ts packages/cli/src/cli.test.ts packages/cli/src/phase-verification.test.ts
 pnpm build

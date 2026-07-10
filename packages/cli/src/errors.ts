@@ -2,7 +2,7 @@ import {
   isRuntimeFailure,
   sanitizeMetadataText,
   type RuntimeFailure,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 import { ZodError, z } from "zod";
 
 export const cliErrorCategories = [

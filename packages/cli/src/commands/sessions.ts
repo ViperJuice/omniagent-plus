@@ -1,4 +1,4 @@
-import type { AgentSession, RuntimeEvent, TurnHandle } from "@omniagent-plus/core-contracts";
+import type { AgentSession, RuntimeEvent, TurnHandle } from "@consiliency/runtime-provider";
 import { AuditLedger, replaySessionHistory } from "@omniagent-plus/state-ledger";
 
 import { createCliError } from "../errors.js";

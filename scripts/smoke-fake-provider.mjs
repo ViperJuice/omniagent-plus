@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 // P0a consumability smoke (IF-0-PUBHARDEN-1).
 //
-// A STANDALONE consumer that imports ONLY the published `@omniagent-plus/core-contracts`
+// A STANDALONE consumer that imports ONLY the published `@consiliency/runtime-provider`
 // package surface (no repo-internal / relative imports) and drives one
 // createSession -> sendTurn -> closeSession turn through `FakeAgentRuntimeProvider`.
 // Exits 0 on success, non-zero on any failure. This is the machine-checkable proof
 // that the built + un-privated package is consumable from a scratch install.
-import { FakeAgentRuntimeProvider } from "@omniagent-plus/core-contracts";
+import { FakeAgentRuntimeProvider } from "@consiliency/runtime-provider";
 
 async function main() {
   const provider = new FakeAgentRuntimeProvider();

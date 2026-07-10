@@ -1,5 +1,5 @@
 {
-  "name": "@omniagent-plus/omnigent-transport",
+  "name": "@consiliency/omnigent-transport",
   "version": "0.2.0",
   "type": "module",
   "exports": {
@@ -15,7 +15,7 @@
     "test": "pnpm --dir ../.. exec vitest --config vitest.config.ts"
   },
   "dependencies": {
-    "@omniagent-plus/core-contracts": "workspace:*",
+    "@consiliency/runtime-provider": "workspace:*",
     "@omniagent-plus/state-ledger": "workspace:*"
   }
 }

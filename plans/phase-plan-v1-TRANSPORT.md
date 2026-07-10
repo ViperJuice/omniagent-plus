@@ -11,12 +11,12 @@ roadmap_sha256: cd559015ff6624aeb1ccbb8a708835c06a747d77d3c62c6a1894af1d8e21bb90
 
 `TRANSPORT` is Phase 4 from `specs/phase-plans-v1.md`. Canonical `.phase-loop/events.jsonl` records `STATELEDGER` complete at commit `25f1b474db017ed0d0fb9d5f442650165ea6ecbe` with a clean tree, while `.phase-loop/state.json` and `.phase-loop/tui-handoff.md` still show older STATELEDGER blocker text. This plan treats the newer canonical ledger plus live git topology as authoritative and does not use legacy `.codex/phase-loop/` state to block or supersede it.
 
-This phase consumes `IF-0-CONTRACT-1` from `docs/omnigent-contract.md`, `IF-0-BOOTCORE-2` from `packages/core-contracts`, and `IF-0-STATELEDGER-3` from `packages/state-ledger`. It adds a real `@omniagent-plus/omnigent-transport` package that maps the frozen Omnigent HTTP, CLI, and hybrid transport surfaces into neutral provider sessions, turns, event streams, history, failures, limit-classification candidates, health data, and durable capability snapshots. It must not add scheduler route selection, identity-profile isolation policy, downstream adapters, UI surfaces, live Omnigent as a CI requirement, or secret-bearing persistence.
+This phase consumes `IF-0-CONTRACT-1` from `docs/omnigent-contract.md`, `IF-0-BOOTCORE-2` from `packages/core-contracts`, and `IF-0-STATELEDGER-3` from `packages/state-ledger`. It adds a real `@consiliency/omnigent-transport` package that maps the frozen Omnigent HTTP, CLI, and hybrid transport surfaces into neutral provider sessions, turns, event streams, history, failures, limit-classification candidates, health data, and durable capability snapshots. It must not add scheduler route selection, identity-profile isolation policy, downstream adapters, UI surfaces, live Omnigent as a CI requirement, or secret-bearing persistence.
 
 ## Interface Freeze Gates
 
 - [ ] IF-0-TRANSPORT-4 - Omnigent HTTP/CLI/hybrid transport maps the frozen contract into provider events, sessions, history, failures, and capabilities.
-  - Required package surface: `@omniagent-plus/omnigent-transport` exposes HTTP, CLI, and hybrid provider constructors that satisfy `AgentRuntimeProvider` without leaking raw Omnigent payloads across public boundaries.
+  - Required package surface: `@consiliency/omnigent-transport` exposes HTTP, CLI, and hybrid provider constructors that satisfy `AgentRuntimeProvider` without leaking raw Omnigent payloads across public boundaries.
   - Required conformance proof: fake Omnigent server and mapper tests consume only `fixtures/omnigent/**` plus `docs/omnigent-contract.md` and prove session creation, send-turn, history read, stream events, cancel, logical close emulation, reconnect snapshot dedupe, malformed SSE skip, and duplicate terminal normalization.
   - Required capability proof: health/version/capability probes persist `OmnigentCapabilitySnapshot` records through `AuditLedger.appendCapabilitySnapshot`, including frozen degraded behavior for logical close, child-session creation, public harness override, malformed-event hardening, reconnect, and terminal-event uniqueness.
   - Required failure proof: HTTP, CLI, stream, process, disconnected-backend, unsupported-capability, auth/billing, policy, and rate-limit-like signals normalize to `RuntimeFailure` and, where applicable, `LimitClassification` candidates with redacted diagnostics only.
@@ -80,9 +80,9 @@ SL-5 — Documentation, exports, and phase verification reducer
 
 | Task ID | Type | Depends on | Files in scope | Tests owned | Test command |
 | --- | --- | --- | --- | --- | --- |
-| SL-0-T1 | test | (none) | `packages/omnigent-transport/src/types.test.ts`, `packages/omnigent-transport/package.json` | transport type/package contract tests | `test ! -e packages/omnigent-transport/package.json || pnpm --filter @omniagent-plus/omnigent-transport typecheck` |
+| SL-0-T1 | test | (none) | `packages/omnigent-transport/src/types.test.ts`, `packages/omnigent-transport/package.json` | transport type/package contract tests | `test ! -e packages/omnigent-transport/package.json || pnpm --filter @consiliency/omnigent-transport typecheck` |
 | SL-0-T2 | impl | SL-0-T1 | package metadata, lockfile, transport tsconfig, and shared types | n/a | n/a |
-| SL-0-T3 | verify | SL-0-T2 | `packages/omnigent-transport/package.json`, `packages/omnigent-transport/tsconfig.json`, `packages/omnigent-transport/src/types.ts`, `packages/omnigent-transport/src/types.test.ts` | transport type/package contract tests | `pnpm install --frozen-lockfile && pnpm --filter @omniagent-plus/omnigent-transport test -- --run packages/omnigent-transport/src/types.test.ts && pnpm --filter @omniagent-plus/omnigent-transport typecheck` |
+| SL-0-T3 | verify | SL-0-T2 | `packages/omnigent-transport/package.json`, `packages/omnigent-transport/tsconfig.json`, `packages/omnigent-transport/src/types.ts`, `packages/omnigent-transport/src/types.test.ts` | transport type/package contract tests | `pnpm install --frozen-lockfile && pnpm --filter @consiliency/omnigent-transport test -- --run packages/omnigent-transport/src/types.test.ts && pnpm --filter @consiliency/omnigent-transport typecheck` |
 
 ### SL-1 — Fake Omnigent conformance and mappers
 
@@ -94,9 +94,9 @@ SL-5 — Documentation, exports, and phase verification reducer
 
 | Task ID | Type | Depends on | Files in scope | Tests owned | Test command |
 | --- | --- | --- | --- | --- | --- |
-| SL-1-T1 | test | SL-0-T3 | mapper tests, fake-server conformance tests, and frozen Omnigent fixtures | fake Omnigent conformance and mapper tests | `pnpm --filter @omniagent-plus/omnigent-transport test -- --run packages/omnigent-transport/src/conformance.test.ts packages/omnigent-transport/src/event-mapper.test.ts packages/omnigent-transport/src/history-mapper.test.ts` |
+| SL-1-T1 | test | SL-0-T3 | mapper tests, fake-server conformance tests, and frozen Omnigent fixtures | fake Omnigent conformance and mapper tests | `pnpm --filter @consiliency/omnigent-transport test -- --run packages/omnigent-transport/src/conformance.test.ts packages/omnigent-transport/src/event-mapper.test.ts packages/omnigent-transport/src/history-mapper.test.ts` |
 | SL-1-T2 | impl | SL-1-T1 | fake server, fixture loader, session/history/event mappers, and tests | n/a | n/a |
-| SL-1-T3 | verify | SL-1-T2 | fake server, fixture loader, session/history/event mappers, tests, and `fixtures/omnigent/**` | fake Omnigent conformance and mapper tests | `pnpm --filter @omniagent-plus/omnigent-transport test -- --run packages/omnigent-transport/src/conformance.test.ts packages/omnigent-transport/src/event-mapper.test.ts packages/omnigent-transport/src/history-mapper.test.ts && find fixtures/omnigent -name '*.json' -print | sort | xargs -r -n1 python3 -m json.tool >/dev/null` |
+| SL-1-T3 | verify | SL-1-T2 | fake server, fixture loader, session/history/event mappers, tests, and `fixtures/omnigent/**` | fake Omnigent conformance and mapper tests | `pnpm --filter @consiliency/omnigent-transport test -- --run packages/omnigent-transport/src/conformance.test.ts packages/omnigent-transport/src/event-mapper.test.ts packages/omnigent-transport/src/history-mapper.test.ts && find fixtures/omnigent -name '*.json' -print | sort | xargs -r -n1 python3 -m json.tool >/dev/null` |
 
 ### SL-2 — HTTP provider and SSE stream client
 
@@ -108,9 +108,9 @@ SL-5 — Documentation, exports, and phase verification reducer
 
 | Task ID | Type | Depends on | Files in scope | Tests owned | Test command |
 | --- | --- | --- | --- | --- | --- |
-| SL-2-T1 | test | SL-1-T3 | HTTP client/provider and SSE stream tests | HTTP provider contract tests | `pnpm --filter @omniagent-plus/omnigent-transport test -- --run packages/omnigent-transport/src/http-client.test.ts packages/omnigent-transport/src/sse-stream.test.ts packages/omnigent-transport/src/http-provider.test.ts` |
+| SL-2-T1 | test | SL-1-T3 | HTTP client/provider and SSE stream tests | HTTP provider contract tests | `pnpm --filter @consiliency/omnigent-transport test -- --run packages/omnigent-transport/src/http-client.test.ts packages/omnigent-transport/src/sse-stream.test.ts packages/omnigent-transport/src/http-provider.test.ts` |
 | SL-2-T2 | impl | SL-2-T1 | HTTP client, SSE stream, HTTP provider, and tests | n/a | n/a |
-| SL-2-T3 | verify | SL-2-T2 | HTTP client/provider and SSE stream source/tests | HTTP provider contract tests | `pnpm --filter @omniagent-plus/omnigent-transport test -- --run packages/omnigent-transport/src/http-client.test.ts packages/omnigent-transport/src/sse-stream.test.ts packages/omnigent-transport/src/http-provider.test.ts && pnpm --filter @omniagent-plus/omnigent-transport typecheck` |
+| SL-2-T3 | verify | SL-2-T2 | HTTP client/provider and SSE stream source/tests | HTTP provider contract tests | `pnpm --filter @consiliency/omnigent-transport test -- --run packages/omnigent-transport/src/http-client.test.ts packages/omnigent-transport/src/sse-stream.test.ts packages/omnigent-transport/src/http-provider.test.ts && pnpm --filter @consiliency/omnigent-transport typecheck` |
 
 ### SL-3 — CLI fallback and hybrid process manager
 
@@ -122,9 +122,9 @@ SL-5 — Documentation, exports, and phase verification reducer
 
 | Task ID | Type | Depends on | Files in scope | Tests owned | Test command |
 | --- | --- | --- | --- | --- | --- |
-| SL-3-T1 | test | SL-1-T3 | CLI client, process manager, and hybrid provider tests | CLI and hybrid process tests | `pnpm --filter @omniagent-plus/omnigent-transport test -- --run packages/omnigent-transport/src/cli-client.test.ts packages/omnigent-transport/src/process-manager.test.ts packages/omnigent-transport/src/hybrid-provider.test.ts` |
+| SL-3-T1 | test | SL-1-T3 | CLI client, process manager, and hybrid provider tests | CLI and hybrid process tests | `pnpm --filter @consiliency/omnigent-transport test -- --run packages/omnigent-transport/src/cli-client.test.ts packages/omnigent-transport/src/process-manager.test.ts packages/omnigent-transport/src/hybrid-provider.test.ts` |
 | SL-3-T2 | impl | SL-3-T1 | CLI client, process manager, hybrid provider, and tests | n/a | n/a |
-| SL-3-T3 | verify | SL-3-T2 | CLI client, process manager, hybrid provider source/tests | CLI and hybrid process tests | `pnpm --filter @omniagent-plus/omnigent-transport test -- --run packages/omnigent-transport/src/cli-client.test.ts packages/omnigent-transport/src/process-manager.test.ts packages/omnigent-transport/src/hybrid-provider.test.ts` |
+| SL-3-T3 | verify | SL-3-T2 | CLI client, process manager, hybrid provider source/tests | CLI and hybrid process tests | `pnpm --filter @consiliency/omnigent-transport test -- --run packages/omnigent-transport/src/cli-client.test.ts packages/omnigent-transport/src/process-manager.test.ts packages/omnigent-transport/src/hybrid-provider.test.ts` |
 
 ### SL-4 — Failure, limit, and capability persistence mapping
 
@@ -136,9 +136,9 @@ SL-5 — Documentation, exports, and phase verification reducer
 
 | Task ID | Type | Depends on | Files in scope | Tests owned | Test command |
 | --- | --- | --- | --- | --- | --- |
-| SL-4-T1 | test | SL-3-T3 | failure mapper, capability probe, capability store, and ledger persistence tests | failure/capability persistence tests | `pnpm --filter @omniagent-plus/omnigent-transport test -- --run packages/omnigent-transport/src/failure-mapper.test.ts packages/omnigent-transport/src/capability-probe.test.ts packages/omnigent-transport/src/capability-store.test.ts` |
+| SL-4-T1 | test | SL-3-T3 | failure mapper, capability probe, capability store, and ledger persistence tests | failure/capability persistence tests | `pnpm --filter @consiliency/omnigent-transport test -- --run packages/omnigent-transport/src/failure-mapper.test.ts packages/omnigent-transport/src/capability-probe.test.ts packages/omnigent-transport/src/capability-store.test.ts` |
 | SL-4-T2 | impl | SL-4-T1 | failure mapper, capability probe/store, limit candidate mapping, and tests | n/a | n/a |
-| SL-4-T3 | verify | SL-4-T2 | failure mapper, capability probe/store, limit candidate mapping source/tests | failure/capability persistence tests | `pnpm --filter @omniagent-plus/omnigent-transport test -- --run packages/omnigent-transport/src/failure-mapper.test.ts packages/omnigent-transport/src/capability-probe.test.ts packages/omnigent-transport/src/capability-store.test.ts && pnpm --filter @omniagent-plus/state-ledger test -- --run packages/state-ledger/src/audit-ledger.test.ts` |
+| SL-4-T3 | verify | SL-4-T2 | failure mapper, capability probe/store, limit candidate mapping source/tests | failure/capability persistence tests | `pnpm --filter @consiliency/omnigent-transport test -- --run packages/omnigent-transport/src/failure-mapper.test.ts packages/omnigent-transport/src/capability-probe.test.ts packages/omnigent-transport/src/capability-store.test.ts && pnpm --filter @omniagent-plus/state-ledger test -- --run packages/state-ledger/src/audit-ledger.test.ts` |
 
 ### SL-5 — Documentation, exports, and phase verification reducer
 
@@ -150,7 +150,7 @@ SL-5 — Documentation, exports, and phase verification reducer
 
 | Task ID | Type | Depends on | Files in scope | Tests owned | Test command |
 | --- | --- | --- | --- | --- | --- |
-| SL-5-T1 | test | SL-4-T3 | public exports, `docs/omnigent-transport.md`, `docs/architecture.md`, `README.md` | export and documentation checks | `test -f docs/omnigent-transport.md && pnpm --filter @omniagent-plus/omnigent-transport typecheck` |
+| SL-5-T1 | test | SL-4-T3 | public exports, `docs/omnigent-transport.md`, `docs/architecture.md`, `README.md` | export and documentation checks | `test -f docs/omnigent-transport.md && pnpm --filter @consiliency/omnigent-transport typecheck` |
 | SL-5-T2 | impl | SL-5-T1 | transport public exports and docs/readme updates | n/a | n/a |
 | SL-5-T3 | verify | SL-5-T2 | full TRANSPORT owned surface | phase verification suite | `test -f docs/omnigent-transport.md && rg -n "IF-0-TRANSPORT-4|HTTP|CLI|hybrid|process ownership|capability snapshot|no live Omnigent" docs/omnigent-transport.md docs/architecture.md README.md packages/omnigent-transport/src/index.ts && pnpm install --frozen-lockfile && pnpm build && pnpm lint && pnpm typecheck && pnpm test -- --run packages/omnigent-transport/src && git diff --check && phase-loop validate-roadmap specs/phase-plans-v1.md` |
 

@@ -1,4 +1,4 @@
-import { routeDecisionSchema, type LimitClassification, type RouteDecision } from "@omniagent-plus/core-contracts";
+import { routeDecisionSchema, type LimitClassification, type RouteDecision } from "@consiliency/runtime-provider";
 
 import type { RouteReplayEntry, RouteStoreReader } from "./types.js";
 

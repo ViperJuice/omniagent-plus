@@ -11,7 +11,7 @@ import {
   type AgentRuntimeProvider,
   type AgentSessionState,
   type TurnState,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 /**
  * L-TSCONFORM (IF-0-PUBHARDEN-1) — the load-bearing pre-publish gate.

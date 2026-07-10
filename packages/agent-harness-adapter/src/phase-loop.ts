@@ -2,7 +2,7 @@ import {
   sanitizeMetadataText,
   type CreateSessionRequest,
   type HarnessId,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import {
   adapterBlockerClasses,

@@ -4,7 +4,7 @@ import {
   sanitizeMetadataText,
   type RouteDecision,
   type RuntimeEvidenceRef,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import type { RouteStoreReader, RouteStoreWriter } from "./types.js";
 

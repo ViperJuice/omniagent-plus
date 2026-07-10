@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, rename, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-import type { WorktreeLease, WorktreeLeaseRequest } from "@omniagent-plus/core-contracts";
+import type { WorktreeLease, WorktreeLeaseRequest } from "@consiliency/runtime-provider";
 import {
   AuditLedger,
   getStateLedgerPaths,

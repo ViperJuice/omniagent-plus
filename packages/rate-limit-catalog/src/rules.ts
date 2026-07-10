@@ -2,7 +2,7 @@ import type {
   LimitClassification,
   LimitScope,
   LimitType,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import { createRoutingActionForLimitType } from "./routing-action.js";
 import type { ClassifierInput } from "./types.js";

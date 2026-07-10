@@ -1,6 +1,6 @@
 # Omnigent Transport
 
-`@omniagent-plus/omnigent-transport` satisfies `IF-0-TRANSPORT-4`.
+`@consiliency/omnigent-transport` satisfies `IF-0-TRANSPORT-4`.
 It adds the first real Omnigent transport package on top of the frozen
 contract, the runtime-neutral core contracts, and the durable state ledger.
 

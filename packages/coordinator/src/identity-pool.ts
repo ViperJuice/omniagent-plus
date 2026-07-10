@@ -3,7 +3,7 @@ import type {
   IdentityProfileStatus,
   ProviderFamilyCooldown,
   ProviderFamilyId,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 import { createEmptyActiveTurnSnapshot } from "./active-turns.js";
 import { evaluateAdaptiveConcurrency } from "./adaptive-concurrency.js";

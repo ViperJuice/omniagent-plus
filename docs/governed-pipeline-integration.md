@@ -1,9 +1,9 @@
 # Governed-Pipeline Integration
 
-`@omniagent-plus/governed-pipeline-adapter` keeps the governed-pipeline side of
+`@consiliency/pipeline-provider-adapter` keeps the governed-pipeline side of
 the contract behind `invokeAgenticHarness` with `harness = omnigent` and an
 explicit `target_harness`. The adapter consumes only public
-`@omniagent-plus/core-contracts` types plus JSON fixtures under
+`@consiliency/runtime-provider` types plus JSON fixtures under
 `examples/governed-pipeline/`; it does not import consumer repo internals,
 `.phase-loop/` runtime state, or private configuration.
 

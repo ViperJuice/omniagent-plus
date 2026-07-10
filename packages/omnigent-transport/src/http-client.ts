@@ -1,4 +1,4 @@
-import type { CreateSessionRequest, SendTurnRequest } from "@omniagent-plus/core-contracts";
+import type { CreateSessionRequest, SendTurnRequest } from "@consiliency/runtime-provider";
 
 import { parseOmnigentSseStream, type OmnigentSseSkip } from "./sse-stream.js";
 import type {

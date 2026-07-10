@@ -2,7 +2,7 @@ import type {
   LimitClassification,
   LimitScope,
   LimitType,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 
 export interface ClassifierInput {
   readonly provider?: string;

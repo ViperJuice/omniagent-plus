@@ -6,7 +6,7 @@ import {
   redactedConfigValueSchema,
   routeDecisionSchema,
   uiControlSnapshotSchema,
-} from "@omniagent-plus/core-contracts";
+} from "@consiliency/runtime-provider";
 import { z } from "zod";
 
 export const cliCommandKeys = [
