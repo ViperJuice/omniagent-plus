@@ -26,9 +26,13 @@ scope wrongly implied ownership of that name. Pre-first-publish rename — the
   unpublished `@omniagent-plus/state-ledger` package. Its capability store now
   accepts a public structural ledger interface backed by runtime-provider
   record types, so the packed transport installs independently.
+- Package the authoritative Omnigent fixture tree under `dist/fixtures` during
+  build and run a clean packed-install capability probe in release verification.
 - Made the publish workflow skip exact package versions already present on npm,
   allowing topological releases to continue to packages that still need
-  publication instead of failing on an earlier unchanged version.
+  publication instead of failing on an earlier unchanged version. Only an
+  explicit npm `E404` enters the publish path; other registry probe failures
+  retain diagnostics and fail closed.
 
 ### Notes
 - The seven **private** workspace packages (`@omniagent-plus/{cli,coordinator,
