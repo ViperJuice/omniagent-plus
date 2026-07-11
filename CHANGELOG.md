@@ -22,6 +22,13 @@ scope wrongly implied ownership of that name. Pre-first-publish rename — the
   byte-identical to agent-harness's vendored golden).
 - Added `.github/workflows/publish.yml`: tokenless npm OIDC trusted publishing for
   the three packages under `@consiliency/*` (repo `ViperJuice/omniagent-plus`).
+- Removed `@consiliency/omnigent-transport`'s dependency on the private,
+  unpublished `@omniagent-plus/state-ledger` package. Its capability store now
+  accepts a public structural ledger interface backed by runtime-provider
+  record types, so the packed transport installs independently.
+- Made the publish workflow skip exact package versions already present on npm,
+  allowing topological releases to continue to packages that still need
+  publication instead of failing on an earlier unchanged version.
 
 ### Notes
 - The seven **private** workspace packages (`@omniagent-plus/{cli,coordinator,

@@ -15,7 +15,6 @@
     "test": "pnpm --dir ../.. exec vitest --config vitest.config.ts"
   },
   "dependencies": {
-    "@consiliency/runtime-provider": "workspace:*",
-    "@omniagent-plus/state-ledger": "workspace:*"
+    "@consiliency/runtime-provider": "workspace:*"
   }
 }

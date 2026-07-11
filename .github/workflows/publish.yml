@@ -64,15 +64,33 @@ jobs:
       - name: Publish @consiliency/runtime-provider
         working-directory: packages/core-contracts
         run: |
-          tarball=$(pnpm pack | tail -n1)
-          npm publish "$tarball" --access public
+          package=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          if npm view "$package@$version" version >/dev/null 2>&1; then
+            echo "::notice::$package@$version is already published; skipping"
+          else
+            tarball=$(pnpm pack | tail -n1)
+            npm publish "$tarball" --access public
+          fi
       - name: Publish @consiliency/pipeline-provider-adapter
         working-directory: packages/governed-pipeline-adapter
         run: |
-          tarball=$(pnpm pack | tail -n1)
-          npm publish "$tarball" --access public
+          package=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          if npm view "$package@$version" version >/dev/null 2>&1; then
+            echo "::notice::$package@$version is already published; skipping"
+          else
+            tarball=$(pnpm pack | tail -n1)
+            npm publish "$tarball" --access public
+          fi
       - name: Publish @consiliency/omnigent-transport
         working-directory: packages/omnigent-transport
         run: |
-          tarball=$(pnpm pack | tail -n1)
-          npm publish "$tarball" --access public
+          package=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          if npm view "$package@$version" version >/dev/null 2>&1; then
+            echo "::notice::$package@$version is already published; skipping"
+          else
+            tarball=$(pnpm pack | tail -n1)
+            npm publish "$tarball" --access public
+          fi
