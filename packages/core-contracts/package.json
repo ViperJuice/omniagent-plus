@@ -1,5 +1,6 @@
 {
   "name": "@consiliency/runtime-provider",
+  "author": "ViperJuice <viperjuice@users.noreply.github.com>",
   "version": "0.2.0",
   "repository": {
     "type": "git",
